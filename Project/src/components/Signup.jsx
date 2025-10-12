@@ -178,7 +178,7 @@ export default function Signup({ onNavigateToLogin }) {
                   type="text"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="Enter your full name"
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-[#30363d] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#58a6ff]/20 focus:border-[#58a6ff] bg-[#0d1117] text-white placeholder-[#8b949e]"
                 />
               </div>
