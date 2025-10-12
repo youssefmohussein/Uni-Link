@@ -1,24 +1,19 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
-interface LoginProps {
-  onNavigateToSignup: () => void;
-  onNavigateToForgotPassword: () => void;
-}
-
-export default function Login({ onNavigateToSignup, onNavigateToForgotPassword }: LoginProps) {
+export default function Login({ onNavigateToSignup, onNavigateToForgotPassword }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@miuegypt\.edu\.eg$/;
     return emailRegex.test(email);
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
 
@@ -29,7 +24,7 @@ export default function Login({ onNavigateToSignup, onNavigateToForgotPassword }
     }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
 
@@ -44,7 +39,7 @@ export default function Login({ onNavigateToSignup, onNavigateToForgotPassword }
     return email && password && validateEmail(email) && !errors.email && !errors.password;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isFormValid()) return;

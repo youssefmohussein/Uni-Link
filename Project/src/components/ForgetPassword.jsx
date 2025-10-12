@@ -1,22 +1,18 @@
 import { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 
-interface ForgotPasswordProps {
-  onNavigateToLogin: () => void;
-}
-
-export default function ForgotPassword({ onNavigateToLogin }: ForgotPasswordProps) {
+export default function ForgotPassword({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@miuegypt\.edu\.eg$/;
     return emailRegex.test(email);
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
 
@@ -31,7 +27,7 @@ export default function ForgotPassword({ onNavigateToLogin }: ForgotPasswordProp
     return email && validateEmail(email) && !error;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isFormValid()) return;

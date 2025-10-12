@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, User, Phone, Mail, Lock, GraduationCap, Calendar, ArrowRight } from 'lucide-react';
 
-interface SignupProps {
-  onNavigateToLogin: () => void;
-}
-
-export default function Signup({ onNavigateToLogin }: SignupProps) {
+export default function Signup({ onNavigateToLogin }) {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -19,18 +15,18 @@ export default function Signup({ onNavigateToLogin }: SignupProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
 
   const faculties = ['CS', 'Dentistry', 'ECE', 'Pharma'];
   const years = ['1', '2', '3', '4', '5'];
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@miuegypt\.edu\.eg$/;
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password: string) => {
+  const validatePassword = (password) => {
     const minLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
@@ -40,7 +36,7 @@ export default function Signup({ onNavigateToLogin }: SignupProps) {
     return minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecial;
   };
 
-  const formatPhoneNumber = (value: string) => {
+  const formatPhoneNumber = (value) => {
     const cleaned = value.replace(/\D/g, '');
 
     if (cleaned.length <= 2) {
@@ -54,7 +50,7 @@ export default function Signup({ onNavigateToLogin }: SignupProps) {
     }
   };
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = (e) => {
     const value = e.target.value;
     const cleaned = value.replace(/\D/g, '');
 
@@ -70,7 +66,7 @@ export default function Signup({ onNavigateToLogin }: SignupProps) {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
     if (field === 'email' && value && !validateEmail(value)) {
@@ -121,7 +117,7 @@ export default function Signup({ onNavigateToLogin }: SignupProps) {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isFormValid()) return;
