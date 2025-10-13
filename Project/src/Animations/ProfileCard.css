@@ -33,6 +33,7 @@
   transform: translate3d(0, 0, 0.1px);
   position: relative;
   touch-action: none;
+  margin-left: px;
 }
 
 .pc-card-wrapper::before {
