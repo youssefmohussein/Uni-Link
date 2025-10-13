@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function ProjectModal({ isOpen, onClose }) {
+function ProjectModal({ isOpen, onClose, addProject }) {
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -23,7 +23,36 @@ function ProjectModal({ isOpen, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Project Submitted:", form);
+
+    // ✅ Convert skills string to array
+    const skillsArray = form.skills
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s);
+
+    // ✅ Create preview URL if user uploaded an image
+    const imageUrl = form.image ? URL.createObjectURL(form.image) : null;
+
+    const newProject = {
+      title: form.title,
+      description: form.description,
+      skills: skillsArray,
+      image: imageUrl,
+    };
+
+    // ✅ Add to parent project list
+    addProject(newProject);
+
+    // Reset + close
+    setForm({
+      title: "",
+      description: "",
+      skills: "",
+      team: "",
+      code: "",
+      docs: "",
+      image: null,
+    });
     onClose();
   };
 
@@ -36,69 +65,43 @@ function ProjectModal({ isOpen, onClose }) {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Row 1: Title + Skills */}
+          {/* Title + Skills */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
               name="title"
               placeholder="Project Title"
-              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
+              value={form.title}
               onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
             />
             <input
               type="text"
               name="skills"
               placeholder="Skills (comma separated)"
-              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
+              value={form.skills}
               onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
             />
           </div>
 
-          {/* Description (Full Width) */}
           <textarea
             name="description"
             placeholder="Project Description"
             rows="3"
-            className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
+            value={form.description}
             onChange={handleChange}
+            className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
           />
 
-          {/* Team Members (Full Width) */}
-          <input
-            type="text"
-            name="team"
-            placeholder="Team Members"
-            className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
-            onChange={handleChange}
-          />
-
-          {/* Row 2: GitHub Repo + Docs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="url"
-              name="code"
-              placeholder="GitHub Repo URL"
-              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
-              onChange={handleChange}
-            />
-            <input
-              type="url"
-              name="docs"
-              placeholder="Documentation Link"
-              className="w-full p-3 rounded-xl bg-main/5 border border-muted focus:ring-2 focus:ring-accent focus:outline-none placeholder:text-muted"
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* File Upload */}
           <label className="block w-full cursor-pointer">
             <span className="text-sm text-muted">Upload Project Image</span>
             <input
               type="file"
               name="image"
               accept="image/*"
-              className="mt-2 block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-white hover:file:bg-accent/80"
               onChange={handleChange}
+              className="mt-2 block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-white hover:file:bg-accent/80"
             />
           </label>
 

@@ -8,90 +8,90 @@ export default function SkillsSection() {
   ]);
 
   const [skills, setSkills] = useState({
-    Frontend: ["React", "TypeScript", "Vue.js", "Tailwind CSS"],
-    Backend: ["Node.js", "Python", "MongoDB", "PostgreSQL"],
-    "Cloud & DevOps": ["AWS", "Docker", "Firebase", "Git"],
+    Frontend: ["React", "TypeScript", "Tailwind CSS"],
+    Backend: ["Node.js", "Python", "MongoDB"],
+    "Cloud & DevOps": ["AWS", "Docker", "Firebase"],
   });
 
-  const [showAdd, setShowAdd] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [newSkill, setNewSkill] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const handleAddCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
+    if (!newCategory.trim()) return;
+    if (!categories.includes(newCategory)) {
       setCategories([...categories, newCategory]);
       setSkills({ ...skills, [newCategory]: [] });
-      setNewCategory("");
-      setShowAdd(false);
     }
+    setNewCategory("");
   };
 
   const handleAddSkill = () => {
-    if (selectedCategory && newSkill) {
-      setSkills({
-        ...skills,
-        [selectedCategory]: [...skills[selectedCategory], newSkill],
-      });
-      setNewSkill("");
-      setShowAdd(false);
-    }
+    if (!selectedCategory || !newSkill.trim()) return;
+    setSkills({
+      ...skills,
+      [selectedCategory]: [...skills[selectedCategory], newSkill],
+    });
+    setNewSkill("");
   };
 
   return (
-    <section className="bg-panel rounded-custom shadow-custom p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">💻 Skills</h2>
+    <section className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-white">💻 Skills</h2>
         <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="bg-accent text-white px-3 py-1 rounded-custom hover:opacity-80"
+          onClick={() => setShowForm(!showForm)}
+          className="text-sm px-3 py-1.5 rounded-lg bg-accent text-white hover:bg-accent/90 transition"
         >
-          + Add
+          {showForm ? "Close" : "+ Add"}
         </button>
       </div>
 
-      {/* Add input panel */}
-      {showAdd && (
-        <div className="flex flex-col gap-2 mb-4">
-          <select
-             className="bg-panel text-main border border-white rounded-custom px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-accent"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">Select category</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+      {/* Add Skill / Category Form */}
+      {showForm && (
+        <div className="bg-white/10 rounded-lg p-4 mb-5 space-y-3 border border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full rounded-lg bg-transparent border border-white/20 text-white px-3 py-2 text-sm focus:ring-2 focus:ring-accent focus:outline-none"
+            >
+              <option value="">Select category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat} className="text-black">
+                  {cat}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              placeholder="Add new skill"
+              className="w-full rounded-lg bg-transparent border border-white/20 text-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-accent focus:outline-none"
+            />
+          </div>
 
           <input
             type="text"
-            placeholder="Or add new category"
-            className="border border-muted rounded-custom px-3 py-1 text-main"
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Or create new category"
+            className="w-full rounded-lg bg-transparent border border-white/20 text-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-accent focus:outline-none"
           />
 
-          <input
-            type="text"
-            placeholder="Add new skill"
-            className="border border-muted rounded-custom px-3 py-1 text-main"
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-          />
-
-          <div className="flex gap-2">
+          <div className="flex gap-2 justify-end">
             <button
               onClick={handleAddCategory}
-              className="bg-accent text-white px-3 py-1 rounded-custom hover:opacity-80 flex-1"
+              className="px-4 py-1.5 text-sm bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition"
             >
               Add Category
             </button>
             <button
               onClick={handleAddSkill}
-              className="bg-accent text-white px-3 py-1 rounded-custom hover:opacity-80 flex-1"
+              className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent/90 transition"
             >
               Add Skill
             </button>
@@ -99,16 +99,18 @@ export default function SkillsSection() {
         </div>
       )}
 
-      {/* Display existing categories & skills */}
-      <div className="space-y-4">
+      {/* Skill Display */}
+      <div className="space-y-5">
         {categories.map((category) => (
           <div key={category}>
-            <h3 className="font-medium text-main mb-2">{category}</h3>
+            <h3 className="text-base font-semibold text-accent mb-2">
+              {category}
+            </h3>
             <div className="flex flex-wrap gap-2">
-              {skills[category].map((skill) => (
+              {skills[category]?.map((skill) => (
                 <span
                   key={skill}
-                  className="bg-accent/20 text-accent px-2 py-1 rounded-custom text-sm"
+                  className="px-2.5 py-1 text-sm rounded-md bg-white/10 border border-white/10 text-gray-200 hover:bg-white/20 transition"
                 >
                   {skill}
                 </span>
