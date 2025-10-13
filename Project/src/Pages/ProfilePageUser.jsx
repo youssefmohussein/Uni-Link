@@ -79,7 +79,7 @@ function ProfilePageUser() {
               </button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 lg:gap-4 xl:gap-0 md:grid-cols-2">
               <ProjectCard
                 image={project1}
                 title="E-Commerce Dashboard"
