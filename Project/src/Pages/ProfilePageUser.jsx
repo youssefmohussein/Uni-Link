@@ -5,6 +5,7 @@ import project2 from "../assets/project2.jpg";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../components/ProjectModal";
 import SkillsSection from "../components/SkillsSection";
+import ProfileHeader from "../components/ProfileHeader";
 
 function ProfilePageUser() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,26 +13,11 @@ function ProfilePageUser() {
   return (
     <div className="max-w-7xl mx-auto p-6 bg-main text-main min-h-screen font-main">
       {/* Header */}
-      <header className="bg-panel rounded-custom shadow-custom p-6 mb-8">
-        <div className="flex items-start gap-6">
-          <div className="w-24 md:w-32 lg:w-40 aspect-square rounded-full overflow-hidden border-4 border-accent mx-auto">
-            <img
-              src={profileImage}
-              alt="Ahmed Mohamed Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-main">Ahmed Mohamed</h1>
-            <p className="text-accent font-medium">Senior Full-Stack Developer</p>
-            <p className="text-muted mt-2 leading-relaxed">
-              Passionate about creating innovative solutions and building scalable
-              applications. Experienced in React, Node.js, TypeScript, and cloud
-              technologies.
-            </p>
-          </div>
-        </div>
-      </header>
+        <ProfileHeader 
+        name="youssef"
+        title="Web Developer"
+        bio = "Building smooth, scalable, and creative digital experiences."
+        image = {profileImage}/>
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar */}
