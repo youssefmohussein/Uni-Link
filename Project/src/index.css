@@ -1,7 +1,4 @@
-/* Tailwind v3 setup */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --bg: #0d1117;
