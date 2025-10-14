@@ -1,25 +1,19 @@
-import { useState } from 'react';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import ForgotPassword from './components/ForgetPassword';
+import React from "react";
+import ProfilePageUser from "./Pages/ProfilePageUser";
+import LoadingPage from "./Pages/LoadingPage";
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('login');
+function App() {
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <>
-      {currentPage === 'login' && (
-        <Login
-          onNavigateToSignup={() => setCurrentPage('signup')}
-          onNavigateToForgotPassword={() => setCurrentPage('forgot-password')}
-        />
-      )}
-      {currentPage === 'signup' && (
-        <Signup onNavigateToLogin={() => setCurrentPage('login')} />
-      )}
-      {currentPage === 'forgot-password' && (
-        <ForgotPassword onNavigateToLogin={() => setCurrentPage('login')} />
-      )}
-    </>
+    <div className="min-h-screen">
+      {loading ? <LoadingPage /> : <ProfilePageUser />}
+    </div>
   );
 }
+
+export default App;

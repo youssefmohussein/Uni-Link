@@ -1,3 +1,4 @@
+/* Tailwind v3 setup */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -150,4 +151,15 @@
   .animate-bounce-slow {
     animation: bounce-slow 2s infinite;
   }
+
+  /* merged utility helpers */
+  body{ background-color: var(--bg); }
+  .bg-main { background-color: var(--bg); }
+  .bg-panel { background-color: var(--panel); }
+  .text-main { color: var(--text); }
+  .text-muted { color: var(--muted); }
+  .text-accent { color: var(--accent); }
+  .shadow-custom { box-shadow: var(--shadow); }
+  .rounded-custom { border-radius: var(--radius); }
+  .font-main { font-family: var(--font); }
 }
