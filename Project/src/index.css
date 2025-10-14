@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
   --bg: #0d1117;
@@ -14,32 +11,152 @@
   --font: "Inter", sans-serif;
 }
 
-@layer utilities {
-body{
+@layer base {
+  body {
     background-color: var(--bg);
-}
-  .bg-main {
-    background-color: var(--bg);
-  }
-  .bg-panel {
-    background-color: var(--panel);
-  }
-  .text-main {
     color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
   }
-  .text-muted {
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  p {
     color: var(--muted);
   }
-  .text-accent {
+
+  a {
     color: var(--accent);
+    transition: color 0.2s ease;
   }
-  .shadow-custom {
-    box-shadow: var(--shadow);
+
+  a:hover {
+    color: #79b8ff;
   }
-  .rounded-custom {
+}
+
+@layer components {
+  .card {
+    background-color: var(--panel);
     border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .font-main {
-    font-family: var(--font);
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
   }
+
+  .btn {
+    background-color: var(--accent);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn:hover {
+    background-color: #79b8ff;
+    transform: translateY(-1px);
+  }
+}
+
+@layer utilities {
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(5px);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounce-slow {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  .animate-shake {
+    animation: shake 0.5s;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 2s infinite;
+  }
+
+  /* merged utility helpers */
+  body{ background-color: var(--bg); }
+  .bg-main { background-color: var(--bg); }
+  .bg-panel { background-color: var(--panel); }
+  .text-main { color: var(--text); }
+  .text-muted { color: var(--muted); }
+  .text-accent { color: var(--accent); }
+  .shadow-custom { box-shadow: var(--shadow); }
+  .rounded-custom { border-radius: var(--radius); }
+  .font-main { font-family: var(--font); }
 }
