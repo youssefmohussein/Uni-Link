@@ -6,12 +6,21 @@ import Signup from "./Pages/Signup";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ProfilePageUser from "./Pages/ProfilePageUser";
 import PostPage from "./Pages/PostPage";
+import { apiRequest } from "./utils/apiClient"; // ✅ add this import
 
 function App() {
   const [loading, setLoading] = React.useState(true);
+  const [backendMsg, setBackendMsg] = React.useState("");
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000);
+    // Step 1: fake loading delay
+    const timer = setTimeout(() => setLoading(false), 2000);
+
+    // Step 2: test backend connection
+    apiRequest("test.php")
+      .then((data) => setBackendMsg(data.status))
+      .catch(() => setBackendMsg("❌ Cannot connect to backend"));
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -22,6 +31,11 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground">
+        {/* Temporary Test Message */}
+        <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
+          Backend status: {backendMsg || "Checking..."}
+        </div>
+
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
