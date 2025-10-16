@@ -6,7 +6,6 @@ import Signup from "./Pages/Signup";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ProfilePageUser from "./Pages/ProfilePageUser";
 import PostPage from "./Pages/PostPage";
-import { apiRequest } from "./utils/apiClient"; // ✅ add this import
 import Home from "./Pages/Home";
 import { apiRequest } from "./utils/apiClient";
 
