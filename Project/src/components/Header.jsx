@@ -1,22 +1,22 @@
 import React from 'react';
-// Assuming 'Logo.png' is the blue 'U' icon ONLY, not the text "UniLink"
-import Logo from '../assets/Logo Png.png'; // Using 'Logo Png.png' as per your provided code
+import { Link } from 'react-router-dom';
+import Logo from '../assets/Logo Png.png';
 
 const Header = ({ onShareActivity }) => (
   <header className="bg-gray-800 shadow-xl fixed top-0 left-0 w-full z-50 h-16 flex items-center px-4"> 
     <div className="container mx-auto flex items-center justify-between max-w-8xl h-full"> 
       
       {/* 1. Logo and UniLink Text (Left) */}
-      <div className="flex items-center space-x-2 flex-shrink-0 h-full"> 
-        
+      <Link to="/" className="flex items-center space-x-2 flex-shrink-0 h-full hover:opacity-80 transition-opacity">
+
         <img
           src={Logo}
           alt="UniLink Icon"
-          className="h-25 w-25 object-contain" 
+          className="h-25 w-25 object-contain"
         />
-    
-        <span className="text-xl font-bold text-white tracking-wide">UniLink</span> 
-      </div>
+
+        <span className="text-xl font-bold text-white tracking-wide">UniLink</span>
+      </Link>
 
       {/* 2. Search Bar and Share Activity (Center Block) */}
       {/* This block will take up the remaining flexible space in the center */}
