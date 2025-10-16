@@ -5,6 +5,7 @@ import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ProfilePageUser from "./Pages/ProfilePageUser";
+import PostPage from "./Pages/PostPage";
 import { apiRequest } from "./utils/apiClient"; // ✅ add this import
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<ProfilePageUser />} />
+          <Route path="/home" element={<PostPage />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
