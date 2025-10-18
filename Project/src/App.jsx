@@ -12,12 +12,24 @@ import Sidebar from "./components/SideBar";
 import ManageUsers from "./Pages/ManageUsers";
 import ManageTAs from "./Pages/ManageTAs";
 import ManageProfessors from "./Pages/ManageProfessors";
+import PostPage from "./Pages/PostPage";
+import ProfilePageProfessor from "./Pages/ProfilePageProfessor";
+import { apiRequest } from "./utils/apiClient"; // ✅ add this import
+
 
 function App() {
   const [loading, setLoading] = React.useState(true);
+  const [backendMsg, setBackendMsg] = React.useState("");
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000);
+    // Step 1: fake loading delay
+    const timer = setTimeout(() => setLoading(false), 2000);
+
+    // Step 2: test backend connection
+    apiRequest("test.php")
+      .then((data) => setBackendMsg(data.status))
+      .catch(() => setBackendMsg("❌ Cannot connect to backend"));
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -48,10 +60,22 @@ function App() {
         <Route path="/admin/students" element={<StudentsPage />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-professors" element={<ManageProfessors />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/home" element={<PostPage />} />
+         <Route  path="/professorprofile" element={<ProfilePageProfessor/>}/>
         <Route path="/admin/manage-tas" element={<ManageTAs />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Temporary Test Message */}
+        <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
+          Backend status: {backendMsg || "Checking..."}
+        </div>
+        <Routes>
+          
+        </Routes>
+      </div>
     </Router>
   );
 }

@@ -2,4 +2,5 @@
 Processes to run:-
 1) Go inside Project Folder by ""cd Project""
 2) If node-modules not downloaded write ""npm i""
-3) Run by ""npm run dev""
+3) make sure also you installed all libraries used  
+4) Run by ""npm run dev""
