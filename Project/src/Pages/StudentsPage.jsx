@@ -19,8 +19,8 @@ export default function StudentsPage() {
   const [page, setPage] = useState(1);
   const pageSize = 6;
 
-  const departments = useMemo(() => ["All", ...new Set(students.map((s) => s.department))], [students]);
-  const years = useMemo(() => ["All", ...new Set(students.map((s) => s.year))], [students]);
+  const departments = useMemo(() => ["Department", ...new Set(students.map((s) => s.department))], [students]);
+  const years = useMemo(() => ["Year", ...new Set(students.map((s) => s.year))], [students]);
 
   const filtered = useMemo(() => {
     let list = [...students];
@@ -46,22 +46,6 @@ export default function StudentsPage() {
 
   const totalPages = Math.ceil(filtered.length / pageSize);
 
-  const studentsPerDept = useMemo(() => {
-    const deptCount = students.reduce((acc, student) => {
-      acc[student.department] = (acc[student.department] || 0) + 1;
-      return acc;
-    }, {});
-    return Object.entries(deptCount).map(([department, value]) => ({ department, value }));
-  }, [students]);
-
-  const studentsPerYear = useMemo(() => {
-    const yearCount = students.reduce((acc, student) => {
-      acc[student.year] = (acc[student.year] || 0) + 1;
-      return acc;
-    }, {});
-    return Object.entries(yearCount).map(([year, value]) => ({ year, value }));
-  }, [students]);
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -70,30 +54,6 @@ export default function StudentsPage() {
         <div className="text-sm text-gray-500">
           Total: {students.length} students
         </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card title="Total Students">
-          <div className="text-3xl font-bold text-indigo-600">{students.length}</div>
-          <div className="text-sm text-gray-500">Enrolled students</div>
-        </Card>
-        <Card title="Departments">
-          <div className="text-3xl font-bold text-emerald-600">{departments.length - 1}</div>
-          <div className="text-sm text-gray-500">Active departments</div>
-        </Card>
-        <Card title="Average GPA">
-          <div className="text-3xl font-bold text-purple-600">
-            {(students.reduce((sum, s) => sum + s.gpa, 0) / students.length).toFixed(1)}
-          </div>
-          <div className="text-sm text-gray-500">Overall average</div>
-        </Card>
-        <Card title="Current Year">
-          <div className="text-3xl font-bold text-orange-600">
-            {students.filter(s => s.year === new Date().getFullYear()).length}
-          </div>
-          <div className="text-sm text-gray-500">This year</div>
-        </Card>
       </div>
 
       {/* Filters & Charts */}
@@ -110,7 +70,7 @@ export default function StudentsPage() {
                 placeholder="Search students..."
                 className="w-full px-3 py-2 rounded-lg border"
               />
-              <select
+              <select 
                 value={filterDept}
                 onChange={(e) => {
                   setFilterDept(e.target.value);
@@ -122,7 +82,8 @@ export default function StudentsPage() {
                   <option key={d}>{d}</option>
                 ))}
               </select>
-              <select
+
+              <select 
                 value={filterYear}
                 onChange={(e) => {
                   setFilterYear(e.target.value);
@@ -134,44 +95,7 @@ export default function StudentsPage() {
                   <option key={y}>{y}</option>
                 ))}
               </select>
-            </div>
-          </Card>
 
-          <Card title="Students per Department">
-            <div className="space-y-2">
-              {studentsPerDept.map(({ department, value }) => (
-                <div key={department} className="w-full">
-                  <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>{department}</span>
-                    <span>{value}</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded h-2">
-                    <div
-                      className="bg-indigo-500 h-2 rounded"
-                      style={{ width: `${Math.min(100, value * 10)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card title="Students per Year">
-            <div className="space-y-2">
-              {studentsPerYear.map(({ year, value }) => (
-                <div key={year} className="w-full">
-                  <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>{year}</span>
-                    <span>{value}</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded h-2">
-                    <div
-                      className="bg-emerald-500 h-2 rounded"
-                      style={{ width: `${Math.min(100, value * 10)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
             </div>
           </Card>
         </aside>
