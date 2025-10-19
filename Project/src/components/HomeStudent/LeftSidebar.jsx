@@ -1,13 +1,13 @@
 import React from 'react';
 
 const LeftSidebar = ({ currentFilter, onFilterChange }) => {
-    // These 'category' values must match the strings used in the PostPage.jsx filter logic
+    
     const navItems = [
         { label: 'Home Feed', icon: 'fas fa-home', category: 'all', count: null },
         { label: 'Trending Posts', icon: 'fas fa-fire', category: 'trending', count: null },
-        { label: 'Project Groups', icon: 'fas fa-user-friends', category: 'Projects', count: 3 }, // Updated category to 'Projects'
+        { label: 'Project Groups', icon: 'fas fa-user-friends', category: 'Projects', count: 3 }, 
         { label: 'Questions', icon: 'fas fa-question-circle', category: 'Questions', count: 5, countColor: 'bg-red-500' },
-        { label: 'Study Group', icon: 'fas fa-book-reader', category: 'Study Group', count: null }, // Updated label and category
+        { label: 'Study Group', icon: 'fas fa-book-reader', category: 'Study Group', count: null }, 
         { label: 'Leaderboard', icon: 'fas fa-trophy', category: 'Leaderboard', count: null },
         { label: 'Settings', icon: 'fas fa-cog', category: 'Settings', count: null },
     ];
@@ -25,7 +25,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
                     {navItems.map((item) => (
                         <button
                             key={item.category}
-                            // Call the function passed from PostPage to update the filter state
+                            
                             onClick={() => onFilterChange(item.category)}
                             className={`filter-btn flex items-center space-x-3 p-3 rounded-xl w-full text-left transition-colors ${
                                 currentFilter === item.category 

@@ -19,7 +19,7 @@ const PostCard = ({ initialPost }) => {
   return (
     <div className={`bg-gray-800 rounded-xl shadow-2xl p-6 post-item border-l-4 ${borderColor}`}>
       
-      {/* Post Header */}
+      
       <div className="flex items-center space-x-3 mb-4">
         <img src={post.user.profilePic} alt="Profile" className="w-10 h-10 rounded-full border-2 border-gray-600" />
         <div className="flex-grow">
@@ -29,20 +29,20 @@ const PostCard = ({ initialPost }) => {
         <i className="fas fa-ellipsis-h text-gray-500 hover:text-white cursor-pointer"></i>
       </div>
       
-      {/* Category Tag */}
+    
       <div className="mb-4">
         <span className="inline-block bg-blue-900 text-blue-400 text-xs font-semibold px-3 py-1 rounded-full">
           #{post.category.replace(/\s/g, '')}
         </span>
       </div>
       
-      {/* Post Content */}
+    
       <p className="text-gray-300 leading-relaxed mb-4">{post.content}</p>
       {post.image && (
         <img src={post.image} alt="Post Image" className="w-full rounded-xl mb-4 shadow-lg" />
       )}
       
-      {/* Reaction Bar */}
+     
       <div className="reaction-bar flex items-center justify-between text-gray-400 border-t border-gray-700 pt-3 mt-4">
         <div className="flex items-center space-x-6">
           <button 
@@ -63,7 +63,7 @@ const PostCard = ({ initialPost }) => {
         </div>
       </div>
       
-      {/* Comment Section */}
+      
       {showComments && (
         <div className="comment-section mt-4 space-y-4">
           <div className="flex items-start space-x-2 pt-2">

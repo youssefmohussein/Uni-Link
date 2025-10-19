@@ -4,7 +4,6 @@ import { UsersPerDeptChart, UsersPerYearChart } from "../../components/Admin/Ana
 import Sidebar from "../../components/Admin/Sidebar";
 
 export default function Dashboard() {
-  // Sample data
   const [users] = useState([
     { id: 1, name: "Ali Mohamed", email: "ali@example.com", phone: "+201111111111", department: "Computer Science", year: 2024 },
     { id: 2, name: "Sara Ahmed", email: "sara@example.com", phone: "+201222222222", department: "Information Systems", year: 2023 },
@@ -27,7 +26,7 @@ export default function Dashboard() {
     { id: 3, name: "Youssef Hassan", department: "Software Engineering", courses: 3 },
   ]);
 
-  // Analytics data
+  
   const usersPerDept = useMemo(() => {
     const deptCount = users.reduce((acc, user) => {
       acc[user.department] = (acc[user.department] || 0) + 1;
@@ -62,10 +61,10 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Sidebar - fixed left */}
+ 
       <Sidebar />
 
-      {/* Main Dashboard Content */}
+     
       <main className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -75,7 +74,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card title="Total Users">
             <div className="text-3xl font-bold text-indigo-600">{users.length}</div>
@@ -97,9 +96,8 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Charts Section */}
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Users Analytics */}
           <div className="space-y-6">
             <Card title="Users per Department">
               <UsersPerDeptChart data={usersPerDept} />
@@ -109,7 +107,6 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Staff Analytics */}
           <div className="space-y-6">
             <Card title="Professors per Department">
               <UsersPerDeptChart data={professorsPerDept} />
@@ -120,7 +117,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        
         <Card title="Recent Activity">
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">

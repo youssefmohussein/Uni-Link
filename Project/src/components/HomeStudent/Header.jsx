@@ -51,10 +51,13 @@ const Header = ({ onShareActivity }) => {
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* User Icon */}
-          <button className="p-2 rounded-full hover:bg-[#21262d] transition-colors">
+          {/* User Profile Icon (Linked to Profile Page) */}
+          <Link
+            to="/profile"
+            className="p-2 rounded-full hover:bg-[#21262d] transition-colors"
+          >
             <FiUser className="text-[#9ca3af] hover:text-[#3B82F6] text-lg" />
-          </button>
+          </Link>
         </div>
       </div>
     </header>

@@ -25,7 +25,7 @@ function ProjectCard({ image, title, description, skills }) {
           h-full
         "
       >
-        {/* Image */}
+      
         <div className="h-48 w-full overflow-hidden border-b border-white/10">
           <img
             src={image}
@@ -34,7 +34,7 @@ function ProjectCard({ image, title, description, skills }) {
           />
         </div>
 
-        {/* Content */}
+      
         <div className="flex flex-col flex-1 justify-between p-5">
           <div>
             <h3 className="text-lg font-semibold text-white mb-2 line-clamp-1">

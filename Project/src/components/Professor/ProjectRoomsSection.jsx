@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-/* Project Rooms Section for Professor with current data without any database connection */
 function ProjectRoomsSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -147,7 +145,6 @@ function ProjectRoomsSection() {
         </div>
       </div>
 
-      {/* Rooms Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => (
           <div key={room.id} className="border border-muted/30 rounded-custom p-4 hover:border-accent/50 transition">
@@ -194,7 +191,7 @@ function ProjectRoomsSection() {
         ))}
       </div>
 
-      {/* Room Details Modal */}
+      
       {roomModal && selectedRoom && (
         <RoomDetailsModal
           room={selectedRoom}
@@ -202,7 +199,7 @@ function ProjectRoomsSection() {
         />
       )}
 
-      {/* Create Room Modal */}
+     
       {createRoomModal && (
         <CreateRoomModal
           onClose={() => setCreateRoomModal(false)}
@@ -228,7 +225,6 @@ function RoomDetailsModal({ room, onClose }) {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Room Info */}
           <div>
             <h4 className="font-semibold mb-4">Room Information</h4>
             <div className="space-y-3 text-sm">
@@ -255,7 +251,7 @@ function RoomDetailsModal({ room, onClose }) {
             </div>
           </div>
           
-          {/* Progress & Members */}
+    
           <div>
             <h4 className="font-semibold mb-4">Team Members</h4>
             <div className="space-y-2 mb-6">
@@ -276,7 +272,7 @@ function RoomDetailsModal({ room, onClose }) {
           </div>
         </div>
         
-        {/* Milestones */}
+        
         <div className="mt-8">
           <h4 className="font-semibold mb-4">Project Milestones</h4>
           <div className="space-y-3">

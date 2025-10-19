@@ -45,10 +45,10 @@ export default function AdminUsersPage() {
 
   return (
     <div className="flex min-h-screen bg-main text-main font-main">
-      {/* ✅ Sidebar visible on the left */}
+   
       <Sidebar />
 
-      {/* ✅ Main content */}
+      
       <main className="flex-1 p-6 space-y-6 overflow-auto">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
               </table>
             </div>
 
-            {/* Pagination */}
+          
             <div className="flex justify-between items-center mt-4 px-4 text-muted">
               <div className="text-sm">
                 Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} users

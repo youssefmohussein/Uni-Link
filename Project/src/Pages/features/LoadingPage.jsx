@@ -11,7 +11,7 @@ const LoadingPage = () => {
       transition={{ duration:1}}
       className="flex items-center justify-center h-screen bg-main font-main relative overflow-hidden"
     >
-      {/* Animated gradient background shimmer */}
+  
       <motion.div
         animate={{
           backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -24,7 +24,7 @@ const LoadingPage = () => {
         className="absolute inset-0 bg-[linear-gradient(135deg,var(--panel),var(--bg),var(--panel))] bg-[length:200%_200%] opacity-20"
       />
 
-      {/* Outer animated glow ring */}
+      
       <motion.div
         animate={{
           scale: [1, 1.2, 1],
@@ -39,7 +39,7 @@ const LoadingPage = () => {
       />
 
       <div className="flex flex-col items-center space-y-10 z-10">
-        {/* 3D gradient spinning ring */}
+     
         <motion.div
           animate={{ rotate: 360 }}
           transition={{
@@ -49,7 +49,7 @@ const LoadingPage = () => {
           }}
           className="w-32 h-32 rounded-full border-[3px] border-t-transparent border-b-transparent border-l-accent border-r-[#1f6feb] flex items-center justify-center shadow-[0_0_25px_rgba(88,166,255,0.3)]"
         >
-          {/* Logo */}
+         
           <motion.img
             src={logo}
             alt="Logo"
@@ -67,7 +67,7 @@ const LoadingPage = () => {
           />
         </motion.div>
 
-        {/* Loading text */}
+       
         <motion.p
           initial={{ opacity: 0.3 }}
           animate={{ opacity: [0.3, 1, 0.3] }}

@@ -9,7 +9,7 @@ function ProfileHeader({ name, title, bio, image }) {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="bg-panel rounded-custom shadow-custom p-6 md:p-8 mb-8 border border-white/10 flex flex-col md:flex-row items-center gap-6"
     >
-      {/* Profile Image */}
+      
       <motion.div
         whileHover={{ scale: 1.04 }}
         transition={{ duration: 0.3 }}
@@ -22,7 +22,7 @@ function ProfileHeader({ name, title, bio, image }) {
         />
       </motion.div>
 
-      {/* Text Info */}
+     
       <div className="flex-1 text-center md:text-left space-y-1">
         <h1 className="text-3xl font-semibold text-main leading-tight">
           {name}

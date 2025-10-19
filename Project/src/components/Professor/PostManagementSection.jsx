@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-/* Post Management Section for Professor with current data without any database connection */
 function PostManagementSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -149,7 +147,7 @@ function PostManagementSection() {
         </div>
       </div>
 
-      {/* Posts List */}
+     
       <div className="space-y-4">
         {filteredPosts.map((post) => (
           <div key={post.id} className="border border-muted/30 rounded-custom p-4 hover:border-accent/50 transition">
@@ -199,7 +197,6 @@ function PostManagementSection() {
         ))}
       </div>
 
-      {/* Post Editor Modal */}
       {postModal && selectedPost && (
         <PostEditorModal
           post={selectedPost}
@@ -209,7 +206,7 @@ function PostManagementSection() {
         />
       )}
 
-      {/* Create Post Modal */}
+      
       {createPostModal && (
         <CreatePostModal
           onClose={() => setCreatePostModal(false)}

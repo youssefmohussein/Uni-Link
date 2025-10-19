@@ -49,10 +49,7 @@ export default function StudentsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="flex-1 p-6 space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -62,7 +59,7 @@ export default function StudentsPage() {
           </div>
         </div>
 
-        {/* Filters */}
+     
         <Card title="Filters" className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center">
             <input
@@ -105,7 +102,7 @@ export default function StudentsPage() {
           </div>
         </Card>
 
-        {/* Students Table */}
+      
         <Card title="Students List">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -144,7 +141,7 @@ export default function StudentsPage() {
             </table>
           </div>
 
-          {/* Pagination */}
+          
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-4 px-4">
               <div className="text-sm text-gray-400">

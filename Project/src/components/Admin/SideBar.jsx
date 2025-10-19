@@ -28,7 +28,7 @@ export default function Sidebar() {
         open ? "w-64" : "w-20" 
       } flex flex-col border-r border-white/10 font-main`}
     >
-      {/* Header */}
+      
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
         <h1
           className={`font-bold text-lg text-accent transition-all duration-300 ${
@@ -45,7 +45,6 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Menu Items */}
       <nav className="flex-1 px-3 py-6 space-y-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -72,7 +71,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
+    
       <div className="px-4 py-3 border-t border-white/10 text-xs text-muted">
         {open ? "© 2025 Admin Panel" : "©"}
       </div>

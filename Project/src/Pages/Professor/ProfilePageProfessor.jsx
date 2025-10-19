@@ -1,22 +1,14 @@
-/*Imports the react library, which is necessary for creating the components of React */
 import React, { useState } from "react";
-/*Imports the profile image from the assets folder*/
 import profileImage from "../../assets/profileImage.jpg";
-/*Imports component responsible for review section*/
 import ProjectReviewSection from "../../components/Professor/ProjectReviewSection";
-/*Imports component responsible for Q&A section*/
 import QASection from "../../components/Professor/QASection";
-/*Imports component responsible for project rooms section*/
 import ProjectRoomsSection from "../../components/Professor/ProjectRoomsSection";
-/*Imports component responsible for post management section*/
 import PostManagementSection from "../../components/Professor/PostManagementSection";
-/*Imports component responsible for analytics section*/
 import AnalyticsSection from "../../components/Professor/AnalyticsSection";
 
 
 
-/* Profile Page for Professor */
-/*Defines a react functional component named ProfilePageProfessor as it is main component of the page*/
+
 function ProfilePageProfessor() {
   const [activeSection, setActiveSection] = useState("projects");
 
@@ -27,7 +19,7 @@ function ProfilePageProfessor() {
     { id: "posts", label: "📝 Manage Posts", icon: "📝" },
     { id: "analytics", label: "📊 Analytics", icon: "📊" },
   ];
-/* Function to render the section based on the active section */
+
   const renderSection = () => {
     switch (activeSection) {
       case "projects":
@@ -45,7 +37,7 @@ function ProfilePageProfessor() {
     }
   };
 
-  /* Main function to render the page */  
+   
   return (
     <div className="max-w-7xl mx-auto p-6 bg-main text-main min-h-screen font-main">
       {/* Header */}
@@ -92,7 +84,7 @@ function ProfilePageProfessor() {
               ))}
             </nav>
             
-            {/* Quick Stats */}
+          
             <div className="mt-8 pt-6 border-t border-muted/20">
               <h3 className="text-sm font-medium text-muted mb-3">Quick Stats</h3>
               <div className="space-y-2 text-sm">
@@ -113,10 +105,9 @@ function ProfilePageProfessor() {
           </div>
         </aside>
 
-        {/* Main Content */}
+       
         <main className="lg:col-span-3">
           <div className="bg-panel rounded-custom shadow-custom p-6">
-            {/*Render the section based on the active section*/}
             {renderSection()}
           </div>
         </main>
@@ -126,7 +117,7 @@ function ProfilePageProfessor() {
 }
 
 
-/*Export component to be imported and used in other files*/
+
 export default ProfilePageProfessor;
 
 

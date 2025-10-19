@@ -48,7 +48,7 @@ export default function Login() {
     setTimeout(() => {
       setIsLoading(false);
       alert('Login successful!');
-      navigate('/Profile'); // ✅ Example: redirect after login if needed
+      navigate('/Profile');
     }, 2000);
   };
 
@@ -66,7 +66,7 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
+           
             <div className="space-y-2">
               <label className="block text-sm font-medium text-[#c9d1d9] ml-1">
                 Email Address
@@ -86,7 +86,6 @@ export default function Login() {
               )}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-[#c9d1d9] ml-1">
                 Password
@@ -119,18 +118,18 @@ export default function Login() {
               )}
             </div>
 
-            {/* Forgot Password */}
+         
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => navigate('/forgot-password')} // ✅ changed
+                onClick={() => navigate('/forgot-password')} 
                 className="text-sm text-[#58a6ff] hover:text-[#79b8ff] font-medium hover:underline"
               >
                 Forgot Password?
               </button>
             </div>
 
-            {/* Submit Button */}
+            
             <PrimaryButton disabled={!isFormValid() || isLoading}>
               {isLoading ? (
                 <>
@@ -146,12 +145,12 @@ export default function Login() {
             </PrimaryButton>
           </form>
 
-          {/* Sign Up */}
+          
           <div className="mt-8 text-center">
             <p className="text-[#c9d1d9]">
               Don't have an account?{' '}
               <button
-                onClick={() => navigate('/Signup')} // ✅ changed
+                onClick={() => navigate('/Signup')} 
                 className="text-[#58a6ff] hover:text-[#79b8ff] font-semibold hover:underline"
               >
                 Sign Up
