@@ -19,8 +19,8 @@ export default function StudentsPage() {
   const [page, setPage] = useState(1);
   const pageSize = 6;
 
-  const departments = useMemo(() => ["Department", ...new Set(students.map((s) => s.department))], [students]);
-  const years = useMemo(() => ["Year", ...new Set(students.map((s) => s.year))], [students]);
+  const departments = useMemo(() => ["All", ...new Set(students.map((s) => s.department))], [students]);
+  const years = useMemo(() => ["All", ...new Set(students.map((s) => s.year))], [students]);
 
   const filtered = useMemo(() => {
     let list = [...students];
@@ -50,79 +50,76 @@ export default function StudentsPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Students</h1>
+        <h1 className="text-3xl font-bold text-accent">Students</h1>
         <div className="text-sm text-gray-500">
           Total: {students.length} students
         </div>
       </div>
 
-      {/* Filters & Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <aside className="lg:col-span-1 space-y-4">
-          <Card title="Filters">
-            <div className="space-y-3">
-              <input
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="Search students..."
-                className="w-full px-3 py-2 rounded-lg border"
-              />
-              <select 
-                value={filterDept}
-                onChange={(e) => {
-                  setFilterDept(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full px-3 py-2 rounded-lg border"
-              >
-                {departments.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-
-              <select 
-                value={filterYear}
-                onChange={(e) => {
-                  setFilterYear(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full px-3 py-2 rounded-lg border"
-              >
-                {years.map((y) => (
-                  <option key={y}>{y}</option>
-                ))}
-              </select>
-
-            </div>
-          </Card>
-        </aside>
+      <Card title="Filters" className="mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
+                <input
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Search..."
+                  className="w-full px-3 py-2 rounded-lg border"
+                />
+                <select
+                  value={filterDept}
+                  onChange={(e) => {
+                    setFilterDept(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+                >
+                  {departments.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={filterYear}
+                  onChange={(e) => {
+                    setFilterYear(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+                >
+                  {years.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+      </Card>
 
         {/* Students Table */}
-        <section className="lg:col-span-3">
           <Card title="Students List">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-600">Name</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-600">Email</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-600">Department</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-600">Year</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-600">GPA</th>
+                  <tr className="text-left text-gray-500">
+                    <th className="py-3 px-2">Name</th>
+                    <th className="py-3 px-2">Email</th>
+                    <th className="py-3 px-2">Department</th>
+                    <th className="py-3 px-2">Year</th>
+                    <th className="py-3 px-2">GPA</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginated.map((student) => (
-                    <tr key={student.id} className="border-b hover:bg-gray-50">
+                    <tr key={student.id} className="border-t hover:bg-white/50 transition">
                       <td className="py-3 px-4">
-                        <div className="font-medium text-gray-900">{student.name}</div>
+                        <div className="font-medium text-white-900">{student.name}</div>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{student.email}</td>
+                      <td className="py-3 px-4 text-white-600">{student.email}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs">
+                        <span className="px-3 py-2 ">
                           {student.department}
                         </span>
                       </td>
@@ -170,8 +167,7 @@ export default function StudentsPage() {
               </div>
             )}
           </Card>
-        </section>
-      </div>
+
     </div>
   );
 }

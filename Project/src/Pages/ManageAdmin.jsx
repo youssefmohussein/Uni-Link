@@ -89,9 +89,9 @@ export default function ManageTAs() {
   }
 
   return (
-    <main className="flex-1 p-6 md:p-8">
+    <main className="p-6 space-y-6">
       <header className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Teaching Assistants Management</h1>
+        <h1 className="text-3xl font-bold text-accent">Admin</h1>
         <button
           onClick={() => {
             setEditingTA(null);
@@ -99,70 +99,52 @@ export default function ManageTAs() {
           }}
           className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-2xl shadow hover:brightness-105"
         >
-          <FiPlus /> Add TA
+          <FiPlus /> Add Admin
         </button>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card title="Total TAs">
-          <div className="text-3xl font-bold">{tas.length}</div>
-        </Card>
-        <Card title="Departments">
-          <div className="text-3xl font-bold">{departments.length - 1}</div>
-        </Card>
-        <Card title="Years">
-          <div className="text-3xl font-bold">{years.length - 1}</div>
-        </Card>
-      </div>
+      <Card title="Filters" className="mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search..."
+            className="w-full px-3 py-2 rounded-lg border "
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <aside className="lg:col-span-1 space-y-4">
-          <Card title="Filters">
-            <div className="space-y-3">
-              <input
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="Search..."
-                className="w-full px-3 py-2 rounded-lg border"
-              />
-              <select
-                value={filterDept}
-                onChange={(e) => {
-                  setFilterDept(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full px-3 py-2 rounded-lg border"
-              >
-                {departments.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-              <select
-                value={filterYear}
-                onChange={(e) => {
-                  setFilterYear(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full px-3 py-2 rounded-lg border"
-              >
-                {years.map((y) => (
-                  <option key={y}>{y}</option>
-                ))}
-              </select>
-            </div>
-          </Card>
-
-          <Card title="Count per Department">
-            <UsersPerDeptChart data={perDept} />
-          </Card>
-
-          <Card title="Count per Year">
-            <UsersPerYearChart data={perYear} />
-          </Card>
-        </aside>
+          />
+          <select
+            value={filterDept}
+            onChange={(e) => {
+              setFilterDept(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+          >
+            {departments.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterYear}
+            onChange={(e) => {
+              setFilterYear(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Card>
 
         <section className="lg:col-span-3">
           <Card>
@@ -228,7 +210,6 @@ export default function ManageTAs() {
             </div>
           </Card>
         </section>
-      </div>
 
       {isAddEditOpen && (
         <Modal onClose={() => setIsAddEditOpen(false)}>
