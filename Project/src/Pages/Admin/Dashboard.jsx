@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import Card from "../components/Admin/Card";
-import { UsersPerDeptChart, UsersPerYearChart } from "../components/Admin/AnalyticsCharts";
+import Card from "../../components/Admin/Card";
+import { UsersPerDeptChart, UsersPerYearChart } from "../../components/Admin/AnalyticsCharts";
 
 export default function Dashboard() {
   // Sample data - in a real app, this would come from an API

@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
-import Card from "../components/Admin/Card";
-import Modal from "../components/Admin/Modal";
-import AddEditForm from "../components/Admin/AddEditForm";
+import Card from "../../components/Admin/Card";
+import Modal from "../../components/Admin/Modal";
+import AddEditForm from "../../components/Admin/AddEditForm";
 
 export default function ManageProfessors() {
   const [professors, setProfessors] = useState([

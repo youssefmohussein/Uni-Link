@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import Card from "../components/Admin/Card";
+import Card from "../../components/Admin/Card";
 
 export default function AdminUsersPage() {
   const [users] = useState([
