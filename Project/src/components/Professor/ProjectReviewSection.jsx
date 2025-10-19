@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-/* Project Review Section for Professor with current data without any database connection */
 function ProjectReviewSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -105,8 +103,6 @@ function ProjectReviewSection() {
           </select>
         </div>
       </div>
-
-      {/* Projects List */}
       <div className="space-y-4">
         {filteredProjects.map((project) => (
           <div key={project.id} className="border border-muted/30 rounded-custom p-4 hover:border-accent/50 transition">
@@ -150,7 +146,7 @@ function ProjectReviewSection() {
         ))}
       </div>
 
-      {/* Review Modal */}
+   
       {reviewModal && selectedProject && (
         <ReviewModal
           project={selectedProject}

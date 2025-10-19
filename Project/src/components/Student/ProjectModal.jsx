@@ -24,13 +24,12 @@ function ProjectModal({ isOpen, onClose, addProject }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ Convert skills string to array
+    
     const skillsArray = form.skills
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s);
 
-    // ✅ Create preview URL if user uploaded an image
     const imageUrl = form.image ? URL.createObjectURL(form.image) : null;
 
     const newProject = {
@@ -40,10 +39,10 @@ function ProjectModal({ isOpen, onClose, addProject }) {
       image: imageUrl,
     };
 
-    // ✅ Add to parent project list
+    
     addProject(newProject);
 
-    // Reset + close
+    
     setForm({
       title: "",
       description: "",
@@ -105,7 +104,7 @@ function ProjectModal({ isOpen, onClose, addProject }) {
             />
           </label>
 
-          {/* Buttons */}
+        
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"

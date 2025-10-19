@@ -4,10 +4,10 @@ import AuthCard from '../../components/Login/AuthCard';
 import BlobBackground from '../../components/Login/BlobBackground';
 import TextInput from '../../components/Login/TextInput';
 import PrimaryButton from '../../components/Login/PrimaryButton';
-import { useNavigate } from 'react-router-dom'; // ✅ added
+import { useNavigate } from 'react-router-dom'; 
 
 export default function Signup() {
-  const navigate = useNavigate(); // ✅ added
+  const navigate = useNavigate(); 
 
   const [formData, setFormData] = useState({
     fullName: '', phone: '', faculty: '', year: '', email: '', password: '', confirmPassword: ''
@@ -60,7 +60,7 @@ export default function Signup() {
     setIsLoading(true);
     setTimeout(() => { 
       setIsLoading(false); 
-      navigate('/login'); // ✅ redirect to login after signup success
+      navigate('/login'); 
     }, 2000);
   };
 
@@ -167,7 +167,7 @@ export default function Signup() {
             <p className="text-[#c9d1d9]">
               Already have an account?{' '}
               <button 
-                onClick={() => navigate('/login')} // ✅ replaced prop with navigate
+                onClick={() => navigate('/login')} 
                 className="text-[#58a6ff] hover:text-[#79b8ff] font-semibold hover:underline"
               >
                 Sign In

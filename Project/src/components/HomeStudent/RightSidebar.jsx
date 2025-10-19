@@ -1,9 +1,5 @@
 import React from 'react';
-
-// RightSidebar now accepts currentFilter and onFilterChange
 const RightSidebar = ({ currentFilter, onFilterChange }) => {
-    
-    // NOTE: Filter values must match the 'category' field in your posts data
     const categories = [
         { tag: '#StudyGroup', posts: 30, filter: 'Study Group' }, 
         { tag: '#CampusEvents', posts: 22, filter: 'Events' },
@@ -28,7 +24,7 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
                                 onClick={() => onFilterChange(cat.filter)}
                                 className={`text-left transition-colors font-medium text-sm p-1 rounded-lg ${
                                     currentFilter === cat.filter 
-                                        ? 'text-blue-400 bg-blue-900 bg-opacity-40' // Active state style
+                                        ? 'text-blue-400 bg-blue-900 bg-opacity-40' 
                                         : 'text-gray-300 hover:text-blue-400'
                                 }`}
                             >

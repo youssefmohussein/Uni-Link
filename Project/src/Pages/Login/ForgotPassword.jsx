@@ -45,7 +45,6 @@ export default function ForgotPassword() {
         <BlobBackground />
         <div className="w-full max-w-md relative">
           <AuthCard>
-            {/* Back to Login Button */}
             <button
               onClick={() => navigate('/login')}
               className="mb-6 flex items-center space-x-2 text-[#c9d1d9] hover:text-white"
@@ -62,7 +61,6 @@ export default function ForgotPassword() {
               <p className="text-[#c9d1d9]">No worries, we'll send you reset instructions</p>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-[#c9d1d9] ml-1">Email Address</label>
@@ -92,7 +90,7 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-      {/* Modal */}
+      
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-[#161b22] rounded-3xl shadow-[0_4px_12px_rgba(0,0,0,0.5)] p-8 max-w-md w-full">

@@ -11,18 +11,10 @@ import MajorsPage from "./Pages/HomePage/MajorsPage";
 import Login from "./Pages/Login/Login";
 import Signup from "./Pages/Login/Signup";
 import ForgotPassword from "./Pages/Login/ForgotPassword";
-
-// Common/Feature Pages
 import LoadingPage from "./Pages/features/LoadingPage";
-
-// Student Pages
 import ProfilePageUser from "./Pages/Student/ProfilePageUser";
 import PostPage from "./Pages/Student/PostPage";
-
-// Professor Pages
 import ProfilePageProfessor from "./Pages/Professor/ProfilePageProfessor";
-
-// Admin Pages
 import Dashboard from "./Pages/Admin/Dashboard";
 import AdminUserPage from "./Pages/Admin/AdminUsersPage";
 import StudentsPage from "./Pages/Admin/StudentsPage";
@@ -55,7 +47,7 @@ function App() {
       </div>
 
       <Routes>
-        {/* Public Routes */}
+     
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -67,7 +59,7 @@ function App() {
         <Route path="/home" element={<PostPage />} />
         <Route path="/professorprofile" element={<ProfilePageProfessor />} />
 
-        {/* Admin Routes — no Sidebar, no nested layout */}
+    
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/users" element={<AdminUserPage />} />
         <Route path="/admin/students" element={<StudentsPage />} />
@@ -76,7 +68,7 @@ function App() {
         <Route path="/admin/manage-tas" element={<ManageTAs />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
 
-        {/* Catch-All */}
+     
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

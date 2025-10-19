@@ -85,10 +85,10 @@ export default function ManageProfessors() {
 
   return (
     <div className="min-h-screen flex bg-background text-foreground">
-      {/* Sidebar */}
+     
       <Sidebar />
 
-      {/* Main content */}
+     
       <main className="flex-1 p-6 space-y-6 overflow-y-auto">
         <header className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-accent">Professor Management</h1>

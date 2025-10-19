@@ -49,7 +49,6 @@ export default function SkillsSection() {
         </button>
       </div>
 
-      {/* Add Skill / Category Form */}
       {showForm && (
         <div className="bg-white/10 rounded-lg p-4 mb-5 space-y-3 border border-white/10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -99,7 +98,7 @@ export default function SkillsSection() {
         </div>
       )}
 
-      {/* Skill Display */}
+      
       <div className="space-y-5">
         {categories.map((category) => (
           <div key={category}>

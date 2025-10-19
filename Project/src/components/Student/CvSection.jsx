@@ -7,7 +7,7 @@ function CVSection() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check file type and size
+  
     const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
     if (!validTypes.includes(file.type)) {
       alert("Please upload a valid PDF or Word document.");
@@ -19,10 +19,9 @@ function CVSection() {
       return;
     }
 
-    // Create URL for preview/download
     const fileUrl = URL.createObjectURL(file);
 
-    // Store file info
+    
     setCvFile({
       name: file.name,
       size: (file.size / (1024 * 1024)).toFixed(2), // MB
@@ -37,7 +36,7 @@ function CVSection() {
         📄 CV Documents
       </h2>
 
-      {/* Upload Area */}
+      
       <label
         htmlFor="cvFile"
         className="block border-2 border-dashed border-muted/60 hover:border-accent transition-all p-6 rounded-custom text-center cursor-pointer"
@@ -49,7 +48,7 @@ function CVSection() {
         <p className="text-sm text-muted">PDF, DOC, DOCX up to 10MB</p>
       </label>
 
-      {/* CV Preview */}
+     
       {cvFile && (
         <div className="mt-5 transition-all duration-300">
           <div className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-xl shadow-inner">

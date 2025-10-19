@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-/* QASection for Professor with current data without any database connection */
 function QASection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -109,7 +107,7 @@ function QASection() {
         </div>
       </div>
 
-      {/* Questions List */}
+
       <div className="space-y-4">
         {filteredQuestions.map((question) => (
           <div key={question.id} className="border border-muted/30 rounded-custom p-4 hover:border-accent/50 transition">
@@ -163,7 +161,7 @@ function QASection() {
         ))}
       </div>
 
-      {/* Answer Modal */}
+   
       {answerModal && selectedQuestion && (
         <AnswerModal
           question={selectedQuestion}

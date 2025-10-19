@@ -5,9 +5,9 @@ import RightSidebar from '../../components/HomeStudent/RightSidebar';
 import PostCard from '../../components/HomeStudent/PostCard';
 import PostForm from '../../components/HomeStudent/PostForm';
 
-// Initial dummy data for the posts
+
 const initialPosts = [
-  // IMPORTANT: Ensure the 'category' fields match the filter strings in LeftSidebar/RightSidebar
+  
   {
     id: 1,
     user: { name: 'Alex Chen', major: 'Computer Science', profilePic: "https://placehold.co/40x40/E5E7EB/6B7280?text=A" },
@@ -53,7 +53,7 @@ const initialPosts = [
 
 const PostPage = () => {
     const [posts, setPosts] = useState(initialPosts);
-    const [filter, setFilter] = useState('all'); // State to hold the current category filter
+    const [filter, setFilter] = useState('all'); 
     const postFormRef = useRef(null);
     const [newPostContent, setNewPostContent] = useState('');
     const [newPostCategory, setNewPostCategory] = useState('');
@@ -81,17 +81,17 @@ const PostPage = () => {
             comments: [],
         };
 
-        setPosts([newPost, ...posts]); // Add new post to the beginning of the list
+        setPosts([newPost, ...posts]); 
         setNewPostContent('');
         setNewPostCategory('');
     };
 
-    // Filter logic: checks for 'all', 'trending', or a specific category string
+    
     const filteredPosts = posts.filter(post => {
         if (filter === 'all') return true;
         if (filter === 'trending') return post.isTrending;
         
-        // This is the core category filter logic
+   
         return post.category === filter;
     });
 
@@ -99,15 +99,13 @@ const PostPage = () => {
         <div className="flex flex-col min-h-screen">
             <Header onShareActivity={scrollToPostForm} />
             
-            {/* IMPORTANT: The pt-20 class pushes the content down to make room for the fixed header */}
+          
             <div className="container mx-auto flex flex-grow pt-20 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl"> 
                 
-                {/* Left Sidebar */}
+               
                 <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
 
                 <main className="flex-grow mx-3 xl:mx-4"> 
-                    
-                    {/* Welcome Banner */}
                     <div className="bg-gray-800 rounded-xl shadow-2xl p-8 mb-6 text-center">
                         <h2 className="text-3xl font-extrabold mb-3 text-white">Welcome to Uni-Link<span className="text-4xl">👋</span></h2>
                         <p className="text-gray-300 mb-6 max-w-xl mx-auto">Share your university experiences, connect with fellow students, and discover exciting activities happening around campus.</p>
@@ -127,7 +125,7 @@ const PostPage = () => {
                         </div>
                     </div>
 
-                    {/* Post Creation Form */}
+                 
                     <PostForm 
                         postFormRef={postFormRef} 
                         newPostContent={newPostContent} 
@@ -137,16 +135,14 @@ const PostPage = () => {
                         handlePost={handlePost}
                     />
 
-                    {/* Activity Feed */}
+                   
                     <div className="space-y-6">
-                        {/* Render all posts that pass the current filter */}
                         {filteredPosts.map(post => (
                             <PostCard key={post.id} initialPost={post} />
                         ))}
                     </div>
                 </main>
 
-                {/* Right Sidebar - now receives the filter props */}
                 <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
                 
             </div>

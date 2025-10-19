@@ -79,10 +79,10 @@ export default function ManageTAs() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Sidebar */}
+    
       <Sidebar />
 
-      {/* Main content */}
+
       <main className="flex-1 p-6 space-y-6 overflow-y-auto">
         <header className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-accent">Manage Teaching Assistants</h1>
@@ -97,7 +97,7 @@ export default function ManageTAs() {
           </button>
         </header>
 
-        {/* Filters */}
+        
         <Card title="Filters" className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center">
             <input
@@ -140,7 +140,7 @@ export default function ManageTAs() {
           </div>
         </Card>
 
-        {/* Table Section */}
+        
         <section>
           <Card>
             <table className="min-w-full text-sm">
@@ -206,7 +206,7 @@ export default function ManageTAs() {
           </Card>
         </section>
 
-        {/* Add/Edit Modal */}
+       
         {isAddEditOpen && (
           <Modal onClose={() => setIsAddEditOpen(false)}>
             <AddEditForm
@@ -217,7 +217,7 @@ export default function ManageTAs() {
           </Modal>
         )}
 
-        {/* Delete Modal */}
+        
         {isDeleteOpen && (
           <Modal onClose={() => setIsDeleteOpen(false)}>
             <div className="space-y-4">

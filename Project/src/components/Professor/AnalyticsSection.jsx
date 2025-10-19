@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-/* Analytics Section for Professor with current data without any database connection */
 function AnalyticsSection() {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
   const [selectedMetric, setSelectedMetric] = useState("technology");
@@ -65,7 +64,7 @@ function AnalyticsSection() {
         </div>
       </div>
 
-      {/* Key Metrics */}
+  
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {projectStats.map((stat, index) => (
           <div key={index} className="bg-main/10 rounded-custom p-6">
@@ -81,7 +80,7 @@ function AnalyticsSection() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Technology Usage */}
+        
         <div className="bg-main/10 rounded-custom p-6">
           <h3 className="text-lg font-semibold mb-6">Technology Usage</h3>
           <div className="space-y-4">
@@ -110,7 +109,7 @@ function AnalyticsSection() {
           </div>
         </div>
 
-        {/* Top Performers */}
+      
         <div className="bg-main/10 rounded-custom p-6">
           <h3 className="text-lg font-semibold mb-6">Top Performing Students</h3>
           <div className="space-y-4">
@@ -146,7 +145,7 @@ function AnalyticsSection() {
         </div>
       </div>
 
-      {/* Activity Chart */}
+     
       <div className="mt-8 bg-main/10 rounded-custom p-6">
         <h3 className="text-lg font-semibold mb-6">Student Activity Trends</h3>
         <div className="grid grid-cols-6 gap-4">
@@ -191,9 +190,8 @@ function AnalyticsSection() {
         </div>
       </div>
 
-      {/* Additional Analytics */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-        {/* Project Categories */}
         <div className="bg-main/10 rounded-custom p-6">
           <h3 className="text-lg font-semibold mb-4">Project Categories</h3>
           <div className="space-y-3">
@@ -220,7 +218,7 @@ function AnalyticsSection() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        
         <div className="bg-main/10 rounded-custom p-6">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-3">
