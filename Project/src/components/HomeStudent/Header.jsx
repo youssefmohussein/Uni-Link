@@ -1,64 +1,64 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Logo from '../../assets/Logo Png.png';
+import React from "react";
+import { Link } from "react-router-dom";
+import { FiBell, FiUser, FiPlus, FiSearch } from "react-icons/fi";
+import Logo from "../../assets/Logo Png.png";
 
-const Header = ({ onShareActivity }) => (
-  <header className="bg-gray-800 shadow-xl fixed top-0 left-0 w-full z-50 h-16 flex items-center px-4"> 
-    <div className="container mx-auto flex items-center justify-between max-w-8xl h-full"> 
-      
-      {/* 1. Logo and UniLink Text (Left) */}
-      <Link to="/" className="flex items-center space-x-2 flex-shrink-0 h-full hover:opacity-80 transition-opacity">
+const Header = ({ onShareActivity }) => {
+  return (
+    <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-[#0d1117] to-[#161b22] shadow-lg border-b border-[#21262d] backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16 text-white font-main">
 
-        <img
-          src={Logo}
-          alt="UniLink Icon"
-          className="h-25 w-25 object-contain"
-        />
-
-        <span className="text-xl font-bold text-white tracking-wide">UniLink</span>
-      </Link>
-
-      {/* 2. Search Bar and Share Activity (Center Block) */}
-      {/* This block will take up the remaining flexible space in the center */}
-      <div className="flex items-center flex-grow justify-center mx-8"> {/* Added mx-8 for horizontal margin */}
-        <div className="relative flex-grow max-w-xl"> {/* Constrained max-width to center it better */}
-          <input 
-            type="text" 
-            placeholder="Search activities, people, or events..." 
-            // The font will be inherited from the global 'font-inter' class in App.jsx
-            className="search-input w-full bg-gray-700 text-gray-300 rounded-full py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" // Adjusted padding and text color
+        {/* Left: Logo and UniLink */}
+        <Link to="/" className="flex items-center space-x-3 group">
+          <img
+            src={Logo}
+            alt="UniLink Logo"
+            className="h-10 w-10 object-contain drop-shadow-lg transition-transform duration-200 group-hover:scale-110"
           />
-          {/* Search Icon */}
-          <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i> {/* Smaller icon for better fit */}
+          <span className="text-2xl font-bold bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] bg-clip-text text-transparent tracking-wide">
+            UniLink
+          </span>
+        </Link>
+
+        {/* Center: Search Bar */}
+        <div className="relative flex-grow max-w-lg hidden sm:flex mx-8">
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
+          <input
+            type="text"
+            placeholder="Search people, projects, or events..."
+            className="w-full bg-[#0d1117]/80 text-[#c9d1d9] rounded-full py-2.5 pl-11 pr-4 
+            focus:outline-none focus:ring-2 focus:ring-[#3B82F6] 
+            transition-all placeholder:text-gray-500 border border-[#21262d] hover:border-[#30363d]"
+          />
         </div>
-        
-        {/* Share Activity Button - positioned immediately after the search bar */}
-        <button 
-          onClick={onShareActivity} 
-          className="bg-blue-600 text-white rounded-full py-2.5 px-5 font-semibold hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-lg ml-15 flex-shrink-0" // Added ml-4 for space, py-2.5 for height
-        >
-          <i className="fas fa-plus text-sm"></i> {/* Smaller icon for better fit */}
-          <span>Share Activity</span>
-        </button>
+
+        {/* Right: Actions */}
+        <div className="flex items-center space-x-4">
+
+          {/* Share Button (Blue Accent) */}
+          <button
+            onClick={onShareActivity}
+            className="flex items-center justify-center bg-[#3B82F6] hover:bg-[#2563EB] rounded-full px-5 py-2 text-sm font-semibold 
+            transition-all shadow-md hover:shadow-blue-500/20"
+          >
+            <FiPlus className="mr-2 text-white text-base" />
+            Share
+          </button>
+
+          {/* Notification Bell */}
+          <button className="relative group p-2 rounded-full hover:bg-[#21262d] transition-colors">
+            <FiBell className="text-[#9ca3af] group-hover:text-[#3B82F6] text-lg" />
+            <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          {/* User Icon */}
+          <button className="p-2 rounded-full hover:bg-[#21262d] transition-colors">
+            <FiUser className="text-[#9ca3af] hover:text-[#3B82F6] text-lg" />
+          </button>
+        </div>
       </div>
-
-      {/* 3. Navigation Icons (Far Right) */}
-      <nav className="flex items-center space-x-6 flex-shrink-0"> {/* Kept space-x-6 here */}
-        
-        {/* Bell Icon (Notifications) */}
-        <div className="relative group"> {/* Removed h-full and flex items-center as parent div handles alignment */}
-          <i className="fas fa-bell text-xl text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"></i> {/* Adjusted icon size */}
-          {/* Red notification dot - positioned more accurately */}
-          <span className="absolute -top-1 right-0 h-2 w-2 bg-red-500 rounded-full border border-gray-800"></span>
-        </div>
-
-        {/* User Icon (Profile) */}
-        <div className="relative group"> {/* Removed h-full and flex items-center */}
-          <i className="fas fa-user-circle text-xl text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"></i> {/* Adjusted icon size */}
-        </div>
-      </nav>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 export default Header;
