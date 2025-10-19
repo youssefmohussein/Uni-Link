@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import Card from "../../components/Admin/Card";
+import Sidebar from "../../components/Admin/Sidebar";
 
 export default function AdminUsersPage() {
   const [users] = useState([
@@ -42,70 +43,63 @@ export default function AdminUsersPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  const usersPerDept = useMemo(() => {
-    const map = {};
-    users.forEach((u) => (map[u.department] = (map[u.department] || 0) + 1));
-    return Object.entries(map).map(([department, value]) => ({ department, value }));
-  }, [users]);
-
-  const usersPerRole = useMemo(() => {
-    const map = {};
-    users.forEach((u) => (map[u.role] = (map[u.role] || 0) + 1));
-    return Object.entries(map).map(([role, value]) => ({ role, value }));
-  }, [users]);
-
   return (
-    <div className="p-6 space-y-6 bg-main text-main min-h-screen font-main">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-accent">Users</h1>
-        <div className="text-sm text-muted">Total: {users.length} users</div>
-      </div>
+    <div className="flex min-h-screen bg-main text-main font-main">
+      {/* ✅ Sidebar visible on the left */}
+      <Sidebar />
 
-      {/* Filters & Charts */}
-      <Card title="Filters" className="mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
-          <input
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Search..."
-            className="w-full px-3 py-2 rounded-lg border"
-          />
-          <select
-            value={filterDept}
-            onChange={(e) => {
-              setFilterDept(e.target.value);
-              setPage(1);
-            }}
-            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
-          >
-            {departments.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterYear}
-            onChange={(e) => {
-              setFilterYear(e.target.value);
-              setPage(1);
-            }}
-            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+      {/* ✅ Main content */}
+      <main className="flex-1 p-6 space-y-6 overflow-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-accent">Users</h1>
+          <div className="text-sm text-muted">Total: {users.length} users</div>
         </div>
-      </Card>
 
-        {/* User Table */}
+        {/* Filters */}
+        <Card title="Filters" className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
+            <input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search..."
+              className="w-full px-3 py-2 rounded-lg border"
+            />
+            <select
+              value={filterDept}
+              onChange={(e) => {
+                setFilterDept(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+            >
+              {departments.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterYear}
+              onChange={(e) => {
+                setFilterYear(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Card>
+
+        {/* Table */}
         <section className="lg:col-span-3">
           <Card title="Users List">
             <div className="overflow-x-auto">
@@ -166,6 +160,7 @@ export default function AdminUsersPage() {
             </div>
           </Card>
         </section>
-      </div>
+      </main>
+    </div>
   );
 }

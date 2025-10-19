@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import Card from "../../components/Admin/Card";
+import Sidebar from "../../components/Admin/Sidebar";
 
 export default function StudentsPage() {
   const [students] = useState([
@@ -47,127 +48,131 @@ export default function StudentsPage() {
   const totalPages = Math.ceil(filtered.length / pageSize);
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-accent">Students</h1>
-        <div className="text-sm text-gray-500">
-          Total: {students.length} students
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-gray-900 text-white">
+      {/* Sidebar */}
+      <Sidebar />
 
-      <Card title="Filters" className="mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
-                <input
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setPage(1);
-                  }}
-                  placeholder="Search..."
-                  className="w-full px-3 py-2 rounded-lg border"
-                />
-                <select
-                  value={filterDept}
-                  onChange={(e) => {
-                    setFilterDept(e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
-                >
-                  {departments.map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={filterYear}
-                  onChange={(e) => {
-                    setFilterYear(e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
-                >
-                  {years.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-              </div>
-      </Card>
+      {/* Main Content */}
+      <div className="flex-1 p-6 space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-accent">Students</h1>
+          <div className="text-sm text-gray-400">
+            Total: {students.length} students
+          </div>
+        </div>
+
+        {/* Filters */}
+        <Card title="Filters" className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center">
+            <input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search..."
+              className="w-full px-3 py-2 rounded-lg border text-black"
+            />
+            <select
+              value={filterDept}
+              onChange={(e) => {
+                setFilterDept(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+            >
+              {departments.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterYear}
+              onChange={(e) => {
+                setFilterYear(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Card>
 
         {/* Students Table */}
-          <Card title="Students List">
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500">
-                    <th className="py-3 px-2">Name</th>
-                    <th className="py-3 px-2">Email</th>
-                    <th className="py-3 px-2">Department</th>
-                    <th className="py-3 px-2">Year</th>
-                    <th className="py-3 px-2">GPA</th>
+        <Card title="Students List">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left text-gray-400">
+                  <th className="py-3 px-2">Name</th>
+                  <th className="py-3 px-2">Email</th>
+                  <th className="py-3 px-2">Department</th>
+                  <th className="py-3 px-2">Year</th>
+                  <th className="py-3 px-2">GPA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.map((student) => (
+                  <tr key={student.id} className="border-t border-gray-700 hover:bg-gray-800 transition">
+                    <td className="py-3 px-4 font-medium">{student.name}</td>
+                    <td className="py-3 px-4">{student.email}</td>
+                    <td className="py-3 px-4">{student.department}</td>
+                    <td className="py-3 px-4">{student.year}</td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          student.gpa >= 3.7
+                            ? "bg-green-100 text-green-800"
+                            : student.gpa >= 3.0
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {student.gpa}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {paginated.map((student) => (
-                    <tr key={student.id} className="border-t hover:bg-white/50 transition">
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-white-900">{student.name}</div>
-                      </td>
-                      <td className="py-3 px-4 text-white-600">{student.email}</td>
-                      <td className="py-3 px-4">
-                        <span className="px-3 py-2 ">
-                          {student.department}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-gray-600">{student.year}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          student.gpa >= 3.7 ? 'bg-green-100 text-green-800' :
-                          student.gpa >= 3.0 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {student.gpa}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-between items-center mt-4 px-4">
-                <div className="text-sm text-gray-500">
-                  Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} students
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="px-3 py-1 text-sm">
-                    Page {page} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center mt-4 px-4">
+              <div className="text-sm text-gray-400">
+                Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} students
               </div>
-            )}
-          </Card>
-
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 text-sm">
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
     </div>
   );
 }
