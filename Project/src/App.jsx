@@ -16,6 +16,8 @@ import PostPage from "./Pages/PostPage";
 import ProfilePageProfessor from "./Pages/ProfilePageProfessor";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
+import ContactUs from "./Pages/ContactUs";
+import MajorsPage from "./Pages/MajorsPage";
 import { apiRequest } from "./utils/apiClient";
 
 function App() {
@@ -55,6 +57,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/majors" element={<MajorsPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<ProfilePageUser />} />
         <Route path="/home" element={<PostPage />} />

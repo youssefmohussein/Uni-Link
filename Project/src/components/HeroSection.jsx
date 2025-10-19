@@ -20,14 +20,12 @@ export default function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <a
-            href="https://www.miuegypt.edu.eg/academics/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/majors"
             className="px-8 py-4 rounded-xl font-semibold text-white bg-gradient-to-r from-[#58a6ff] to-[#79b8ff] hover:from-[#388bfd] hover:to-[#58a6ff] shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
           >
             Explore Majors
-          </a>
+          </Link>
 
           <Link
             to="/home"

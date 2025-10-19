@@ -26,12 +26,12 @@ const HomeHeader = () => {
             About
           </Link>
 
-          <a
-            href="mailto:ali2306123@miuegypt.edu.eg"
+          <Link
+            to="/contact"
             className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
           >
             Contact Us
-          </a>
+          </Link>
 
           {isLoggedIn ? (
             <Link
