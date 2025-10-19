@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ProjectCard from './ProjectCard';
+import ProjectCard from '../ProjectCard';
 
 const mockProjects = [
   {
