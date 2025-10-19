@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import BlobBackground from './BlobBackground';
+import BlobBackground from '../Login/BlobBackground';
 
 export default function HeroSection() {
   return (

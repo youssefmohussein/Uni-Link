@@ -1,6 +1,6 @@
 import React from 'react';
-import HomeHeader from '../components/HomeHeader';
-import Footer from '../components/Footer';
+import HomeHeader from '../../components/HomePage/HomeHeader';
+import Footer from '../../components/HomePage/Footer';
 
 export default function About() {
   return (

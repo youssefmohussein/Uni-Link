@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../assets/Logo Png.png';
+import Logo from '../../assets/Logo Png.png';
 
 const HomeHeader = () => {
   const isLoggedIn = false;

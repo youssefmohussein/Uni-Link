@@ -1,24 +1,34 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import LoadingPage from "./Pages/LoadingPage";
-import Login from "./Pages/Login";
-import Signup from "./Pages/Signup";
-import ForgotPassword from "./Pages/ForgotPassword";
-import ProfilePageUser from "./Pages/ProfilePageUser";
-import Dashboard from "./Pages/Dashboard";
-import AdminUserPage from "./Pages/AdminUsersPage";
-import StudentsPage from "./Pages/StudentsPage";
-import Sidebar from "./components/Admin/SideBar";
-import ManageUsers from "./Pages/ManageUsers";
-import ManageTAs from "./Pages/ManageAdmin";
-import ManageProfessors from "./Pages/ManageProfessors";
-import PostPage from "./Pages/PostPage";
-import ProfilePageProfessor from "./Pages/ProfilePageProfessor";
-import Home from "./Pages/Home";
-import About from "./Pages/About";
-import ContactUs from "./Pages/ContactUs";
-import MajorsPage from "./Pages/MajorsPage";
+// Utility
 import { apiRequest } from "./utils/apiClient";
+
+// Public Pages
+import Home from "./Pages/HomePage/Home";
+import About from "./Pages/HomePage/About";
+import ContactUs from "./Pages/HomePage/ContactUs";
+import MajorsPage from "./Pages/HomePage/MajorsPage";
+import Login from "./Pages/Login/Login";
+import Signup from "./Pages/Login/Signup";
+import ForgotPassword from "./Pages/Login/ForgotPassword";
+
+// Common/Feature Pages
+import LoadingPage from "./Pages/features/LoadingPage";
+
+// Student Pages
+import ProfilePageUser from "./Pages/Student/ProfilePageUser";
+import PostPage from "./Pages/Student/PostPage";
+
+// Professor Pages
+import ProfilePageProfessor from "./Pages/Professor/ProfilePageProfessor";
+
+// Admin Pages
+import Dashboard from "./Pages/Admin/Dashboard";
+import AdminUserPage from "./Pages/Admin/AdminUsersPage";
+import StudentsPage from "./Pages/Admin/StudentsPage";
+import ManageUsers from "./Pages/Admin/ManageUsers";
+import ManageTAs from "./Pages/Admin/ManageAdmin";
+import ManageProfessors from "./Pages/Admin/ManageProfessors";
 
 function App() {
   const [loading, setLoading] = React.useState(true);

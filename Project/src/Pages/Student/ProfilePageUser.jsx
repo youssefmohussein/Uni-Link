@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import profileImage from "../assets/profileImage.jpg";
-import project1 from "../assets/project1.jpg";
-import project2 from "../assets/project2.jpg";
-import ProjectCard from "../components/ProjectCard";
-import ProjectModal from "../components/ProjectModal";
-import SkillsSection from "../components/SkillsSection";
-import ProfileHeader from "../components/ProfileHeader";
-import CVSection from "../components/CvSection";
+import profileImage from "../../assets/profileImage.jpg";
+import project1 from "../../assets/project1.jpg";
+import project2 from "../../assets/project2.jpg";
+import ProjectCard from "../../components/Student/ProjectCard.jsx";
+import ProjectModal from "../../components/Student/ProjectModal.jsx";
+import SkillsSection from "../../components/Student/SkillsSection.jsx";
+import ProfileHeader from "../../components/Student/ProfileHeader.jsx";
+import CVSection from "../../components/Student/CvSection.jsx";
 import PostsSection from "../../components/Student/PostsSection.jsx";
 
 function ProfilePageUser() {

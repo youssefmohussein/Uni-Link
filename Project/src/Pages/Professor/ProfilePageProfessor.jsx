@@ -1,7 +1,7 @@
 /*Imports the react library, which is necessary for creating the components of React */
 import React, { useState } from "react";
 /*Imports the profile image from the assets folder*/
-import profileImage from "../assets/profileImage.jpg";
+import profileImage from "../../assets/profileImage.jpg";
 /*Imports component responsible for review section*/
 import ProjectReviewSection from "../../components/Professor/ProjectReviewSection";
 /*Imports component responsible for Q&A section*/

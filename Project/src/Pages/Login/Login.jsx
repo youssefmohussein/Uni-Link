@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import AuthCard from '../components/AuthCard';
-import BlobBackground from '../components/BlobBackground';
-import TextInput from '../components/TextInput';
-import PrimaryButton from '../components/PrimaryButton';
+import AuthCard from '../../components/Login/AuthCard';
+import BlobBackground from '../../components/Login/BlobBackground';
+import TextInput from '../../components/Login/TextInput';
+import PrimaryButton from '../../components/Login/PrimaryButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');

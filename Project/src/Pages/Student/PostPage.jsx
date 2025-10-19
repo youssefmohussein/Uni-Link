@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
-import Header from '../components/Header';
-import LeftSidebar from '../components/LeftSidebar';
-import RightSidebar from '../components/RightSidebar';
-import PostCard from '../components/PostCard';
-import PostForm from '../components/PostForm';
+import Header from '../../components/HomeStudent/Header';
+import LeftSidebar from '../../components/HomeStudent/LeftSidebar';
+import RightSidebar from '../../components/HomeStudent/RightSidebar';
+import PostCard from '../../components/HomeStudent/PostCard';
+import PostForm from '../../components/HomeStudent/PostForm';
 
 // Initial dummy data for the posts
 const initialPosts = [

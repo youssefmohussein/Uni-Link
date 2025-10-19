@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../assets/Logo Png.png';
+import Logo from '../../assets/Logo Png.png';
 
 const Header = ({ onShareActivity }) => (
   <header className="bg-gray-800 shadow-xl fixed top-0 left-0 w-full z-50 h-16 flex items-center px-4"> 

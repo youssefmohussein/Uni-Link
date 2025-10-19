@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, ArrowRight } from 'lucide-react';
-import HomeHeader from '../components/HomeHeader';
-import Footer from '../components/Footer';
-import BlobBackground from '../components/BlobBackground';
+import HomeHeader from '../../components/HomePage/HomeHeader';
+import Footer from '../../components/HomePage/Footer';
+import BlobBackground from '../../components/Login/BlobBackground';
 
 const majors = [
   {

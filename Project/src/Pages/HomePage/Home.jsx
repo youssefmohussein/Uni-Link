@@ -1,8 +1,8 @@
 import React from 'react';
-import HomeHeader from '../components/HomeHeader';
-import HeroSection from '../components/HeroSection';
-import TrendingProjectsSection from '../components/TrendingProjectsSection';
-import Footer from '../components/Footer';
+import HomeHeader from '../../components/HomePage/HomeHeader';
+import HeroSection from '../../components/HomePage/HeroSection';
+import TrendingProjectsSection from '../../components/HomePage/TrendingProjectsSection';
+import Footer from '../../components/HomePage/Footer';
 
 export default function Home() {
   return (
