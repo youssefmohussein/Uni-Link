@@ -72,7 +72,6 @@ function App() {
         {/* Catch-All */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-<<<<<<< HEAD
       <div className="min-h-screen bg-background text-foreground">
         <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
           Backend status: {backendMsg || "Checking..."}
@@ -81,8 +80,6 @@ function App() {
           
         </Routes>
       </div>
-=======
->>>>>>> 62ccf312e1f78a1d3338c7e331bf4a2265e20e8f
     </Router>
   );
 }
