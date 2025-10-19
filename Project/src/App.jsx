@@ -68,7 +68,6 @@ function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <div className="min-h-screen bg-background text-foreground">
-        {/* Temporary Test Message */}
         <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
           Backend status: {backendMsg || "Checking..."}
         </div>
