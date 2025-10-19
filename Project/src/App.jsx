@@ -14,6 +14,8 @@ import ManageTAs from "./Pages/ManageTAs";
 import ManageProfessors from "./Pages/ManageProfessors";
 import PostPage from "./Pages/PostPage";
 import ProfilePageProfessor from "./Pages/ProfilePageProfessor";
+import Home from "./Pages/Home";
+import About from "./Pages/About";
 import { apiRequest } from "./utils/apiClient";
 
 function App() {
@@ -51,9 +53,10 @@ function App() {
 
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/about" element={<About />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<ProfilePageUser />} />
         <Route path="/home" element={<PostPage />} />
@@ -70,7 +73,7 @@ function App() {
         </Route>
 
         {/* Catch-All */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <div className="min-h-screen bg-background text-foreground">
         <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
