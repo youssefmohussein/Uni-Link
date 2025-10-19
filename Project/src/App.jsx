@@ -41,7 +41,7 @@ function App() {
         <Outlet />
       </div>
     </div>
-  );
+  )
 
   return (
     <Router>
