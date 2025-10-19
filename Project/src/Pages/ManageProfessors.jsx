@@ -93,9 +93,9 @@ export default function ManageProfessors() {
   }
 
   return (
-    <main className="flex-1 p-6 md:p-8">
+    <main className="p-6 space-y-6">
       <header className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Professor Management</h1>
+        <h1 className="text-3xl font-bold text-accent">Professor Management</h1>
         <button
           onClick={() => {
             setEditingProfessor(null);
@@ -116,7 +116,7 @@ export default function ManageProfessors() {
               setPage(1);
             }}
             placeholder="Search..."
-            className="w-full px-3 py-2 rounded-lg border"
+            className="w-full px-3 py-2 rounded-lg border "
           />
           <select
             value={filterDept}
@@ -124,7 +124,7 @@ export default function ManageProfessors() {
               setFilterDept(e.target.value);
               setPage(1);
             }}
-            className="w-full px-3 py-2 rounded-lg border"
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
           >
             {departments.map((d) => (
               <option key={d} value={d}>
@@ -138,7 +138,7 @@ export default function ManageProfessors() {
               setFilterYear(e.target.value);
               setPage(1);
             }}
-            className="w-full px-3 py-2 rounded-lg border"
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
           >
             {years.map((y) => (
               <option key={y} value={y}>

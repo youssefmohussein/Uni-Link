@@ -62,98 +62,48 @@ export default function AdminUsersPage() {
         <div className="text-sm text-muted">Total: {users.length} users</div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card title="Total Users">
-          <div className="text-3xl font-bold text-accent">{users.length}</div>
-          <div className="text-sm text-muted">All users</div>
-        </Card>
-        <Card title="Students">
-          <div className="text-3xl font-bold text-blue-400">
-            {users.filter((u) => u.role === "Student").length}
-          </div>
-          <div className="text-sm text-muted">Enrolled students</div>
-        </Card>
-        <Card title="Professors">
-          <div className="text-3xl font-bold text-purple-400">
-            {users.filter((u) => u.role === "Professor").length}
-          </div>
-          <div className="text-sm text-muted">Teaching staff</div>
-        </Card>
-        <Card title="TAs">
-          <div className="text-3xl font-bold text-emerald-400">
-            {users.filter((u) => u.role === "TA").length}
-          </div>
-          <div className="text-sm text-muted">Teaching assistants</div>
-        </Card>
-      </div>
-
       {/* Filters & Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <aside className="lg:col-span-1 space-y-4">
-          <Card title="Filters">
-            <div className="space-y-3">
-              <input
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="Search users..."
-                className="w-full px-3 py-2 rounded-custom bg-panel border border-white/10 text-main placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-              {[filterDept, filterYear, filterRole].map((filter, i) => (
-                <select
-                  key={i}
-                  value={filter}
-                  onChange={(e) => {
-                    [setFilterDept, setFilterYear, setFilterRole][i](e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 rounded-custom bg-panel border border-white/10 text-main focus:ring-2 focus:ring-accent"
-                >
-                  {(i === 0 ? departments : i === 1 ? years : roles).map((option) => (
-                    <option key={option}>{option}</option>
-                  ))}
-                </select>
-              ))}
-            </div>
-          </Card>
-
-          <Card title="Users per Department">
-            {usersPerDept.map(({ department, value }) => (
-              <div key={department} className="w-full mb-2">
-                <div className="flex justify-between text-sm text-muted mb-1">
-                  <span>{department}</span>
-                  <span>{value}</span>
-                </div>
-                <div className="w-full bg-panel rounded h-2">
-                  <div
-                    className="bg-accent h-2 rounded"
-                    style={{ width: `${Math.min(100, value * 10)}%` }}
-                  />
-                </div>
-              </div>
+      <Card title="Filters" className="mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center ">
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search..."
+            className="w-full px-3 py-2 rounded-lg border"
+          />
+          <select
+            value={filterDept}
+            onChange={(e) => {
+              setFilterDept(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+          >
+            {departments.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
-          </Card>
-
-          <Card title="Users per Role">
-            {usersPerRole.map(({ role, value }) => (
-              <div key={role} className="w-full mb-2">
-                <div className="flex justify-between text-sm text-muted mb-1">
-                  <span>{role}</span>
-                  <span>{value}</span>
-                </div>
-                <div className="w-full bg-panel rounded h-2">
-                  <div
-                    className="bg-emerald-500 h-2 rounded"
-                    style={{ width: `${Math.min(100, value * 10)}%` }}
-                  />
-                </div>
-              </div>
+          </select>
+          <select
+            value={filterYear}
+            onChange={(e) => {
+              setFilterYear(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-3 py-2 rounded-lg border text-white bg-panel"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
-          </Card>
-        </aside>
+          </select>
+        </div>
+      </Card>
 
         {/* User Table */}
         <section className="lg:col-span-3">
@@ -217,6 +167,5 @@ export default function AdminUsersPage() {
           </Card>
         </section>
       </div>
-    </div>
   );
 }
