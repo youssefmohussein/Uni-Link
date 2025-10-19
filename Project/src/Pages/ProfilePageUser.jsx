@@ -7,7 +7,7 @@ import ProjectModal from "../components/ProjectModal";
 import SkillsSection from "../components/SkillsSection";
 import ProfileHeader from "../components/ProfileHeader";
 import CVSection from "../components/CvSection";
-import PostsSection from "../components/PostsSection";
+import PostsSection from "../components/PostsSection.jsx";
 
 function ProfilePageUser() {
   const [isModalOpen, setIsModalOpen] = useState(false);
