@@ -1,5 +1,5 @@
 import React from "react";
-import GlareHover from "../Animations/GlareHover";
+import GlareHover from "../../Animations/GlareHover";
 function ProjectCard({ image, title, description, skills }) {
   return (
     <GlareHover
