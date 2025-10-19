@@ -32,9 +32,7 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
-    return <LoadingPage />;
-  }
+  if (loading) return <LoadingPage />;
 
   const AdminLayout = () => (
     <div className="min-h-screen bg-background text-foreground flex">
@@ -75,14 +73,6 @@ function App() {
         {/* Catch-All */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="p-4 text-center text-sm bg-blue-100 text-blue-700">
-          Backend status: {backendMsg || "Checking..."}
-        </div>
-        <Routes>
-          
-        </Routes>
-      </div>
     </Router>
   );
 }
