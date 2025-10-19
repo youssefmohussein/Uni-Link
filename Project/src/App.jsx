@@ -8,7 +8,7 @@ import ProfilePageUser from "./Pages/ProfilePageUser";
 import Dashboard from "./Pages/Dashboard";
 import AdminUserPage from "./Pages/AdminUsersPage";
 import StudentsPage from "./Pages/StudentsPage";
-import Sidebar from "./components/SideBar";
+import Sidebar from "./components/Admin/SideBar";
 import ManageUsers from "./Pages/ManageUsers";
 import ManageTAs from "./Pages/ManageAdmin";
 import ManageProfessors from "./Pages/ManageProfessors";
