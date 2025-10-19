@@ -29,6 +29,8 @@ import StudentsPage from "./Pages/Admin/StudentsPage";
 import ManageUsers from "./Pages/Admin/ManageUsers";
 import ManageTAs from "./Pages/Admin/ManageAdmin";
 import ManageProfessors from "./Pages/Admin/ManageProfessors";
+import AdminUsersPage from "./Pages/Admin/AdminUsersPage";
+import AdminSettings from "./Pages/Admin/AdminSettings";
 
 function App() {
   const [loading, setLoading] = React.useState(true);
@@ -72,6 +74,7 @@ function App() {
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-professors" element={<ManageProfessors />} />
         <Route path="/admin/manage-tas" element={<ManageTAs />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
 
         {/* Catch-All */}
         <Route path="*" element={<Navigate to="/" replace />} />

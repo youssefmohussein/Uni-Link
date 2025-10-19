@@ -81,4 +81,12 @@ body{
   .animation-delay-4000 {
     animation-delay: 4s;
   }
+  .light {
+  --bg: #ffffff;
+  --panel: #f5f5f5;
+  --text: #000000;
+  --muted: #555555;
+  --accent: #007bff;
+}
+
 }
