@@ -10,7 +10,7 @@ import AdminUserPage from "./Pages/AdminUsersPage";
 import StudentsPage from "./Pages/StudentsPage";
 import Sidebar from "./components/SideBar";
 import ManageUsers from "./Pages/ManageUsers";
-import ManageTAs from "./Pages/ManageTAs";
+import ManageTAs from "./Pages/ManageAdmin";
 import ManageProfessors from "./Pages/ManageProfessors";
 import PostPage from "./Pages/PostPage";
 import ProfilePageProfessor from "./Pages/ProfilePageProfessor";
