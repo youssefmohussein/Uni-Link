@@ -89,44 +89,18 @@ const PostPage = () => {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 via-gray-950 to-black text-white">
+    <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme">
+      {/* 🌟 Header */}
       <Header logoSize="large" onShareActivity={scrollToPostForm} />
 
-      <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl space-x-6">
-        {/* Left Sidebar */}
-        <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
-
-        {/* Main Feed */}
+      <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
+        {/* 📁 Left Sidebar */}
+                  <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
+        
+        {/* 📰 Main Feed */}
         <main className="flex-grow space-y-8">
-          {/* Welcome Section */}
-          {/* <div className="bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-2xl p-10 text-center border border-gray-700">
-            <h2 className="text-4xl font-extrabold mb-3 text-blue-400 tracking-tight">
-              Welcome to Uni-Link 👋
-            </h2>
-            <p className="text-gray-300 mb-6 max-w-xl mx-auto text-lg">
-              Share your university experiences, connect with others, and join exciting campus activities.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <button
-                onClick={scrollToPostForm}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-xl py-3 px-10 font-semibold shadow-lg hover:scale-105 transition-transform duration-200"
-              >
-                <i className="fas fa-share-alt text-lg"></i>
-                <span>Share Activity</span>
-              </button>
-              <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-xl py-3 px-10 font-semibold shadow-lg hover:scale-105 transition-transform duration-200">
-                <i className="fas fa-calendar-plus text-lg"></i>
-                <span>Join Events</span>
-              </button>
-              <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-xl py-3 px-10 font-semibold shadow-lg hover:scale-105 transition-transform duration-200">
-                <i className="fas fa-users text-lg"></i>
-                <span>Find Your Group</span>
-              </button>
-            </div>
-          </div> */}
+          {/* ✏️ Post Form */}
 
-          {/* Post Form */}
-          <div ref={postFormRef}>
             <PostForm
               newPostContent={newPostContent}
               setNewPostContent={setNewPostContent}
@@ -134,18 +108,19 @@ const PostPage = () => {
               setNewPostCategory={setNewPostCategory}
               handlePost={handlePost}
             />
-          </div>
 
-          {/* Feed */}
+          {/* 📜 Feed */}
           <div className="space-y-8">
             {filteredPosts.map((post) => (
-              <PostCard key={post.id} initialPost={post} />
+                <PostCard initialPost={post} />
+              
             ))}
           </div>
         </main>
 
-        {/* Right Sidebar */}
-        <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
+        {/* 💬 Right Sidebar */}
+                  <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
+        
       </div>
     </div>
   );

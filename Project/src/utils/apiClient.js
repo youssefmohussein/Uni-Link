@@ -1,22 +1,28 @@
 import { API_BASE_URL } from "../config/api";
 
 export async function apiRequest(endpoint, method = "GET", data = null) {
+  const url = `${API_BASE_URL}/${endpoint}`;
+  console.log("Fetching from:", url);
+
   const options = {
     method,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   };
 
   if (data) {
     options.body = JSON.stringify(data);
   }
 
-  const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    const json = await response.json();
+    console.log("Response:", json);
+    return json;
+  } catch (err) {
+    console.error("❌ API Request failed:", err);
+    throw err;
   }
-
-  return response.json();
 }

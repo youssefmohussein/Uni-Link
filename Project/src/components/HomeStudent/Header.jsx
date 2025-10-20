@@ -13,9 +13,9 @@ const Header = ({ onShareActivity }) => {
           <img
             src={Logo}
             alt="UniLink Logo"
-            className="h-10 w-10 object-contain drop-shadow-lg transition-transform duration-200 group-hover:scale-110"
+            className="h-12 w-12 object-contain drop-shadow-[0_0_15px_rgba(88,166,255,0.4)] transition-transform duration-200 group-hover:scale-110"
           />
-          <span className="text-2xl font-bold bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] bg-clip-text text-transparent tracking-wide">
+          <span className="text-2xl font-bold bg-gradient-to-r from-[#58a6ff] to-[#3b82f6] bg-clip-text text-transparent tracking-wide">
             UniLink
           </span>
         </Link>
@@ -27,7 +27,7 @@ const Header = ({ onShareActivity }) => {
             type="text"
             placeholder="Search people, projects, or events..."
             className="w-full bg-[#0d1117]/80 text-[#c9d1d9] rounded-full py-2.5 pl-11 pr-4 
-            focus:outline-none focus:ring-2 focus:ring-[#3B82F6] 
+            focus:outline-none focus:ring-2 focus:ring-[#58a6ff] 
             transition-all placeholder:text-gray-500 border border-[#21262d] hover:border-[#30363d]"
           />
         </div>
@@ -35,28 +35,28 @@ const Header = ({ onShareActivity }) => {
         {/* Right: Actions */}
         <div className="flex items-center space-x-4">
 
-          {/* Share Button (Blue Accent) */}
+          {/* Share Button (Blue Accent from index.css) */}
           <button
             onClick={onShareActivity}
-            className="flex items-center justify-center bg-[#3B82F6] hover:bg-[#2563EB] rounded-full px-5 py-2 text-sm font-semibold 
-            transition-all shadow-md hover:shadow-blue-500/20"
+            className="flex items-center justify-center bg-[#58a6ff] hover:bg-[#3b82f6] text-white rounded-full px-6 py-2 font-semibold text-sm 
+            shadow-[0_4px_10px_rgba(88,166,255,0.3)] hover:shadow-[0_0_20px_rgba(88,166,255,0.5)] transition-all duration-200"
           >
-            <FiPlus className="mr-2 text-white text-base" />
+            <FiPlus className="mr-2 text-base" />
             Share
           </button>
 
           {/* Notification Bell */}
           <button className="relative group p-2 rounded-full hover:bg-[#21262d] transition-colors">
-            <FiBell className="text-[#9ca3af] group-hover:text-[#3B82F6] text-lg" />
+            <FiBell className="text-[#9ca3af] group-hover:text-[#58a6ff] text-lg" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* User Profile Icon (Linked to Profile Page) */}
+          {/* User Profile Icon */}
           <Link
             to="/profile"
             className="p-2 rounded-full hover:bg-[#21262d] transition-colors"
           >
-            <FiUser className="text-[#9ca3af] hover:text-[#3B82F6] text-lg" />
+            <FiUser className="text-[#9ca3af] hover:text-[#58a6ff] text-lg" />
           </Link>
         </div>
       </div>
