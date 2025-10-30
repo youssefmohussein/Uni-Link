@@ -14,7 +14,7 @@ export default function Sidebar() {
   const location = useLocation();
 
   const menuItems = [
-    { label: "Dashboard", icon: <FiBarChart2 />, path: "/admin" },
+    { label: "Dashboard", icon: <FiBarChart2 />, path: "/admin/dashboard" },
     { label: "Users", icon: <FiUsers />, path: "/admin/users" },
     { label: "Students", icon: <FiBookOpen />, path: "/admin/students" },
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },

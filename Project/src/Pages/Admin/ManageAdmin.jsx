@@ -85,7 +85,7 @@ export default function ManageTAs() {
 
       <main className="flex-1 p-6 space-y-6 overflow-y-auto">
         <header className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-accent">Manage Teaching Assistants</h1>
+          <h1 className="text-3xl font-bold text-accent">Manage Admins</h1>
           <button
             onClick={() => {
               setEditingTA(null);

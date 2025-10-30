@@ -21,7 +21,7 @@ import StudentsPage from "./Pages/Admin/StudentsPage";
 import ManageUsers from "./Pages/Admin/ManageUsers";
 import ManageTAs from "./Pages/Admin/ManageAdmin";
 import ManageProfessors from "./Pages/Admin/ManageProfessors";
-import AdminUsersPage from "./Pages/Admin/AdminUsersPage";
+// import AdminUsersPage from "./Pages/Admin/AdminUsersPage";
 import AdminSettings from "./Pages/Admin/AdminSettings";
 
 function App() {

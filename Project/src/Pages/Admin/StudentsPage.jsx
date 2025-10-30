@@ -48,7 +48,7 @@ export default function StudentsPage() {
   const totalPages = Math.ceil(filtered.length / pageSize);
 
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
+    <div className="flex min-h-screen bg-900 text-white">
       <Sidebar />
       <div className="flex-1 p-6 space-y-6">
         {/* Header */}
