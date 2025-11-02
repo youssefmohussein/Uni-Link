@@ -8,6 +8,7 @@ $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Normalize request (remove trailing slashes)
 $request = rtrim($request, '/');
+require_once __DIR__ . '/Controllers/UserController.php';
 
 // ✅ Router
 switch ($request) {
