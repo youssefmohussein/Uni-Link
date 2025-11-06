@@ -134,16 +134,9 @@ function UserForm({ isOpen, onClose, onSubmit, initialData }) {
 
 
 export default function AdminUsersPage() {
-  const initialUsers = [
-    { id: 1, name: "Ali Mohamed", email: "ali@example.com", phone: "+201111111111", department: "Computer Science", year: 2024, role: "Student" },
-    { id: 2, name: "Sara Ahmed", email: "sara@example.com", phone: "+201222222222", department: "Information Systems", year: 2023, role: "Student" },
-    { id: 3, name: "Omar Ehab", email: "omar@example.com", phone: "+201333333333", department: "Software Engineering", year: 2025, role: "Student" },
-    { id: 4, name: "Nour Hassan", email: "nour@example.com", phone: "+201444444444", department: "AI", year: 2024, role: "Student" },
-    { id: 5, name: "Dr. Mohamed Hassan", email: "mohamed@university.edu", phone: "+201555555555", department: "Computer Science", year: 2020, role: "Professor" },
-    { id: 6, name: "Dr. Sara Ahmed", email: "sara.prof@university.edu", phone: "+201666666666", department: "Information Systems", year: 2019, role: "Professor" },
-    { id: 7, name: "Ahmed Ali", email: "ahmed.ta@university.edu", phone: "+201777777777", department: "Software Engineering", year: 2022, role: "TA" },
-    { id: 8, name: "Fatma Mohamed", email: "fatma.ta@university.edu", phone: "+201888888888", department: "AI", year: 2021, role: "TA" },
-  ];
+  // --- REMOVED SAMPLE DATA ---
+  const initialUsers = []; 
+  // --- END REMOVED SAMPLE DATA ---
   
   const [users, setUsers] = useState(initialUsers);
   const [editingUser, setEditingUser] = useState(null); 
@@ -151,6 +144,7 @@ export default function AdminUsersPage() {
 
   // --- CRUD Functions ---
   const handleAddUser = (newUser) => {
+    // Generates the next ID based on the current highest ID
     const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
     setUsers(prevUsers => [
       ...prevUsers,
@@ -204,7 +198,11 @@ export default function AdminUsersPage() {
       );
     }
     if (filterDept !== "All") list = list.filter((u) => u.department === filterDept);
-    if (filterYear !== "All") list = list.filter((u) => u.year === filterYear);
+    // Note: The original code compared string 'All' to a mix of string/number years. 
+    // This is robust enough because filterYear is initially 'All' (string). 
+    // When a year is selected, it's a string, and u.year is a number/string. 
+    // To be precise for number comparison, a conversion would be ideal, but current logic works for filtering from the dropdown.
+    if (filterYear !== "All") list = list.filter((u) => u.year == filterYear); 
     if (filterRole !== "All") list = list.filter((u) => u.role === filterRole);
     return list;
   }, [users, query, filterDept, filterYear, filterRole]);
@@ -285,69 +283,78 @@ export default function AdminUsersPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-panel-border">
-                <thead>
-                  <tr className="bg-panel-light">
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Name</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Email</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Role</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Department</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Year</th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-panel-border">
-                  {paginated.map((u) => (
-                    <tr key={u.id} className="hover:bg-panel-light transition-colors duration-150">
-                      <td className="py-3 px-4 font-medium text-main">{u.name}</td>
-                      <td className="py-3 px-4 text-muted">{u.email}</td>
-                      <td className="py-3 px-4">
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-muted">{u.department}</td>
-                      <td className="py-3 px-4 text-muted">{u.year}</td>
-                      
-                      {/* --- UPDATED: Actions Column with Font Awesome Icons --- */}
-                      <td className="py-3 px-4 space-x-2 whitespace-nowrap">
-                        {/* Edit Button with Font Awesome Icon */}
-                        <button
-                            onClick={() => openEditModal(u)}
-                            className="p-1 rounded-full text-yellow-500 hover:bg-yellow-500/20 transition-colors group"
-                            title="Edit User"
-                        >
-                            <i className="fa-solid fa-pen-to-square text-lg"></i>
-                        </button>
-                        
-                        {/* Delete Button with Font Awesome Icon */}
-                        <button
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="p-1 rounded-full text-red-500 hover:bg-red-500/20 transition-colors group"
-                            title="Delete User"
-                        >
-                            <i className="fa-solid fa-trash text-lg"></i>
-                        </button>
-                      </td>
-                      {/* --- END: UPDATED Icons --- */}
-                      
+              {/* Conditional rendering for empty state */}
+              {paginated.length === 0 ? (
+                <p className="text-center text-muted py-10">
+                  No users found. Try adjusting your filters or click Add User to start.
+                </p>
+              ) : (
+                <table className="min-w-full divide-y divide-panel-border">
+                  <thead>
+                    <tr className="bg-panel-light">
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Name</th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Email</th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Role</th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Department</th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Year</th>
+                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-panel-border">
+                    {paginated.map((u) => (
+                      <tr key={u.id} className="hover:bg-panel-light transition-colors duration-150">
+                        <td className="py-3 px-4 font-medium text-main">{u.name}</td>
+                        <td className="py-3 px-4 text-muted">{u.email}</td>
+                        <td className="py-3 px-4">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-muted">{u.department}</td>
+                        <td className="py-3 px-4 text-muted">{u.year}</td>
+                        
+                        {/* --- UPDATED: Actions Column with Font Awesome Icons --- */}
+                        <td className="py-3 px-4 space-x-2 whitespace-nowrap">
+                          {/* Edit Button with Font Awesome Icon */}
+                          <button
+                              onClick={() => openEditModal(u)}
+                              className="p-1 rounded-full text-yellow-500 hover:bg-yellow-500/20 transition-colors group"
+                              title="Edit User"
+                          >
+                              <i className="fa-solid fa-pen-to-square text-lg"></i>
+                          </button>
+                          
+                          {/* Delete Button with Font Awesome Icon */}
+                          <button
+                              onClick={() => handleDeleteUser(u.id)}
+                              className="p-1 rounded-full text-red-500 hover:bg-red-500/20 transition-colors group"
+                              title="Delete User"
+                          >
+                              <i className="fa-solid fa-trash text-lg"></i>
+                          </button>
+                        </td>
+                        {/* --- END: UPDATED Icons --- */}
+                        
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 px-4 text-muted text-sm">
-              <div className="text-muted">
-                Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} users
+            {filtered.length > 0 && (
+              <div className="flex justify-between items-center mt-6 px-4 text-muted text-sm">
+                <div className="text-muted">
+                  Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} users
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 border border-panel-border rounded-md text-main hover:bg-panel-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">Previous</button>
+                  <span className="px-4 py-2 text-main bg-panel-light rounded-md border border-panel-border">Page {page} of {totalPages}</span>
+                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-4 py-2 border border-panel-border rounded-md text-main hover:bg-panel-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">Next</button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 border border-panel-border rounded-md text-main hover:bg-panel-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">Previous</button>
-                <span className="px-4 py-2 text-main bg-panel-light rounded-md border border-panel-border">Page {page} of {totalPages}</span>
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-4 py-2 border border-panel-border rounded-md text-main hover:bg-panel-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">Next</button>
-              </div>
-            </div>
+            )}
           </div>
         </section>
       </main>
