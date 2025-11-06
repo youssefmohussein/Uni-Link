@@ -27,12 +27,24 @@ class UserController {
         $username  = trim($input['username']);
         $email     = trim($input['email']);
         $password  = password_hash($input['password'], PASSWORD_DEFAULT);
-        $role      = $input['role'];
+        // Normalize and validate role
+        $roleInput = $input['role'];
+        $role = ucfirst(strtolower(trim($roleInput)));
+        $allowedRoles = ['Student', 'Professor', 'Admin'];
+        if (!in_array($role, $allowedRoles, true)) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Invalid role provided"
+            ]);
+            return;
+        }
         $phone     = $input['phone'] ?? null;
         $faculty_id = $input['faculty_id'] ?? null;
         $major_id   = $input['major_id'] ?? null;
 
         try {
+            // Use transaction to keep Users and role tables consistent
+            $pdo->beginTransaction();
             // ✅ Step 3: Insert into Users
             $stmt = $pdo->prepare("
                 INSERT INTO Users (user_id, username, email, password, phone, role, faculty_id, major_id)
@@ -49,6 +61,9 @@ class UserController {
                 $pdo->prepare("INSERT INTO Admin (admin_id) VALUES (?)")->execute([$user_id]);
             }
 
+            // Commit after successful inserts
+            $pdo->commit();
+
             // ✅ Step 5: Response
             echo json_encode([
                 "status" => "success",
@@ -57,6 +72,9 @@ class UserController {
             ]);
 
         } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             echo json_encode([
                 "status" => "error",
                 "message" => "Database error: " . $e->getMessage()
