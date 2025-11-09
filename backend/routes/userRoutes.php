@@ -23,4 +23,6 @@ function registerUserRoutes($request, $method) {
             return false;
     }
     return true;
+
+    //Youssef was here :-)
 }
