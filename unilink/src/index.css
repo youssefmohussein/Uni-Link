@@ -3,90 +3,84 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================= */
+/* 🌈 Root Variables - Colors & Fonts */
+/* ============================= */
 :root {
-  --bg: #0d1117;
-  --panel: #161b22;
-  --text: #ffffff;
-  --muted: #c9d1d9;
-  --accent: #58a6ff;
-  --radius: 12px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --font: "Inter", sans-serif;
+  /* 🌑 Elegant Black Dark Theme with Purple Accent */
+
+  /* Backgrounds */
+  --bg: #000000; 			    /* Main background - pure black */
+  --panel: #0a0a0a; 		    /* Panels / cards - slightly lighter for depth */
+  --hover-bg: #1a1a1a; 	    /* Hover states - table rows, buttons */
+  --sidebar: #191919;       /* Explicit Sidebar background (Added for clarity) */
+
+  /* Text Colors */
+  --text: #ffffff; 			    /* Primary text - pure white */
+  --muted: #aaaaaa; 		    /* Secondary / muted text - soft gray */
+  --highlight: #ffb547; 	    /* Highlight / badges / alerts - warm amber */
+
+  /* Accent Colors */
+  --accent: #a600ff; 		    /* Primary accent - purple */
+  --accent-alt: #be46ff; 	  /* Secondary accent - same as primary */
+  --accent-gradient: linear-gradient(135deg, var(--accent), #c266ff); 
+  
+  /* Borders & Shadows */
+  --border: #2b2b2b; 		    /* Panel/input borders */
+  --shadow: rgba(0,0,0,0.6); /* Shadow for cards/modals */
+
+  /* UI & Fonts */
+  --radius: 14px; 			    /* Rounded corners for panels/buttons */
+  --transition: all 0.3s ease; /* Smooth transitions */
+  --font-primary: "Inter", sans-serif; 	  /* Body font */
+  --font-secondary: "Poppins", sans-serif; /* Headings */
 }
 
-@layer utilities {
-body{
-    background-color: var(--bg);
-}
-  .bg-main {
-    background-color: var(--bg);
-  }
-  .bg-panel {
-    background-color: var(--panel);
-  }
-  .text-main {
-    color: var(--text);
-  }
-  .text-muted {
-    color: var(--muted);
-  }
-  .text-accent {
-    color: var(--accent);
-  }
-  .shadow-custom {
-    box-shadow: var(--shadow);
-  }
-  .rounded-custom {
-    border-radius: var(--radius);
-  }
-  .font-main {
-    font-family: var(--font);
-  }
 
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes blob {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 1s ease-out;
-  }
-
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-  .light {
-  --bg: #ffffff;
-  --panel: #f5f5f5;
-  --text: #000000;
+/* Light Mode Override */
+[data-theme="light"] {
+  --bg: #f8f9fa;
+  --panel: #ffffff;
+  --text: #121212;
   --muted: #555555;
   --accent: #007bff;
 }
 
+/* ============================= */
+/* 🌟 Global Body & Fonts */
+/* ============================= */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  transition: var(--transition);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  transition: var(--transition);
+}
+
+/* ============================= */
+/* 🖌 Tailwind Utility Overrides */
+/* ============================= */
+/* NOTE: The names of these classes MUST match those used in AdminUsersPage.jsx */
+@layer utilities {
+  .bg-bg { background-color: var(--bg); }
+  .bg-panel { background-color: var(--panel); }
+  .bg-sidebar { background-color: var(--sidebar); } /* Added: Used in Sidebar.jsx */
+  .bg-accent { background-color: var(--accent); } /* Added: Used for solid purple in buttons/forms */
+
+  .text-main { color: var(--text); }
+  .text-muted { color: var(--muted); }
+  .text-accent { color: var(--accent); }
+  .text-accent-alt { color: var(--accent-alt); } /* Added: Used for table header in AdminUsersPage.jsx */
+
+  .rounded-custom { border-radius: var(--radius); }
+  .font-main { font-family: var(--font-primary); }
+  .transition-smooth { transition: var(--transition); }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -15,36 +16,132 @@ export default function Sidebar() {
     { label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];
 
+  // Sidebar expand/collapse animation
+  const sidebarVariants = {
+    open: { width: 250, transition: { type: "spring", stiffness: 220, damping: 20 } },
+    closed: { width: 70, transition: { type: "spring", stiffness: 220, damping: 20 } },
+  };
+
+  // Menu item hover & tap animation
+  const itemVariants = {
+    hover: { scale: 1.05, backgroundColor: "rgba(128,0,255,0.15)" },
+    tap: { scale: 0.95 },
+  };
+
   return (
-    <aside className={`bg-panel shadow-custom h-screen transition-all duration-200 ${open ? "w-64" : "w-20"} flex flex-col border-r border-white/10 font-main`}>
-      <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-        <h1 className={`font-bold text-lg text-accent transition-all duration-300 ${open ? "opacity-100" : "opacity-0 w-0"}`}>
+    <motion.aside
+      animate={open ? "open" : "closed"}
+      variants={sidebarVariants}
+      className="h-screen flex flex-col border-r border-white/10 shadow-xl"
+      style={{ backgroundColor: "var(--panel)" }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-4 border-b"
+        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+      >
+        <motion.h1
+          animate={{ opacity: open ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="font-bold text-lg text-accent whitespace-nowrap"
+          style={{ color: "var(--accent)" }}
+        >
           Admin
-        </h1>
-        <button onClick={() => setOpen(!open)} className="p-2 rounded-custom hover:bg-accent/10 text-accent transition">
-          <FiMenu size={20} />
+        </motion.h1>
+        <button
+          onClick={() => setOpen(!open)}
+          className="p-2 rounded-full hover:bg-white/10 transition-all duration-300"
+          style={{ color: "var(--accent)" }}
+        >
+          <FiMenu size={22} />
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-6 space-y-2">
-        {menuItems.map((item) => {
+      {/* Menu Items */}
+      <nav className="flex-1 px-2 py-6 space-y-2 relative">
+        {menuItems.map((item, index) => {
           const isActive = location.pathname === item.path;
+
           return (
-            <Link
+            <motion.div
               key={item.label}
-              to={item.path}
-              className={`flex items-center gap-3 p-3 rounded-custom cursor-pointer transition-all ${isActive ? "bg-accent/20 text-accent border-r-2 border-accent" : "hover:bg-panel/70 text-muted hover:text-accent"}`}
+              variants={itemVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="relative"
             >
-              <div className={`${isActive ? "text-accent" : "text-muted group-hover:text-accent"}`}>{item.icon}</div>
-              {open && <span className="font-medium">{item.label}</span>}
-            </Link>
+              <Link
+                to={item.path}
+                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all"
+                style={{
+                  backgroundColor: isActive ? "rgba(128,0,255,0.2)" : "transparent",
+                  color: isActive ? "var(--accent)" : "var(--muted)",
+                }}
+              >
+                <motion.div
+                  animate={isActive ? { rotate: [0, 15, -15, 0] } : { rotate: 0 }}
+                  transition={{ repeat: isActive ? Infinity : 0, duration: 1.2 }}
+                  className="text-xl"
+                  style={{ color: isActive ? "var(--accent)" : "var(--muted)" }}
+                >
+                  {item.icon}
+                </motion.div>
+
+                <AnimatePresence>
+                  {open && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="font-medium"
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </Link>
+
+              {/* Glowing Active Indicator */}
+              {isActive && open && (
+                <motion.span
+                  layoutId="active-indicator"
+                  className="absolute left-0 top-0 h-full w-1 rounded-r-full"
+                  style={{
+                    background: "var(--accent-gradient)",
+                    boxShadow: "0 0 12px var(--accent), 0 0 24px var(--accent-alt)",
+                  }}
+                />
+              )}
+            </motion.div>
           );
         })}
       </nav>
 
-      <div className="px-4 py-3 border-t border-white/10 text-xs text-muted">
-        {open ? "© 2025 Admin Panel" : "©"}
+      {/* Footer */}
+      <div
+        className="px-4 py-3 text-xs text-muted border-t"
+        style={{ color: "var(--muted)", borderColor: "rgba(255,255,255,0.1)" }}
+      >
+        <AnimatePresence>
+          {open ? (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              © 2025 Admin Panel
+            </motion.span>
+          ) : (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              ©
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
