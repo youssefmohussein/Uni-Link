@@ -10,7 +10,7 @@ class UserController {
     public static function addUser() {
         global $pdo;
 
-        // 🧠 Get JSON input
+        // 🧠 Get JSON inputt
         $input = json_decode(file_get_contents("php://input"), true);
 
         // ✅ Step 1: Validate fields
