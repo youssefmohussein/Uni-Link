@@ -36,40 +36,47 @@ export default function Sidebar() {
       style={{ backgroundColor: "var(--panel)" }}
     >
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-4 border-b"
-        style={{ borderColor: "rgba(255,255,255,0.1)" }}
-      >
-        <motion.h1
-          animate={{ opacity: open ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="font-bold text-lg text-accent whitespace-nowrap"
-          style={{ color: "var(--accent)" }}
-        >
-          Admin
-        </motion.h1>
-        <button
-          onClick={() => setOpen(!open)}
-          className="p-2 rounded-full hover:bg-white/10 transition-all duration-300"
-          style={{ color: "var(--accent)" }}
-        >
-          <FiMenu size={22} />
-        </button>
+      <div className="flex items-center justify-between px-4 py-4 border-b relative" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+        {open ? (
+          <>
+            <motion.h1
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="font-bold text-lg text-accent whitespace-nowrap"
+              style={{ color: "var(--accent)" }}
+            >
+              Admin
+            </motion.h1>
+            <button
+              onClick={() => setOpen(!open)}
+              className="p-2 rounded-full hover:bg-white/10 transition-all duration-300"
+              style={{ color: "var(--accent)" }}
+            >
+              <FiMenu size={22} />
+            </button>
+          </>
+        ) : (
+          // Hamburger 3-dashes when closed
+          <div className="flex flex-col justify-center ml-3 gap-1 cursor-pointer" onClick={() => setOpen(true)}>
+            {[0, 1, 2].map((i) => (
+              <motion.span
+                key={i}
+                className="block w-5 h-0.5 rounded-full bg-accent"
+                animate={{ x: [0, 2, 0], opacity: [0.6, 1, 0.6] }}
+                transition={{ repeat: Infinity, duration: 0.8 + i * 0.1, ease: "easeInOut" }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Menu Items */}
       <nav className="flex-1 px-2 py-6 space-y-2 relative">
-        {menuItems.map((item, index) => {
+        {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
 
           return (
-            <motion.div
-              key={item.label}
-              variants={itemVariants}
-              whileHover="hover"
-              whileTap="tap"
-              className="relative"
-            >
+            <motion.div key={item.label} variants={itemVariants} whileHover="hover" whileTap="tap" className="relative">
               <Link
                 to={item.path}
                 className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all"
@@ -118,25 +125,14 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div
-        className="px-4 py-3 text-xs text-muted border-t"
-        style={{ color: "var(--muted)", borderColor: "rgba(255,255,255,0.1)" }}
-      >
+      <div className="px-4 py-3 text-xs text-muted border-t" style={{ color: "var(--muted)", borderColor: "rgba(255,255,255,0.1)" }}>
         <AnimatePresence>
           {open ? (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               © 2025 Admin Panel
             </motion.span>
           ) : (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               ©
             </motion.span>
           )}

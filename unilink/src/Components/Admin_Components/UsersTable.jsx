@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
+import { FiRefreshCw } from "react-icons/fi";
 import AnimatedUserRow from "./AnimatedUserRow";
-import Card from "./Card"; // assuming same folder or adjust path
+import Card from "./Card"; // adjust path if necessary
 
 /**
  * UsersTable - display list of users with search & actions
@@ -10,8 +11,9 @@ import Card from "./Card"; // assuming same folder or adjust path
  *  - setQuery: function
  *  - setEditingUser: function
  *  - handleDeleteUser: function
+ *  - onRefresh: function (called when refresh button clicked)
  */
-export default function UsersTable({ users, query, setQuery, setEditingUser, handleDeleteUser }) {
+export default function UsersTable({ users, query, setQuery, setEditingUser, handleDeleteUser, onRefresh }) {
   const filtered = useMemo(() => {
     if (!query.trim()) return users;
     const q = query.toLowerCase();
@@ -24,7 +26,19 @@ export default function UsersTable({ users, query, setQuery, setEditingUser, han
   }, [users, query]);
 
   return (
-    <Card title="Users">
+    <Card>
+      {/* Header with title and refresh */}
+      <div className="flex items-center justify-between mb-4 px-4">
+        <h2 className="text-xl font-bold text-accent">Users</h2>
+        <button
+          onClick={onRefresh}
+          className="p-2 rounded-full hover:bg-white/10 transition"
+          title="Refresh users"
+        >
+          <FiRefreshCw className="text-accent" size={20} />
+        </button>
+      </div>
+
       {/* Search input */}
       <input
         value={query}

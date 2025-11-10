@@ -29,7 +29,9 @@ export default function AdminUsersPage() {
       setLoading(false);
     }
   };
-
+  const handleRefresh = () => {
+  getUsers();
+};
   // 🔹 Fetch faculties and majors
   const getFacultiesAndMajors = async () => {
     try {
@@ -89,14 +91,8 @@ export default function AdminUsersPage() {
           <h1 className="text-3xl font-bold">Users Dashboard</h1>
           <div className="flex gap-2">
             <motion.button
-              onClick={getUsers}
-              className="px-4 py-2 rounded-custom text-white bg-accent shadow-lg"
-            >
-              Refresh
-            </motion.button>
-            <motion.button
               onClick={() => setIsAdding(true)}
-              className="px-4 py-2 rounded-custom text-white bg-green-500 shadow-lg"
+              className="px-4 py-2 rounded-custom text-white bg-accent shadow-lg"
             >
               Add User
             </motion.button>
@@ -108,6 +104,7 @@ export default function AdminUsersPage() {
           query={query}
           setQuery={setQuery}
           handleDeleteUser={handleDeleteUser}
+          onRefresh={handleRefresh}
         />
 
         <UserForm
