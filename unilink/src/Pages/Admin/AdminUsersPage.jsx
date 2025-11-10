@@ -50,11 +50,15 @@ export default function AdminUsersPage() {
   }, []);
 
   // 🔹 Delete user
-  const handleDeleteUser = async (id) => {
+    const handleDeleteUser = async (user_id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
+
     try {
-      await apiRequest(`index.php/deleteUser/${id}`, "DELETE", { user_id: id });
-      setUsers((prev) => prev.filter((u) => u.user_id !== id));
+      const res = await apiRequest("index.php/deleteUser", "POST", { user_id });
+      if (res.status !== "success") throw new Error(res.message || "Delete failed");
+
+      // Update state
+      setUsers((prev) => prev.filter((u) => u.user_id !== user_id));
     } catch (err) {
       alert("Delete failed: " + (err.message || ""));
       console.error(err);
