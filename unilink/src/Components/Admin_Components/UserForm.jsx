@@ -5,10 +5,21 @@ import Card from "../../Components/Admin_Components/Card";
 
 export default function UserForm({ isOpen, onClose, onSubmit, initialData, faculties, majors }) {
   const defaultData = {
-    user_id: "", username: "", email: "", password: "", phone: "", 
-    profile_image: null, bio: "", job_title: "", role: "Student", 
-    faculty_id: "", major_id: ""
+    user_id: "",
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+    profile_image: "",
+    bio: "",
+    job_title: "",
+    role: "Student",
+    faculty_id: "",
+    major_id: "",
+    faculty_name: "",
+    major_name: ""
   };
+
   const [formData, setFormData] = useState(initialData || defaultData);
   const isEditing = !!initialData?.user_id;
 
@@ -19,7 +30,9 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "profile_image" && files) {
-      setFormData(prev => ({ ...prev, profile_image: files[0] }));
+      const reader = new FileReader();
+      reader.onloadend = () => setFormData(prev => ({ ...prev, profile_image: reader.result }));
+      reader.readAsDataURL(files[0]);
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -27,13 +40,16 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const requiredFields = ["username", "email", "password", "role"];
-    for (let field of requiredFields) {
+
+    // Required fields for adding
+    const required = ["user_id", "username", "email", "password", "role"];
+    for (let field of required) {
       if (!formData[field] && !isEditing) {
         alert(`Please fill out ${field}`);
         return;
       }
     }
+
     onSubmit(formData);
   };
 
@@ -66,52 +82,100 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
               </h3>
 
               <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                {[
-                  { name: "username", type: "text", placeholder: "Username" },
-                  { name: "email", type: "email", placeholder: "Email" },
-                  { name: "password", type: "password", placeholder: "Password" },
-                  { name: "phone", type: "text", placeholder: "Phone" },
-                  { name: "job_title", type: "text", placeholder: "Job Title" },
-                  { name: "bio", type: "text", placeholder: "Bio", full: true }
-                ].map(input => (
+                <input
+                  name="user_id"
+                  type="number"
+                  value={formData.user_id || ""}
+                  onChange={handleChange}
+                  placeholder="User ID"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
+
+                <input
+                  name="username"
+                  type="text"
+                  value={formData.username || ""}
+                  onChange={handleChange}
+                  placeholder="Username"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
+
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email || ""}
+                  onChange={handleChange}
+                  placeholder="Email"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
+
+                {!isEditing && (
                   <input
-                    key={input.name}
-                    name={input.name}
-                    type={input.type}
-                    value={formData[input.name] || ""}
+                    name="password"
+                    type="password"
+                    value={formData.password || ""}
                     onChange={handleChange}
-                    placeholder={input.placeholder}
-                    className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition ${input.full ? "col-span-2" : ""}`}
+                    placeholder="Password"
+                    className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                   />
-                ))}
+                )}
+
+                <input
+                  name="phone"
+                  type="text"
+                  value={formData.phone || ""}
+                  onChange={handleChange}
+                  placeholder="Phone"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
+
+                <input
+                  name="job_title"
+                  type="text"
+                  value={formData.job_title || ""}
+                  onChange={handleChange}
+                  placeholder="Job Title"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
+
+                <input
+                  name="bio"
+                  type="text"
+                  value={formData.bio || ""}
+                  onChange={handleChange}
+                  placeholder="Bio"
+                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                />
 
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 >
-                  {["Student", "Professor", "Admin"].map(role => <option key={role} value={role}>{role}</option>)}
+                  {["Student", "Professor", "Admin"].map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
 
                 <select
                   name="faculty_id"
-                  value={formData.faculty_id}
+                  value={formData.faculty_id || ""}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   <option value="">Select Faculty</option>
-                  {(faculties || []).map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                  <option value="">Select Faculty</option> <option value="1">Faculty of Al-Alsun</option> <option value="2">Faculty of Business</option> <option value="3">Faculty of Computer Science</option> <option value="4">Faculty of Engineering Sciences & Arts</option> <option value="7">Faculty of Mass Communication</option> <option value="6">Faculty of Oral and Dental Medicine</option> <option value="5">Faculty of Pharmacy</option>
+                  {(faculties || []).map(f => <option key={f.faculty_id} value={f.faculty_id}>{f.faculty_name}</option>)}
                 </select>
 
                 <select
                   name="major_id"
-                  value={formData.major_id}
+                  value={formData.major_id || ""}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   <option value="">Select Major</option>
-                  {(majors || []).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                  <option value="19">Computer Science (CS)</option>
+                  {(majors || []).map(m => <option key={m.major_id} value={m.major_id}>{m.major_name}</option>)}
                 </select>
 
                 <input
@@ -119,21 +183,14 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="profile_image"
                   accept="image/*"
                   onChange={handleChange}
-                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity"
+                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
 
                 <div className="col-span-2 flex justify-end gap-3 mt-4">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition"
-                  >
+                  <button type="button" onClick={onClose} className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition"
-                  >
+                  <button type="submit" className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition">
                     {isEditing ? "Save Changes" : "Add User"}
                   </button>
                 </div>
