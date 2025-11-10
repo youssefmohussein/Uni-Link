@@ -81,7 +81,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                     value={formData[input.name] || ""}
                     onChange={handleChange}
                     placeholder={input.placeholder}
-                    className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition ${input.full ? "col-span-2" : ""}`}
+                    className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition ${input.full ? "col-span-2" : ""}`}
                   />
                 ))}
 
@@ -89,7 +89,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   {["Student", "Professor", "Admin"].map(role => <option key={role} value={role}>{role}</option>)}
                 </select>
@@ -98,7 +98,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="faculty_id"
                   value={formData.faculty_id}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   <option value="">Select Faculty</option>
                   {(faculties || []).map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
@@ -108,7 +108,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="major_id"
                   value={formData.major_id}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   <option value="">Select Major</option>
                   {(majors || []).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -119,7 +119,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="profile_image"
                   accept="image/*"
                   onChange={handleChange}
-                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main"
+                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 transition-opacity"
                 />
 
                 <div className="col-span-2 flex justify-end gap-3 mt-4">

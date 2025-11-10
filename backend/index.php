@@ -11,6 +11,7 @@ header("Content-Type: application/json");
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';
 require_once __DIR__ . '/routes/adminRoutes.php';
+
 // Later: require_once __DIR__ . '/routes/postRoutes.php';
 
 $request = str_replace('/backend/index.php', '', $_SERVER['REQUEST_URI']);
@@ -26,6 +27,7 @@ elseif (registerStudentRoutes($request, $method)) {
 elseif (registerAdminRoutes($request, $method)) { 
     exit; 
 }
+
 // elseif (registerProfessorRoutes($request, $method)) { exit; }
 
 echo json_encode([

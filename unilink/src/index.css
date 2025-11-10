@@ -21,9 +21,11 @@
   --highlight: #ffb547; 	    /* Highlight / badges / alerts - warm amber */
 
   /* Accent Colors */
-  --accent: #a600ff; 		    /* Primary accent - purple */
-  --accent-alt: #be46ff; 	  /* Secondary accent - same as primary */
-  --accent-gradient: linear-gradient(135deg, var(--accent), #c266ff); 
+  --accent: #008080; 		    /* Primary accent - purple */
+  --accent-alt: #20B2AA; 	  /* Secondary accent - same as primary */
+  --accent-hover: #20B2AA;  /* Hover shade teal */
+  --accent-light: #E0FFFF;  /* Light cyan highlight (for icons/text) */
+  --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-hover));
   
   /* Borders & Shadows */
   --border: #2b2b2b; 		    /* Panel/input borders */
