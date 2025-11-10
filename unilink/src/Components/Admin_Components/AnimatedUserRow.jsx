@@ -1,37 +1,38 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
-/**
- * AnimatedUserRow - simplified user row for UsersTable
- * Props:
- *  - u: user object
- *  - setEditingUser(user)
- *  - handleDeleteUser(id)
- */
 export default function AnimatedUserRow({ u, setEditingUser, handleDeleteUser, index }) {
   return (
-    <div
-      className={`grid grid-cols-12 gap-2 px-4 py-3 items-center border-b border-white/5 hover:bg-white/5 transition duration-150 ${
-        index % 2 === 0 ? "bg-white/2" : ""
-      }`}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.03 }}
+      className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-white/10 items-center text-sm text-white/70 hover:bg-white/5"
     >
-      <div className="col-span-3 truncate">{u.username || "—"}</div>
-      <div className="col-span-4 truncate">{u.email || "—"}</div>
-      <div className="col-span-3 truncate capitalize">{u.role || "—"}</div>
+      <div className="col-span-3 truncate">{u.username}</div>
+      <div className="col-span-4 truncate">{u.email}</div>
+      <div className="col-span-3 truncate">{u.role}</div>
 
-      <div className="col-span-2 text-right space-x-2">
+      <div className="col-span-2 flex justify-end gap-3">
+        {/* Edit Button */}
         <button
           onClick={() => setEditingUser(u)}
-          className="px-2 py-1 rounded text-sm bg-white/10 hover:bg-white/20 transition"
+          className="p-2 rounded hover:bg-accent/20 text-accent"
+          title="Edit user"
         >
-          Edit
+          <FiEdit2 size={16} />
         </button>
+
+        {/* Delete Button */}
         <button
           onClick={() => handleDeleteUser(u.user_id)}
-          className="px-2 py-1 rounded text-sm bg-red-600 hover:bg-red-700 transition"
+          className="p-2 rounded hover:bg-red-500/20 text-red-500"
+          title="Delete user"
         >
-          Delete
+          <FiTrash2 size={16} />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

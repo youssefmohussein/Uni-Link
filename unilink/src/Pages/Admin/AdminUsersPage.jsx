@@ -11,6 +11,7 @@ export default function AdminUsersPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [editingUser, setEditingUser] = useState(null); // 🟢 For editing
   const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
 
@@ -18,26 +19,28 @@ export default function AdminUsersPage() {
   const getUsersFromService = async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await userHandler.getUsers();
       setUsers(data);
+      setError(null);
     } catch (err) {
+      setError("Failed to fetch users");
       console.error(err);
-      setError("Failed to load users. Check backend.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch faculties & majors
+  // Fetch faculties and majors if needed
   const getFacultiesAndMajors = async () => {
     try {
-      const fData = await userHandler.getAllFaculties();
-      const mData = await userHandler.getAllMajors();
-      setFaculties(fData);
-      setMajors(mData);
+      const [facData, majData] = await Promise.all([
+        userHandler.getFaculties(),
+        userHandler.getMajors(),
+      ]);
+      setFaculties(facData);
+      setMajors(majData);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load faculties/majors", err);
     }
   };
 
@@ -46,53 +49,81 @@ export default function AdminUsersPage() {
     getFacultiesAndMajors();
   }, []);
 
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      await userHandler.deleteUser(id);
-      setUsers((prev) => prev.filter((u) => u.user_id !== id));
-    } catch (err) {
-      alert("Delete failed: " + (err.message || ""));
-      console.error(err);
-    }
-  };
-
+  // Add User
   const handleAddUser = async (formData) => {
     try {
-      const user_id = await userHandler.addUser(formData);
-      setUsers((prev) => [{ ...formData, user_id }, ...prev]);
+      await userHandler.addUser(formData);
+      await getUsersFromService();
       setIsAdding(false);
+      alert("User added successfully");
     } catch (err) {
-      alert("Add user failed: " + (err.message || ""));
       console.error(err);
+      alert("Failed to add user: " + (err.message || ""));
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
-  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
+  // Update User
+  const handleUpdateUser = async (formData) => {
+    try {
+      await userHandler.updateUser(formData);
+      await getUsersFromService();
+      setEditingUser(null);
+      alert("User updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update user: " + (err.message || ""));
+    }
+  };
+
+  // Delete User
+  const handleDeleteUser = async (user_id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      await userHandler.deleteUser(user_id);
+      await getUsersFromService();
+      alert("User deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete user: " + (err.message || ""));
+    }
+  };
 
   return (
-    <div className="flex min-h-screen font-main bg-bg text-main">
+    <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
-      <main className="flex-1 p-6 space-y-6 overflow-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold">Users Dashboard</h1>
-          <motion.button
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex-1 p-8"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Manage Users</h1>
+          <button
             onClick={() => setIsAdding(true)}
-            className="px-4 py-2 rounded-custom text-white bg-accent shadow-lg"
+            className="px-4 py-2 bg-accent rounded-lg font-medium hover:bg-accent/80"
           >
-            Add User
-          </motion.button>
+            + Add User
+          </button>
         </div>
 
-        <UsersTable
-          users={users}
-          query={query}
-          setQuery={setQuery}
-          handleDeleteUser={handleDeleteUser}
-          onRefresh={getUsersFromService} // refresh inside table
-        />
+        {loading ? (
+          <p className="text-gray-400">Loading users...</p>
+        ) : error ? (
+          <p className="text-red-400">{error}</p>
+        ) : (
+          <UsersTable
+            users={users}
+            query={query}
+            setQuery={setQuery}
+            setEditingUser={setEditingUser}
+            handleDeleteUser={handleDeleteUser}
+            onRefresh={getUsersFromService}
+          />
+        )}
 
+        {/* Add User Form */}
         <UserForm
           isOpen={isAdding}
           onClose={() => setIsAdding(false)}
@@ -100,7 +131,17 @@ export default function AdminUsersPage() {
           faculties={faculties}
           majors={majors}
         />
-      </main>
+
+        {/* Edit User Form */}
+        <UserForm
+          isOpen={!!editingUser}
+          onClose={() => setEditingUser(null)}
+          onSubmit={handleUpdateUser}
+          initialData={editingUser}
+          faculties={faculties}
+          majors={majors}
+        />
+      </motion.div>
     </div>
   );
 }

@@ -20,6 +20,17 @@ export const addUser = async (userData) => {
 };
 
 /**
+ * 🟢 Update an existing user
+ * @param {Object} userData — must include user_id
+ */
+export const updateUser = async (userData) => {
+  if (!userData.user_id) throw new Error("Missing user_id for update");
+  const res = await apiRequest("index.php/updateUser", "POST", userData);
+  if (res.status !== "success") throw new Error(res.message || "Failed to update user");
+  return true;
+};
+
+/**
  * Delete a user by user_id
  * @param {number} user_id
  */
