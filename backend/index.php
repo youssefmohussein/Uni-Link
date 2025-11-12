@@ -11,9 +11,9 @@ header("Content-Type: application/json");
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';
 require_once __DIR__ . '/routes/adminRoutes.php';
-
-// Later: require_once __DIR__ . '/routes/postRoutes.php';
-
+require_once __DIR__ . '/routes/facultyRoutes.php';
+require_once __DIR__ . '/routes/majorRoutes.php';
+require_once __DIR__ . '/routes/professorRoute.php';
 $request = str_replace('/backend/index.php', '', $_SERVER['REQUEST_URI']);
 $method  = $_SERVER['REQUEST_METHOD'];
 
@@ -27,6 +27,16 @@ elseif (registerStudentRoutes($request, $method)) {
 elseif (registerAdminRoutes($request, $method)) { 
     exit; 
 }
+elseif (registerProfessorRoutes($request, $method)) { 
+    exit; 
+}
+elseif (registerFacultyRoutes($request, $method)) { 
+    exit; 
+}
+elseif (registerMajorRoutes($request, $method)) { 
+    exit; 
+}
+
 
 // elseif (registerProfessorRoutes($request, $method)) { exit; }
 
