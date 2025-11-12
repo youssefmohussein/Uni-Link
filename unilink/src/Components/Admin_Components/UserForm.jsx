@@ -1,5 +1,5 @@
 // src/Pages/Admin/components/UserForm.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "../../Components/Admin_Components/Card";
 
@@ -29,19 +29,33 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "profile_image" && files) {
       const reader = new FileReader();
-      reader.onloadend = () => setFormData(prev => ({ ...prev, profile_image: reader.result }));
+      reader.onloadend = () =>
+        setFormData((prev) => ({ ...prev, profile_image: reader.result }));
       reader.readAsDataURL(files[0]);
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        // Reset major if faculty changes
+        ...(name === "faculty_id" ? { major_id: "" } : {})
+      }));
     }
   };
+
+  // 🔥 Filter majors based on selected faculty
+  const filteredMajors = useMemo(() => {
+    if (!formData.faculty_id) return majors || [];
+    return (majors || []).filter(
+      (m) => String(m.faculty_id) === String(formData.faculty_id)
+    );
+  }, [majors, formData.faculty_id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Required fields for adding
     const required = ["user_id", "username", "email", "password", "role"];
     for (let field of required) {
       if (!formData[field] && !isEditing) {
@@ -75,7 +89,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                 style={{
                   background: "linear-gradient(135deg, var(--accent), var(--accent-alt))",
                   WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
+                  WebkitTextFillColor: "transparent",
                 }}
               >
                 {isEditing ? "Edit User" : "Add User"}
@@ -153,7 +167,11 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   onChange={handleChange}
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 >
-                  {["Student", "Professor", "Admin"].map(r => <option key={r} value={r}>{r}</option>)}
+                  {["Student", "Professor", "Admin"].map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
                 </select>
 
                 <select
@@ -163,19 +181,28 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 >
                   <option value="">Select Faculty</option>
-                  <option value="">Select Faculty</option> <option value="1">Faculty of Al-Alsun</option> <option value="2">Faculty of Business</option> <option value="3">Faculty of Computer Science</option> <option value="4">Faculty of Engineering Sciences & Arts</option> <option value="7">Faculty of Mass Communication</option> <option value="6">Faculty of Oral and Dental Medicine</option> <option value="5">Faculty of Pharmacy</option>
-                  {(faculties || []).map(f => <option key={f.faculty_id} value={f.faculty_id}>{f.faculty_name}</option>)}
+                  {(faculties || []).map((f) => (
+                    <option key={f.faculty_id} value={f.faculty_id}>
+                      {f.faculty_name}
+                    </option>
+                  ))}
                 </select>
 
                 <select
                   name="major_id"
                   value={formData.major_id || ""}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  disabled={!formData.faculty_id}
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition ${
+                    !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   <option value="">Select Major</option>
-                  <option value="19">Computer Science (CS)</option>
-                  {(majors || []).map(m => <option key={m.major_id} value={m.major_id}>{m.major_name}</option>)}
+                  {filteredMajors.map((m) => (
+                    <option key={m.major_id} value={m.major_id}>
+                      {m.major_name}
+                    </option>
+                  ))}
                 </select>
 
                 <input
@@ -187,10 +214,17 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                 />
 
                 <div className="col-span-2 flex justify-end gap-3 mt-4">
-                  <button type="button" onClick={onClose} className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition"
+                  >
                     {isEditing ? "Save Changes" : "Add User"}
                   </button>
                 </div>
