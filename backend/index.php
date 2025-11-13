@@ -15,6 +15,10 @@ require_once __DIR__ . '/routes/facultyRoutes.php';
 require_once __DIR__ . '/routes/majorRoutes.php';
 require_once __DIR__ . '/routes/professorRoute.php';
 require_once __DIR__ . '/routes/postRoutes.php';
+require_once __DIR__ . '/routes/postMediaRoutes.php';
+require_once __DIR__ . '/routes/commentRoutes.php';
+require_once __DIR__ . '/routes/postInteractionRoutes.php';
+
 $request = str_replace('/backend/index.php', '', $_SERVER['REQUEST_URI']);
 $method  = $_SERVER['REQUEST_METHOD'];
 
@@ -39,6 +43,15 @@ elseif (registerMajorRoutes($request, $method)) {
 }
 elseif (registerPostRoutes($request, $method)) { 
     exit; 
+}
+elseif (registerPostMediaRoutes($request, $method)){
+    exit;
+}
+elseif (registerCommentRoutes($request, $method)){
+    exit;
+}
+elseif (registerPostInteractionRoutes($request, $method)){
+    exit;
 }
 
 
