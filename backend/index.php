@@ -14,6 +14,7 @@ require_once __DIR__ . '/routes/adminRoutes.php';
 require_once __DIR__ . '/routes/facultyRoutes.php';
 require_once __DIR__ . '/routes/majorRoutes.php';
 require_once __DIR__ . '/routes/professorRoute.php';
+require_once __DIR__ . '/routes/postRoutes.php';
 $request = str_replace('/backend/index.php', '', $_SERVER['REQUEST_URI']);
 $method  = $_SERVER['REQUEST_METHOD'];
 
@@ -34,6 +35,9 @@ elseif (registerFacultyRoutes($request, $method)) {
     exit; 
 }
 elseif (registerMajorRoutes($request, $method)) { 
+    exit; 
+}
+elseif (registerPostRoutes($request, $method)) { 
     exit; 
 }
 

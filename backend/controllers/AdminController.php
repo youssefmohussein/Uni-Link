@@ -1,7 +1,4 @@
 <?php
-// ================================
-// 👑 Admin Controller (Update Only)
-// ================================
 
 require_once __DIR__ . '/../utils/DbConnection.php';
 
