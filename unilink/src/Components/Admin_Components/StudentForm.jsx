@@ -2,52 +2,37 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "../../Components/Admin_Components/Card";
 
-export default function UserForm({ isOpen, onClose, onSubmit, initialData, faculties, majors }) {
+export default function StudentForm({ isOpen, onClose, onSubmit, initialData, faculties, majors }) {
   const defaultData = {
-    user_id: "",
+    student_id: "",
     username: "",
     email: "",
-    password: "",
-    phone: "",
-    profile_image: "",
-    bio: "",
-    job_title: "",
-    role: "Student",
+    year: "",
+    gpa: "",
     faculty_id: "",
     major_id: "",
-    faculty_name: "",
-    major_name: ""
   };
 
-  const [formData, setFormData] = useState(defaultData);
-  const isEditing = !!initialData?.user_id;
+  const [formData, setFormData] = useState(initialData || defaultData);
+  const isEditing = !!initialData?.student_id;
 
-  // Update formData whenever initialData changes
   useEffect(() => {
-    setFormData({ ...defaultData, ...initialData });
+    setFormData(initialData || defaultData);
   }, [initialData]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value } = e.target;
 
-    if (name === "profile_image" && files) {
-      const reader = new FileReader();
-      reader.onloadend = () =>
-        setFormData((prev) => ({ ...prev, profile_image: reader.result }));
-      reader.readAsDataURL(files[0]);
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-        // Reset major if faculty changes
-        ...(name === "faculty_id" ? { major_id: "" } : {})
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "faculty_id" ? { major_id: "" } : {}),
+    }));
   };
 
-  // Filter majors based on selected faculty
+  // 🔥 Filter majors based on selected faculty
   const filteredMajors = useMemo(() => {
-    if (!formData.faculty_id) return [];
+    if (!formData.faculty_id) return majors || [];
     return (majors || []).filter(
       (m) => String(m.faculty_id) === String(formData.faculty_id)
     );
@@ -56,9 +41,9 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const required = ["user_id", "username", "email", "password", "role"];
+    const required = ["student_id", "username", "email", "year", "gpa"];
     for (let field of required) {
-      if (!formData[field] && !isEditing) {
+      if (!formData[field]) {
         alert(`Please fill out ${field}`);
         return;
       }
@@ -81,7 +66,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-3xl"
+            className="w-full max-w-2xl"
           >
             <Card>
               <h3
@@ -92,16 +77,16 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                {isEditing ? "Edit User" : "Add User"}
+                {isEditing ? "Edit Student" : "Add Student"}
               </h3>
 
               <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
                 <input
-                  name="user_id"
+                  name="student_id"
                   type="number"
-                  value={formData.user_id || ""}
+                  value={formData.student_id || ""}
                   onChange={handleChange}
-                  placeholder="User ID"
+                  placeholder="Student ID"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 />
 
@@ -123,56 +108,24 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 />
 
-                {!isEditing && (
-                  <input
-                    name="password"
-                    type="password"
-                    value={formData.password || ""}
-                    onChange={handleChange}
-                    placeholder="Password"
-                    className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                  />
-                )}
-
                 <input
-                  name="phone"
-                  type="text"
-                  value={formData.phone || ""}
+                  name="year"
+                  type="number"
+                  value={formData.year || ""}
                   onChange={handleChange}
-                  placeholder="Phone"
+                  placeholder="Year"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 />
 
                 <input
-                  name="job_title"
-                  type="text"
-                  value={formData.job_title || ""}
+                  name="gpa"
+                  type="number"
+                  step="0.01"
+                  value={formData.gpa || ""}
                   onChange={handleChange}
-                  placeholder="Job Title"
+                  placeholder="GPA"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
                 />
-
-                <input
-                  name="bio"
-                  type="text"
-                  value={formData.bio || ""}
-                  onChange={handleChange}
-                  placeholder="Bio"
-                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                />
-
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                >
-                  {["Student", "Professor", "Admin"].map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
 
                 <select
                   name="faculty_id"
@@ -192,11 +145,9 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                   name="major_id"
                   value={formData.major_id || ""}
                   onChange={handleChange}
-                  disabled={!formData.faculty_id || filteredMajors.length === 0}
+                  disabled={!formData.faculty_id}
                   className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition ${
-                    !formData.faculty_id || filteredMajors.length === 0
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
+                    !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
                   <option value="">Select Major</option>
@@ -206,14 +157,6 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                     </option>
                   ))}
                 </select>
-
-                <input
-                  type="file"
-                  name="profile_image"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
-                />
 
                 <div className="col-span-2 flex justify-end gap-3 mt-4">
                   <button
@@ -227,7 +170,7 @@ export default function UserForm({ isOpen, onClose, onSubmit, initialData, facul
                     type="submit"
                     className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition"
                   >
-                    {isEditing ? "Save Changes" : "Add User"}
+                    {isEditing ? "Save Changes" : "Add Student"}
                   </button>
                 </div>
               </form>
