@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "../../Components/Admin_Components/Card";
 
-export default function StudentForm({ isOpen, onClose, onSubmit, initialData, faculties, majors }) {
+export default function StudentForm({ isOpen, onClose, onSubmit, initialData, faculties, majors, role = "Student" }) {
   const defaultData = {
     student_id: "",
     username: "",
@@ -17,8 +17,13 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
   const isEditing = !!initialData?.student_id;
 
   useEffect(() => {
-    setFormData(initialData || defaultData);
-  }, [initialData]);
+    // If first-year student and adding, lock GPA to 0.0
+    const updatedData = { ...defaultData, ...initialData };
+    if (!isEditing && role === "Student" && (updatedData.year === "" || updatedData.year === 1)) {
+      updatedData.gpa = 0.0;
+    }
+    setFormData(updatedData);
+  }, [initialData, isEditing, role]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +35,7 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
     }));
   };
 
-  // 🔥 Filter majors based on selected faculty
+  // Filter majors based on selected faculty
   const filteredMajors = useMemo(() => {
     if (!formData.faculty_id) return majors || [];
     return (majors || []).filter(
@@ -41,7 +46,10 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const required = ["student_id", "username", "email", "year", "gpa"];
+    const required = ["student_id", "username", "email"];
+    if (role === "Student") {
+      required.push("year", "gpa");
+    }
     for (let field of required) {
       if (!formData[field]) {
         alert(`Please fill out ${field}`);
@@ -51,6 +59,12 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
 
     onSubmit(formData);
   };
+
+  // Disable year/gpa for Professors/Admins
+  const isLocked = role !== "Student";
+
+  // Lock GPA to 0 for first-year students
+  const gpaValue = (!isEditing && formData.year === 1) ? 0.0 : formData.gpa;
 
   return (
     <AnimatePresence>
@@ -115,16 +129,18 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
                   onChange={handleChange}
                   placeholder="Year"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  disabled={isLocked}
                 />
 
                 <input
                   name="gpa"
                   type="number"
                   step="0.01"
-                  value={formData.gpa || ""}
+                  value={gpaValue || ""}
                   onChange={handleChange}
                   placeholder="GPA"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  disabled={isLocked || (!isEditing && formData.year === 1)}
                 />
 
                 <select

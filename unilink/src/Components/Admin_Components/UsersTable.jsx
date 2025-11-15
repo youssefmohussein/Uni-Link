@@ -1,19 +1,21 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import AnimatedUserRow from "./AnimatedUserRow";
-import Card from "./Card"; // adjust path if necessary
+import Card from "./Card";
+import Pagination from "../Admin_Components/Paganation";  // Import the pagination component
 
-/**
- * UsersTable - display list of users with search & actions
- * Props:
- *  - users: array of user objects
- *  - query: string
- *  - setQuery: function
- *  - setEditingUser: function
- *  - handleDeleteUser: function
- *  - onRefresh: function (called when refresh button clicked)
- */
-export default function UsersTable({ users, query, setQuery, setEditingUser, handleDeleteUser, onRefresh }) {
+export default function UsersTable({
+  users = [],
+  query,
+  setQuery,
+  setEditingUser,
+  handleDeleteUser,
+  onRefresh
+}) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 7; // Limit for users table
+
+  // Filter users based on search query
   const filtered = useMemo(() => {
     if (!query.trim()) return users;
     const q = query.toLowerCase();
@@ -24,6 +26,16 @@ export default function UsersTable({ users, query, setQuery, setEditingUser, han
         u.role?.toLowerCase().includes(q)
     );
   }, [users, query]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <Card>
@@ -42,7 +54,10 @@ export default function UsersTable({ users, query, setQuery, setEditingUser, han
       {/* Search input */}
       <input
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setCurrentPage(1); // Reset page when searching
+        }}
         placeholder="Search by username, email, or role..."
         className="w-full mb-4 px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
       />
@@ -56,7 +71,7 @@ export default function UsersTable({ users, query, setQuery, setEditingUser, han
       </div>
 
       {/* Table rows */}
-      {filtered.map((u, index) => (
+      {paginated.map((u, index) => (
         <AnimatedUserRow
           key={u.user_id}
           u={u}
@@ -67,11 +82,19 @@ export default function UsersTable({ users, query, setQuery, setEditingUser, han
       ))}
 
       {/* Empty state */}
-      {filtered.length === 0 && (
+      {paginated.length === 0 && (
         <div className="text-center py-10 text-white/50 transition-opacity duration-500">
           No users found.
         </div>
       )}
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
     </Card>
   );
 }

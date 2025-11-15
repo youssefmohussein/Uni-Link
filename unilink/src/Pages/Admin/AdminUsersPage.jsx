@@ -34,8 +34,8 @@ export default function AdminUsersPage() {
   const getFacultiesAndMajors = async () => {
     try {
       const [facData, majData] = await Promise.all([
-        userHandler.getFaculties(),
-        userHandler.getMajors(),
+        userHandler.getAllFaculties(),
+        userHandler.getAllMajors(),
       ]);
       setFaculties(facData);
       setMajors(majData);

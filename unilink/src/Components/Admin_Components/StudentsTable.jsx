@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { FiRefreshCw, FiEdit, FiTrash2 } from "react-icons/fi";
 import Card from "./Card";
+import Pagination from "../Admin_Components/Paganation"; // Import the pagination component
 
 export default function StudentsTable({
-  students,
+  students = [],
   query,
   setQuery,
   onRefresh,
@@ -12,10 +13,14 @@ export default function StudentsTable({
   faculties = [],
   majors = []
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 4; // 4 students per page
+
   // Helper functions to get names from IDs
   const getFacultyName = (id) => faculties.find(f => f.faculty_id === id)?.faculty_name || "-";
   const getMajorName = (id) => majors.find(m => m.major_id === id)?.major_name || "-";
 
+  // Filter students based on search query
   const filtered = useMemo(() => {
     if (!query.trim()) return students;
     const q = query.toLowerCase();
@@ -25,6 +30,16 @@ export default function StudentsTable({
         s.email?.toLowerCase().includes(q)
     );
   }, [students, query]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <Card>
@@ -43,7 +58,10 @@ export default function StudentsTable({
       {/* Search */}
       <input
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setCurrentPage(1); // reset page on search
+        }}
         placeholder="Search by username or email..."
         className="w-full mb-4 px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
       />
@@ -61,7 +79,7 @@ export default function StudentsTable({
       </div>
 
       {/* Rows */}
-      {filtered.map((s) => (
+      {paginated.map((s) => (
         <div
           key={s.student_id}
           className="grid grid-cols-13 gap-2 px-4 py-3 border-b border-white/5 hover:bg-white/5 transition text-sm items-center"
@@ -70,9 +88,9 @@ export default function StudentsTable({
           <div className="col-span-3">{s.email}</div>
           <div className="col-span-1">{getFacultyName(s.faculty_id)}</div>
           <div className="col-span-1">{getMajorName(s.major_id)}</div>
-          <div className="col-span-1">{s.year}</div>
-          <div className="col-span-1">{s.gpa}</div>
-          <div className="col-span-1">{s.points}</div>
+          <div className="col-span-1">{s.year ?? 0}</div>
+          <div className="col-span-1">{s.gpa ?? 0}</div>
+          <div className="col-span-1">{s.points ?? 0}</div>
 
           {/* Actions */}
           <div className="col-span-3 text-right flex gap-2 justify-end">
@@ -95,11 +113,19 @@ export default function StudentsTable({
       ))}
 
       {/* Empty */}
-      {filtered.length === 0 && (
+      {paginated.length === 0 && (
         <div className="text-center py-10 text-white/50 transition-opacity duration-500">
           No students found.
         </div>
       )}
+
+      {/* Pagination Component */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
     </Card>
   );
 }

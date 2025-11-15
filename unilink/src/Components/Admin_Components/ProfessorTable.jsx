@@ -1,16 +1,21 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import AnimatedUserRow from "./AnimatedUserRow";
 import Card from "./Card";
+import Pagination from "../Admin_Components/Paganation"; // Import the pagination component
 
 export default function ProfessorTable({
-  professors,
+  professors = [],
   query,
   setQuery,
   setEditingProfessor,
   handleDeleteProfessor,
   onRefresh
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 7; // Limit for professors table
+
+  // Filter professors based on search query
   const filtered = useMemo(() => {
     if (!query.trim()) return professors;
     const q = query.toLowerCase();
@@ -22,6 +27,16 @@ export default function ProfessorTable({
         p.major_name?.toLowerCase().includes(q)
     );
   }, [professors, query]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <Card>
@@ -40,12 +55,15 @@ export default function ProfessorTable({
       {/* Search */}
       <input
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setCurrentPage(1); // Reset page when searching
+        }}
         placeholder="Search by username, email, faculty, or major..."
         className="w-full mb-4 px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
       />
 
-      {/* Header */}
+      {/* Table Header */}
       <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-white/10 text-xs font-semibold uppercase text-accent">
         <div className="col-span-3">Username</div>
         <div className="col-span-3">Email</div>
@@ -54,8 +72,8 @@ export default function ProfessorTable({
         <div className="col-span-1 text-right">Actions</div>
       </div>
 
-      {/* Rows */}
-      {filtered.map((p, index) => (
+      {/* Table Rows */}
+      {paginated.map((p, index) => (
         <AnimatedUserRow
           key={p.user_id}
           u={p}
@@ -67,9 +85,18 @@ export default function ProfessorTable({
         />
       ))}
 
-      {filtered.length === 0 && (
+      {/* Empty state */}
+      {paginated.length === 0 && (
         <div className="text-center py-10 text-white/50">No professors found.</div>
       )}
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
     </Card>
   );
 }
