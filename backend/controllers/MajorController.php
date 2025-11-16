@@ -4,7 +4,6 @@ require_once __DIR__ . '/../utils/DbConnection.php';
 
 class MajorController {
 
-    
     public static function addMajor() {
         global $pdo;
 
@@ -37,7 +36,7 @@ class MajorController {
                 return;
             }
 
-            // Check for duplicate major name under same faculty
+            // Check duplicate under same faculty
             $checkMajor = $pdo->prepare("SELECT * FROM Major WHERE major_name = ? AND faculty_id = ?");
             $checkMajor->execute([$major_name, $faculty_id]);
             if ($checkMajor->fetch()) {
@@ -65,7 +64,7 @@ class MajorController {
         }
     }
 
-    
+
     public static function getAllMajors() {
         global $pdo;
 
@@ -80,6 +79,7 @@ class MajorController {
                 JOIN Faculty f ON m.faculty_id = f.faculty_id
                 ORDER BY m.major_id ASC
             ");
+
             $majors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             echo json_encode([
@@ -96,11 +96,42 @@ class MajorController {
         }
     }
 
-    
+
+    // ⭐ NEW: Get majors by faculty
+    public static function getMajorsByFaculty($faculty_id) {
+        global $pdo;
+
+        try {
+            $stmt = $pdo->prepare("
+                SELECT major_id, major_name 
+                FROM Major 
+                WHERE faculty_id = ?
+                ORDER BY major_name ASC
+            ");
+            $stmt->execute([(int)$faculty_id]);
+
+            $majors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "status" => "success",
+                "count" => count($majors),
+                "data" => $majors
+            ]);
+
+        } catch (PDOException $e) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+    }
+
+
     public static function updateMajor() {
         global $pdo;
 
         $input = json_decode(file_get_contents("php://input"), true);
+
         if (
             !$input ||
             !isset($input['major_id'], $input['major_name'], $input['faculty_id'])
@@ -138,8 +169,27 @@ class MajorController {
             return;
         }
 
+        // Check duplicate after update
+        $checkDuplicate = $pdo->prepare("
+            SELECT * FROM Major 
+            WHERE major_name = ? AND faculty_id = ? AND major_id != ?
+        ");
+        $checkDuplicate->execute([$major_name, $faculty_id, $major_id]);
+
+        if ($checkDuplicate->fetch()) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Another major with this name already exists in the same faculty"
+            ]);
+            return;
+        }
+
         try {
-            $stmt = $pdo->prepare("UPDATE Major SET major_name = ?, faculty_id = ? WHERE major_id = ?");
+            $stmt = $pdo->prepare("
+                UPDATE Major 
+                SET major_name = ?, faculty_id = ? 
+                WHERE major_id = ?
+            ");
             $stmt->execute([$major_name, $faculty_id, $major_id]);
 
             echo json_encode([
@@ -155,11 +205,12 @@ class MajorController {
         }
     }
 
-    
+
     public static function deleteMajor() {
         global $pdo;
 
         $input = json_decode(file_get_contents("php://input"), true);
+
         if (!$input || !isset($input['major_id'])) {
             echo json_encode([
                 "status" => "error",
@@ -171,6 +222,21 @@ class MajorController {
         $major_id = (int)$input['major_id'];
 
         try {
+
+            // ⭐ Prevent deleting major if users depend on it
+            $checkUsers = $pdo->prepare("
+                SELECT user_id FROM Users WHERE major_id = ?
+            ");
+            $checkUsers->execute([$major_id]);
+
+            if ($checkUsers->fetch()) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Cannot delete major because users are assigned to it"
+                ]);
+                return;
+            }
+
             $stmt = $pdo->prepare("DELETE FROM Major WHERE major_id = ?");
             $stmt->execute([$major_id]);
 

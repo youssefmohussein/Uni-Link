@@ -5,7 +5,7 @@
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, X-USER-ID");
 header("Content-Type: application/json");
 
 require_once __DIR__ . '/routes/userRoutes.php';
@@ -18,47 +18,30 @@ require_once __DIR__ . '/routes/postRoutes.php';
 require_once __DIR__ . '/routes/postMediaRoutes.php';
 require_once __DIR__ . '/routes/commentRoutes.php';
 require_once __DIR__ . '/routes/postInteractionRoutes.php';
+require_once __DIR__ . '/routes/cvRoutes.php';
+require_once __DIR__ . '/routes/projectRoutes.php';
+// Parse request URL without query parameters
+$request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$request = str_replace('/backend/index.php', '', $request);
 
-$request = str_replace('/backend/index.php', '', $_SERVER['REQUEST_URI']);
 $method  = $_SERVER['REQUEST_METHOD'];
+// Debug
+error_log("Request path: [$request], Method: [$method]");
 
 // Check each route group in order
-if (registerUserRoutes($request, $method)) {
-    exit;
-}
-elseif (registerStudentRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerAdminRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerProfessorRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerFacultyRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerMajorRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerPostRoutes($request, $method)) { 
-    exit; 
-}
-elseif (registerPostMediaRoutes($request, $method)){
-    exit;
-}
-elseif (registerCommentRoutes($request, $method)){
-    exit;
-}
-elseif (registerPostInteractionRoutes($request, $method)){
-    exit;
-}
-
-
-// elseif (registerProfessorRoutes($request, $method)) { exit; }
-
+if (registerUserRoutes($request, $method)) exit;
+elseif (registerStudentRoutes($request, $method)) exit;
+elseif (registerAdminRoutes($request, $method)) exit;
+elseif (registerProfessorRoutes($request, $method)) exit;
+elseif (registerFacultyRoutes($request, $method)) exit;
+elseif (registerMajorRoutes($request, $method)) exit;
+elseif (registerPostRoutes($request, $method)) exit;
+elseif (registerPostMediaRoutes($request, $method)) exit;
+elseif (registerCommentRoutes($request, $method)) exit;
+elseif (registerPostInteractionRoutes($request, $method)) exit;
+elseif (registerCVRoutes($request, $method)) exit;
+elseif (registerProjectRoutes($request, $method)) exit;  // <-- Added
 echo json_encode([
     "status" => "error",
     "message" => "Invalid route or method"
 ]);
-?>

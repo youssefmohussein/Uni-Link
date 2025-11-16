@@ -20,9 +20,10 @@ class FacultyController {
         $faculty_name = trim($input['faculty_name']);
 
         try {
-            // Check if name already exists
+            // Check duplicate
             $check = $pdo->prepare("SELECT * FROM Faculty WHERE faculty_name = ?");
             $check->execute([$faculty_name]);
+
             if ($check->fetch()) {
                 echo json_encode([
                     "status" => "error",
@@ -31,7 +32,7 @@ class FacultyController {
                 return;
             }
 
-            // Insert new faculty
+            // Insert
             $stmt = $pdo->prepare("INSERT INTO Faculty (faculty_name) VALUES (?)");
             $stmt->execute([$faculty_name]);
 
@@ -46,7 +47,8 @@ class FacultyController {
                 "message" => "Database error: " . $e->getMessage()
             ]);
         }
-    } 
+    }
+
 
     public static function getAllFaculties() {
         global $pdo;
@@ -69,10 +71,12 @@ class FacultyController {
         }
     }
 
+
     public static function updateFaculty() {
         global $pdo;
 
         $input = json_decode(file_get_contents("php://input"), true);
+
         if (!$input || !isset($input['faculty_id'], $input['faculty_name'])) {
             echo json_encode([
                 "status" => "error",
@@ -84,13 +88,29 @@ class FacultyController {
         $faculty_id = (int)$input['faculty_id'];
         $faculty_name = trim($input['faculty_name']);
 
-        // Validate
+        // Validate faculty exists
         $stmt = $pdo->prepare("SELECT * FROM Faculty WHERE faculty_id = ?");
         $stmt->execute([$faculty_id]);
+
         if (!$stmt->fetch()) {
             echo json_encode([
                 "status" => "error",
                 "message" => "Faculty not found"
+            ]);
+            return;
+        }
+
+        // Prevent duplicate name
+        $checkDuplicate = $pdo->prepare("
+            SELECT * FROM Faculty 
+            WHERE faculty_name = ? AND faculty_id != ?
+        ");
+        $checkDuplicate->execute([$faculty_name, $faculty_id]);
+
+        if ($checkDuplicate->fetch()) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Another faculty with this name already exists"
             ]);
             return;
         }
@@ -112,10 +132,12 @@ class FacultyController {
         }
     }
 
+
     public static function deleteFaculty() {
         global $pdo;
 
         $input = json_decode(file_get_contents("php://input"), true);
+
         if (!$input || !isset($input['faculty_id'])) {
             echo json_encode([
                 "status" => "error",
@@ -127,6 +149,19 @@ class FacultyController {
         $faculty_id = (int)$input['faculty_id'];
 
         try {
+
+            // ⭐ Prevent deleting faculty with majors
+            $checkMajors = $pdo->prepare("SELECT major_id FROM Major WHERE faculty_id = ?");
+            $checkMajors->execute([$faculty_id]);
+
+            if ($checkMajors->fetch()) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Cannot delete faculty because it contains majors"
+                ]);
+                return;
+            }
+
             $stmt = $pdo->prepare("DELETE FROM Faculty WHERE faculty_id = ?");
             $stmt->execute([$faculty_id]);
 

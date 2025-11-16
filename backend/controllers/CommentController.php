@@ -1,202 +1,176 @@
 <?php
 require_once __DIR__ . '/../utils/DbConnection.php';
 
-class CommentController {
+class CommentController
+{
 
-    public static function getCommentsByPost() {
+    public static function addComment()
+    {
         global $pdo;
 
-        $input = json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!$input || !isset($input['post_id'])) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Missing post_id"
-            ]);
+        $entityType = $data['entity_type'];
+        $entityId   = $data['entity_id'];
+        $userId     = $data['user_id'];
+        $parentId   = $data['parent_id'] ?? null;
+        $content    = $data['content'];
+
+        if (!$entityType || !$entityId || !$userId || !$content) {
+            echo json_encode(["status" => "error", "message" => "Missing required fields"]);
             return;
         }
 
-        $post_id = (int)$input['post_id'];
-
-        try {
-            $stmt = $pdo->prepare("
-                SELECT c.*, u.username AS user_name
-                FROM Comment c
-                JOIN Users u ON c.user_id = u.user_id
-                WHERE c.post_id = ?
-                ORDER BY c.created_at ASC
-            ");
-            $stmt->execute([$post_id]);
-            $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            echo json_encode([
-                "status" => "success",
-                "count" => count($comments),
-                "data" => $comments
-            ]);
-
-        } catch (PDOException $e) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Database error: " . $e->getMessage()
-            ]);
+        // 1️⃣ PROJECT VALIDATION
+        if ($entityType === "project") {
+            if (!self::validateProjectProfessor($pdo, $entityId, $userId)) return;
         }
+
+        // INSERT
+        $stmt = $pdo->prepare("
+            INSERT INTO comments (entity_type, entity_id, user_id, parent_id, content)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
+        $stmt->execute([$entityType, $entityId, $userId, $parentId, $content]);
+
+        echo json_encode(["status" => "success", "message" => "Comment added"]);
+    }
+    public static function getComments($entityType, $entityId)
+    {
+        global $pdo;
+
+        $sql = "
+            SELECT c.*, u.username
+            FROM comments c
+            JOIN users u ON u.user_id = c.user_id
+            WHERE c.entity_type = ?
+            AND c.entity_id = ?
+            ORDER BY c.created_at ASC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$entityType, $entityId]);
+
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    public static function addComment() {
+    public static function getComment($commentId)
+    {
         global $pdo;
 
-        $input = json_decode(file_get_contents("php://input"), true);
+        $stmt = $pdo->prepare("
+            SELECT c.*, u.username
+            FROM comments c
+            JOIN users u ON u.user_id = c.user_id
+            WHERE c.comment_id = ?
+        ");
+        $stmt->execute([$commentId]);
 
-        if (!$input || !isset($input['post_id'], $input['user_id'], $input['content'])) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Missing required fields"
-            ]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC));
+    }
+    public static function updateComment()
+    {
+        global $pdo;
+
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $commentId = $data['comment_id'];
+        $userId    = $data['user_id'];
+        $content   = $data['content'];
+
+        if (!$commentId || !$userId || !$content) {
+            echo json_encode(["status" => "error", "message" => "Missing fields"]);
             return;
         }
 
-        $post_id = (int)$input['post_id'];
-        $user_id = (int)$input['user_id'];
-        $parent_id = isset($input['parent_id']) ? (int)$input['parent_id'] : null;
-        $content = trim($input['content']);
+        // Get the existing comment
+        $stmt = $pdo->prepare("SELECT * FROM comments WHERE comment_id = ?");
+        $stmt->execute([$commentId]);
+        $comment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        try {
-            // Check if post exists
-            $checkPost = $pdo->prepare("SELECT * FROM Post WHERE post_id = ?");
-            $checkPost->execute([$post_id]);
-            if (!$checkPost->fetch()) {
-                echo json_encode([
-                    "status" => "error",
-                    "message" => "Post not found"
-                ]);
-                return;
-            }
-
-            // Check if user exists
-            $checkUser = $pdo->prepare("SELECT * FROM Users WHERE user_id = ?");
-            $checkUser->execute([$user_id]);
-            if (!$checkUser->fetch()) {
-                echo json_encode([
-                    "status" => "error",
-                    "message" => "User not found"
-                ]);
-                return;
-            }
-
-            // Check if parent comment exists (if parent_id provided)
-            if ($parent_id !== null) {
-                $checkParent = $pdo->prepare("SELECT * FROM Comment WHERE comment_id = ?");
-                $checkParent->execute([$parent_id]);
-                if (!$checkParent->fetch()) {
-                    echo json_encode([
-                        "status" => "error",
-                        "message" => "Parent comment not found"
-                    ]);
-                    return;
-                }
-            }
-
-            $stmt = $pdo->prepare("
-                INSERT INTO Comment (post_id, user_id, parent_id, content, created_at)
-                VALUES (?, ?, ?, ?, NOW())
-            ");
-            $stmt->execute([$post_id, $user_id, $parent_id, $content]);
-
-            echo json_encode([
-                "status" => "success",
-                "message" => "Comment added successfully",
-                "comment_id" => $pdo->lastInsertId()
-            ]);
-
-        } catch (PDOException $e) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Database error: " . $e->getMessage()
-            ]);
+        if (!$comment) {
+            echo json_encode(["status" => "error", "message" => "Comment not found"]);
+            return;
         }
+
+        // Only the owner can update
+        if ((int)$comment['user_id'] !== (int)$userId) {
+            echo json_encode(["status" => "error", "message" => "You cannot edit someone else's comment"]);
+            return;
+        }
+
+        // If it's a project comment → Professor validation
+        if ($comment['entity_type'] === "project") {
+            if (!self::validateProjectProfessor($pdo, $comment['entity_id'], $userId)) return;
+        }
+
+        // UPDATE
+        $update = $pdo->prepare("UPDATE comments SET content = ? WHERE comment_id = ?");
+        $update->execute([$content, $commentId]);
+
+        echo json_encode(["status" => "success", "message" => "Comment updated"]);
+    }
+    
+    public static function deleteComment()
+    {
+        global $pdo;
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $commentId = $data['comment_id'];
+        $userId    = $data['user_id'];
+
+        if (!$commentId || !$userId) {
+            echo json_encode(["status" => "error", "message" => "Missing fields"]);
+            return;
+        }
+
+        // Get old comment
+        $stmt = $pdo->prepare("SELECT * FROM comments WHERE comment_id = ?");
+        $stmt->execute([$commentId]);
+        $comment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$comment) {
+            echo json_encode(["status" => "error", "message" => "Comment not found"]);
+            return;
+        }
+
+        // Only the owner can delete
+        if ((int)$comment['user_id'] !== (int)$userId) {
+            echo json_encode(["status" => "error", "message" => "You cannot delete someone else's comment"]);
+            return;
+        }
+
+        // If it's a project → check professor
+        if ($comment['entity_type'] === "project") {
+            if (!self::validateProjectProfessor($pdo, $comment['entity_id'], $userId)) return;
+        }
+
+        // DELETE
+        $del = $pdo->prepare("DELETE FROM comments WHERE comment_id = ?");
+        $del->execute([$commentId]);
+
+        echo json_encode(["status" => "success", "message" => "Comment deleted"]);
     }
 
-    public static function updateComment() {
-        global $pdo;
+    private static function validateProjectProfessor($pdo, $projectId, $userId)
+    {
+        $stmt = $pdo->prepare("SELECT professor_id FROM projects WHERE project_id = ?");
+        $stmt->execute([$projectId]);
+        $project = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $input = json_decode(file_get_contents("php://input"), true);
-
-        if (!$input || !isset($input['comment_id'], $input['content'])) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Missing comment_id or content"
-            ]);
-            return;
+        if (!$project) {
+            echo json_encode(["status" => "error", "message" => "Project not found"]);
+            return false;
         }
 
-        $comment_id = (int)$input['comment_id'];
-        $content = trim($input['content']);
-
-        try {
-            $check = $pdo->prepare("SELECT * FROM Comment WHERE comment_id = ?");
-            $check->execute([$comment_id]);
-            if (!$check->fetch()) {
-                echo json_encode([
-                    "status" => "error",
-                    "message" => "Comment not found"
-                ]);
-                return;
-            }
-
-            $stmt = $pdo->prepare("
-                UPDATE Comment
-                SET content = ?
-                WHERE comment_id = ?
-            ");
-            $stmt->execute([$content, $comment_id]);
-
-            echo json_encode([
-                "status" => "success",
-                "message" => "Comment updated successfully"
-            ]);
-
-        } catch (PDOException $e) {
+        if ((int)$project['professor_id'] !== (int)$userId) {
             echo json_encode([
                 "status" => "error",
-                "message" => "Database error: " . $e->getMessage()
+                "message" => "Only the assigned professor can interact with project comments"
             ]);
+            return false;
         }
-    }
-
-    public static function deleteComment() {
-        global $pdo;
-
-        $input = json_decode(file_get_contents("php://input"), true);
-
-        if (!$input || !isset($input['comment_id'])) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Missing comment_id"
-            ]);
-            return;
-        }
-
-        $comment_id = (int)$input['comment_id'];
-
-        try {
-            // Optional: delete child comments first to avoid FK issues
-            $pdo->prepare("DELETE FROM Comment WHERE parent_id = ?")->execute([$comment_id]);
-
-            $stmt = $pdo->prepare("DELETE FROM Comment WHERE comment_id = ?");
-            $stmt->execute([$comment_id]);
-
-            echo json_encode([
-                "status" => "success",
-                "message" => "Comment deleted successfully"
-            ]);
-
-        } catch (PDOException $e) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Database error: " . $e->getMessage()
-            ]);
-        }
+        return true;
     }
 }
-?>
