@@ -24,6 +24,8 @@ require_once __DIR__ . '/routes/skillCategoryRoutes.php';
 require_once __DIR__ . '/routes/skillRoutes.php';
 require_once __DIR__ . '/routes/projectSkillRoutes.php';
 require_once __DIR__ . '/routes/userSkillRoutes.php';
+require_once __DIR__ . '/routes/announcementRoutes.php';
+require_once __DIR__ . '/routes/projectReviewRoutes.php';
 // Parse request URL without query parameters
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $request = str_replace('/backend/index.php', '', $request);
@@ -49,6 +51,8 @@ elseif (registerSkillCategoryRoutes($request, $method)) exit;
 elseif (registerSkillRoutes($request, $method)) exit;   
 elseif (registerProjectSkillRoutes($request, $method)) exit;
 elseif (registerUserSkillRoutes($request, $method)) exit;
+elseif (registerAnnouncementRoutes($request, $method)) exit;
+elseif (registerProjectReviewRoutes($request, $method)) exit;
 echo json_encode([
     "status" => "error",
     "message" => "Invalid route or method"
