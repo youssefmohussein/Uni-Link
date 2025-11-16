@@ -4,6 +4,7 @@ import AdminUsersPage from "./Pages/Admin/AdminUsersPage";
 import AdminStudentsPage from "./Pages/Admin/AdminStudentsPage";
 import AdminProfessorPage from "./Pages/Admin/AdminProfessorPage";
 import AdminAdminPage from "./Pages/Admin/AdminAdminPage";
+import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/admin/manage-professors" element={<AdminProfessorPage />} />
         <Route path="/admin/manage-tas" element={<AdminAdminPage />} />
         <Route path="/admin/settings" element={<AdminUsersPage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="*" element={<AdminUsersPage />} />
       </Routes>
     </Router>
