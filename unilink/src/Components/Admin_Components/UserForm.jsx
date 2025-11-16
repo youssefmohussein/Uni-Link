@@ -31,12 +31,10 @@ export default function UserForm({
   const [formData, setFormData] = useState(defaultData);
   const isEditing = !!initialData?.user_id;
 
-  // Sync with initial data
   useEffect(() => {
     setFormData({ ...defaultData, ...initialData });
   }, [initialData]);
 
-  // GPA auto-lock when student and year = 1
   useEffect(() => {
     if (formData.role === "Student" && formData.year === "1") {
       setFormData((prev) => ({ ...prev, gpa: "0.0" }));
@@ -46,7 +44,6 @@ export default function UserForm({
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    // Handle image upload
     if (name === "profile_image" && files?.[0]) {
       const reader = new FileReader();
       reader.onloadend = () =>
@@ -55,7 +52,6 @@ export default function UserForm({
       return;
     }
 
-    // Lock GPA if Student + Year = 1
     if (name === "gpa" && formData.role === "Student" && formData.year === "1") {
       return;
     }
@@ -67,7 +63,6 @@ export default function UserForm({
     }));
   };
 
-  // Filter majors by faculty
   const filteredMajors = useMemo(() => {
     if (!formData.faculty_id) return [];
     return (majors || []).filter(
@@ -77,7 +72,6 @@ export default function UserForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const required = ["user_id", "username", "email", "password", "role"];
     if (!isEditing) {
       for (let field of required) {
@@ -87,11 +81,9 @@ export default function UserForm({
         }
       }
     }
-
     onSubmit(formData);
   };
 
-  // Helper flags
   const isStudent = formData.role === "Student";
   const isProfessor = formData.role === "Professor";
   const isAdmin = formData.role === "Admin";
@@ -126,7 +118,6 @@ export default function UserForm({
               </h3>
 
               <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                {/* USER ID */}
                 <input
                   name="user_id"
                   type="number"
@@ -135,8 +126,6 @@ export default function UserForm({
                   placeholder="User ID"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
-
-                {/* Username */}
                 <input
                   name="username"
                   type="text"
@@ -145,8 +134,6 @@ export default function UserForm({
                   placeholder="Username"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
-
-                {/* Email */}
                 <input
                   name="email"
                   type="email"
@@ -155,8 +142,6 @@ export default function UserForm({
                   placeholder="Email"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
-
-                {/* Password */}
                 {!isEditing && (
                   <input
                     name="password"
@@ -167,8 +152,6 @@ export default function UserForm({
                     className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                   />
                 )}
-
-                {/* Phone */}
                 <input
                   name="phone"
                   type="text"
@@ -177,8 +160,6 @@ export default function UserForm({
                   placeholder="Phone"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
-
-                {/* Job Title */}
                 <input
                   name="job_title"
                   type="text"
@@ -187,8 +168,6 @@ export default function UserForm({
                   placeholder="Job Title"
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
-
-                {/* Bio */}
                 <input
                   name="bio"
                   type="text"
@@ -198,16 +177,22 @@ export default function UserForm({
                   className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
                 />
 
-                {/* ROLE */}
+                {/* Role */}
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer"
                 >
-                  <option value="Student">Student</option>
-                  <option value="Professor">Professor</option>
-                  <option value="Admin">Admin</option>
+                  <option className="cursor-pointer" value="Student">
+                    Student
+                  </option>
+                  <option className="cursor-pointer" value="Professor">
+                    Professor
+                  </option>
+                  <option className="cursor-pointer" value="Admin">
+                    Admin
+                  </option>
                 </select>
 
                 {/* Faculty */}
@@ -215,11 +200,13 @@ export default function UserForm({
                   name="faculty_id"
                   value={formData.faculty_id || ""}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer"
                 >
-                  <option value="">Select Faculty</option>
+                  <option className="cursor-pointer" value="">
+                    Select Faculty
+                  </option>
                   {(faculties || []).map((f) => (
-                    <option key={f.faculty_id} value={f.faculty_id}>
+                    <option key={f.faculty_id} className="cursor-pointer" value={f.faculty_id}>
                       {f.faculty_name}
                     </option>
                   ))}
@@ -231,35 +218,45 @@ export default function UserForm({
                   value={formData.major_id || ""}
                   onChange={handleChange}
                   disabled={!formData.faculty_id}
-                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 ${
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer ${
                     !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
-                  <option value="">Select Major</option>
+                  <option className="cursor-pointer" value="">
+                    Select Major
+                  </option>
                   {filteredMajors.map((m) => (
-                    <option key={m.major_id} value={m.major_id}>
+                    <option key={m.major_id} className="cursor-pointer" value={m.major_id}>
                       {m.major_name}
                     </option>
                   ))}
                 </select>
 
-                {/* STUDENT-ONLY: YEAR */}
                 {isStudent && (
                   <>
                     <select
                       name="year"
                       value={formData.year || ""}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
+                      className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer"
                     >
-                      <option value="">Select Year</option>
-                      <option value="1">1st Year</option>
-                      <option value="2">2nd Year</option>
-                      <option value="3">3rd Year</option>
-                      <option value="4">4th Year</option>
+                      <option className="cursor-pointer" value="">
+                        Select Year
+                      </option>
+                      <option className="cursor-pointer" value="1">
+                        1st Year
+                      </option>
+                      <option className="cursor-pointer" value="2">
+                        2nd Year
+                      </option>
+                      <option className="cursor-pointer" value="3">
+                        3rd Year
+                      </option>
+                      <option className="cursor-pointer" value="4">
+                        4th Year
+                      </option>
                     </select>
 
-                    {/* GPA */}
                     <input
                       name="gpa"
                       type="number"
@@ -277,36 +274,45 @@ export default function UserForm({
                   </>
                 )}
 
-                {/* PROFESSOR / ADMIN hidden GPA + YEAR */}
-                {(isProfessor || isAdmin) && (
-                  <>
-                    <input type="hidden" name="gpa" value={formData.gpa} />
-                    <input type="hidden" name="year" value={formData.year} />
-                  </>
-                )}
-
-                {/* IMAGE UPLOAD */}
                 <input
                   type="file"
                   name="profile_image"
                   accept="image/*"
                   onChange={handleChange}
-                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50"
+                  className="col-span-2 w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer"
                 />
 
-                {/* BUTTONS */}
+                {/* Buttons */}
                 <div className="col-span-2 flex justify-end gap-3 mt-4">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition"
+                    className="
+                      px-4 py-2 rounded-lg font-medium
+                      text-white
+                      bg-transparent
+                      border-2 border-white
+                      transition-all duration-200
+                      hover:scale-105
+                      hover:drop-shadow-[0_0_6px_white,0_0_12px_white]
+                      cursor-pointer
+                    "
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition"
+                    className="
+                      px-4 py-2 rounded-lg font-medium
+                      text-accent
+                      bg-transparent
+                      border-2 border-accent
+                      transition-all duration-200
+                      hover:scale-105
+                      hover:drop-shadow-[0_0_6px_currentColor,0_0_12px_currentColor]
+                      cursor-pointer
+                    "
                   >
                     {isEditing ? "Save Changes" : "Add User"}
                   </button>

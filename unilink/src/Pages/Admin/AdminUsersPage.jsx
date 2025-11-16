@@ -11,7 +11,7 @@ export default function AdminUsersPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-  const [editingUser, setEditingUser] = useState(null); // 🟢 For editing
+  const [editingUser, setEditingUser] = useState(null);
   const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
 
@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  // Fetch faculties and majors if needed
+  // Fetch faculties and majors
   const getFacultiesAndMajors = async () => {
     try {
       const [facData, majData] = await Promise.all([
@@ -100,9 +100,20 @@ export default function AdminUsersPage() {
       >
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Manage Users</h1>
+
+          {/* Add User button matching edit button color */}
           <button
             onClick={() => setIsAdding(true)}
-            className="px-4 py-2 bg-accent rounded-lg font-medium hover:bg-accent/80"
+            className="
+              px-4 py-2 rounded-lg font-medium
+              text-accent
+              bg-transparent
+              border-2 border-accent
+              transition-all duration-200
+              hover:scale-105
+              hover:drop-shadow-[0_0_6px_currentColor,0_0_12px_currentColor]
+              cursor-pointer
+            "
           >
             + Add User
           </button>

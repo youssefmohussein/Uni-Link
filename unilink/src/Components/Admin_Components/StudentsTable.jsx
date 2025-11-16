@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { FiRefreshCw, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiRefreshCw, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Card from "./Card";
-import Pagination from "../Admin_Components/Paganation"; // Import the pagination component
+import Pagination from "../Admin_Components/Paganation";
 
 export default function StudentsTable({
   students = [],
@@ -14,13 +14,14 @@ export default function StudentsTable({
   majors = []
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 4; // 4 students per page
+  const rowsPerPage = 4;
 
-  // Helper functions to get names from IDs
-  const getFacultyName = (id) => faculties.find(f => f.faculty_id === id)?.faculty_name || "-";
-  const getMajorName = (id) => majors.find(m => m.major_id === id)?.major_name || "-";
+  const getFacultyName = (id) =>
+    faculties.find((f) => f.faculty_id === id)?.faculty_name || "-";
 
-  // Filter students based on search query
+  const getMajorName = (id) =>
+    majors.find((m) => m.major_id === id)?.major_name || "-";
+
   const filtered = useMemo(() => {
     if (!query.trim()) return students;
     const q = query.toLowerCase();
@@ -31,7 +32,6 @@ export default function StudentsTable({
     );
   }, [students, query]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const paginated = filtered.slice(
     (currentPage - 1) * rowsPerPage,
@@ -48,10 +48,17 @@ export default function StudentsTable({
         <h2 className="text-xl font-bold text-accent">Students</h2>
         <button
           onClick={onRefresh}
-          className="p-2 rounded-full hover:bg-white/10 transition"
+          className="
+            p-2 rounded-full cursor-pointer
+            text-accent
+            transition-all duration-200
+            hover:scale-110
+            hover:drop-shadow-[0_0_6px_currentColor]
+            hover:bg-white/10
+          "
           title="Refresh"
         >
-          <FiRefreshCw className="text-accent" size={20} />
+          <FiRefreshCw size={20} />
         </button>
       </div>
 
@@ -60,7 +67,7 @@ export default function StudentsTable({
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
-          setCurrentPage(1); // reset page on search
+          setCurrentPage(1);
         }}
         placeholder="Search by username or email..."
         className="w-full mb-4 px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
@@ -93,33 +100,48 @@ export default function StudentsTable({
           <div className="col-span-1">{s.points ?? 0}</div>
 
           {/* Actions */}
-          <div className="col-span-3 text-right flex gap-2 justify-end">
+          <div className="col-span-3 flex justify-end gap-3">
+            {/* Edit Button */}
             <button
               onClick={() => setEditingStudent(s)}
-              className="p-1 rounded hover:bg-white/10 transition"
+              className="
+                p-2 rounded cursor-pointer
+                text-accent
+                transition-all duration-200
+                hover:scale-110
+                hover:drop-shadow-[0_0_6px_currentColor]
+              "
               title="Edit Student"
             >
-              <FiEdit className="text-blue-400" size={18} />
+              <FiEdit2 size={16} />
             </button>
+
+            {/* Delete Button */}
             <button
               onClick={() => handleDeleteStudent(s.student_id)}
-              className="p-1 rounded hover:bg-white/10 transition"
+              className="
+                p-2 rounded cursor-pointer
+                text-red-500
+                transition-all duration-200
+                hover:scale-110
+                hover:drop-shadow-[0_0_6px_currentColor]
+              "
               title="Delete Student"
             >
-              <FiTrash2 className="text-red-400" size={18} />
+              <FiTrash2 size={16} />
             </button>
           </div>
         </div>
       ))}
 
-      {/* Empty */}
+      {/* Empty state */}
       {paginated.length === 0 && (
         <div className="text-center py-10 text-white/50 transition-opacity duration-500">
           No students found.
         </div>
       )}
 
-      {/* Pagination Component */}
+      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
