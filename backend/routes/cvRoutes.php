@@ -5,14 +5,13 @@ function registerCVRoutes($request, $method) {
     switch (true) {
         case $request === '/uploadCV' && $method === 'POST':
             CVController::uploadCV();
-            break;
+            return true;
 
         case preg_match('#^/downloadCV/(\d+)$#', $request, $matches) && $method === 'GET':
             CVController::downloadCV($matches[1]);
-            break;
+            return true;
 
         default:
-            echo json_encode(['status' => 'error', 'message' => 'Invalid route']);
-            break;
+            return false;
     }
 }

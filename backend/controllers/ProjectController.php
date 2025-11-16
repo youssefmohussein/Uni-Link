@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../utils/DbConnection.php';
 
-class ProjectsController {
+class ProjectController {
 
     public static function addProject() {
         global $pdo;
@@ -51,12 +51,26 @@ class ProjectsController {
             echo json_encode(["status" => "error", "message" => $e->getMessage()]);
         }
     }
-    public static function getProjectById($id) {
+    public static function getProjectById() {
         global $pdo;
+
+        // Get project_id from query string or request body
+        $project_id = null;
+        if (isset($_GET['project_id'])) {
+            $project_id = (int)$_GET['project_id'];
+        } else {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $project_id = isset($input['project_id']) ? (int)$input['project_id'] : null;
+        }
+
+        if (!$project_id) {
+            echo json_encode(["status" => "error", "message" => "Project ID is required"]);
+            return;
+        }
 
         try {
             $stmt = $pdo->prepare("SELECT * FROM Project WHERE project_id = ?");
-            $stmt->execute([(int)$id]);
+            $stmt->execute([$project_id]);
             $project = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$project) {
@@ -194,6 +208,11 @@ class ProjectsController {
             echo json_encode(["status" => "error", "message" => $e->getMessage()]);
         }
     }
+    public static function addGrade() {
+        // Alias for updateStatusAndGrade
+        self::updateStatusAndGrade();
+    }
+
     public static function updateStatusAndGrade() {
         global $pdo;
 

@@ -44,7 +44,7 @@ class CVController {
 
         // Save to DB
         try {
-            $pdo = DbConnection::getInstance();
+            global $pdo;
             // If CV already exists, update it
             $stmt = $pdo->prepare("INSERT INTO CV (user_id, file_path) VALUES (?, ?)
                                    ON DUPLICATE KEY UPDATE file_path = VALUES(file_path), created_at = CURRENT_TIMESTAMP");
@@ -61,7 +61,7 @@ class CVController {
     }
 
     public static function downloadCV($user_id) {
-        $pdo = DbConnection::getInstance();
+        global $pdo;
         $stmt = $pdo->prepare("SELECT file_path FROM CV WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $cv = $stmt->fetch(PDO::FETCH_ASSOC);

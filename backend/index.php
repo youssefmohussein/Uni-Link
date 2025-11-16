@@ -27,8 +27,12 @@ require_once __DIR__ . '/routes/userSkillRoutes.php';
 require_once __DIR__ . '/routes/announcementRoutes.php';
 require_once __DIR__ . '/routes/projectReviewRoutes.php';
 // Parse request URL without query parameters
-$request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$request = str_replace('/backend/index.php', '', $request);
+if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
+    $request = $_SERVER['PATH_INFO'];
+} else {
+    $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $request = str_replace('/backend/index.php', '', $request);
+}
 
 $method  = $_SERVER['REQUEST_METHOD'];
 // Debug
