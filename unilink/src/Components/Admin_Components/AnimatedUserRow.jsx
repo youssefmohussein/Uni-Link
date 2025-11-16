@@ -15,10 +15,17 @@ export default function AnimatedUserRow({ u, setEditingUser, handleDeleteUser, i
       <div className="col-span-3 truncate">{u.role}</div>
 
       <div className="col-span-2 flex justify-end gap-3">
+
         {/* Edit Button */}
         <button
           onClick={() => setEditingUser(u)}
-          className="p-2 rounded hover:bg-accent/20 text-accent"
+          className="
+            p-2 rounded cursor-pointer
+            text-accent
+            transition-all duration-200
+            hover:scale-110
+            hover:drop-shadow-[0_0_6px_currentColor]
+          "
           title="Edit user"
         >
           <FiEdit2 size={16} />
@@ -27,11 +34,18 @@ export default function AnimatedUserRow({ u, setEditingUser, handleDeleteUser, i
         {/* Delete Button */}
         <button
           onClick={() => handleDeleteUser(u.user_id)}
-          className="p-2 rounded hover:bg-red-500/20 text-red-500"
+          className="
+            p-2 rounded cursor-pointer
+            text-red-500
+            transition-all duration-200
+            hover:scale-110
+            hover:drop-shadow-[0_0_6px_currentColor]
+          "
           title="Delete user"
         >
           <FiTrash2 size={16} />
         </button>
+
       </div>
     </motion.div>
   );
