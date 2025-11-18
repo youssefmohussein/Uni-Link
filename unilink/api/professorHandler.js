@@ -43,3 +43,17 @@ export const deleteProfessor = async (user_id) => {
   if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };
+
+
+export const getAllFaculties = async () => {
+  const res = await apiRequest("index.php/getAllFaculties", "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch faculties");
+  return res.data ?? [];
+};
+
+
+export const getAllMajors = async () => {
+  const res = await apiRequest("index.php/getAllMajors", "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
+  return res.data ?? [];
+};

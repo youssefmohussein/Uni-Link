@@ -2,9 +2,15 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "../../Components/Admin_Components/Card";
 
-export default function StudentForm({ isOpen, onClose, onSubmit, initialData, faculties, majors, role = "Student" }) {
+export default function StudentForm({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  faculties,
+  majors,
+}) {
   const defaultData = {
-    student_id: "",
     username: "",
     email: "",
     year: "",
@@ -13,21 +19,35 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
     major_id: "",
   };
 
-  const [formData, setFormData] = useState(initialData || defaultData);
   const isEditing = !!initialData?.student_id;
+  const [formData, setFormData] = useState(defaultData);
 
   useEffect(() => {
-    // If first-year student and adding, lock GPA to 0.0
-    const updatedData = { ...defaultData, ...initialData };
-    if (!isEditing && role === "Student" && (updatedData.year === "" || updatedData.year === 1)) {
-      updatedData.gpa = 0.0;
+    if (isEditing) {
+      setFormData({
+        username: initialData.username || "",
+        email: initialData.email || "",
+        year: initialData.year || "",
+        gpa: initialData.gpa || "",
+        faculty_id: initialData.faculty_id || "",
+        major_id: initialData.major_id || "",
+        student_id: initialData.student_id,
+      });
+    } else {
+      setFormData({ ...defaultData });
     }
-    setFormData(updatedData);
-  }, [initialData, isEditing, role]);
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    if (name === "gpa") {
+      let g = parseFloat(value);
+      if (isNaN(g)) g = "";
+      if (g < 0) g = 0;
+      if (g > 4) g = 4;
+      setFormData((prev) => ({ ...prev, gpa: g }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -35,9 +55,8 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
     }));
   };
 
-  // Filter majors based on selected faculty
   const filteredMajors = useMemo(() => {
-    if (!formData.faculty_id) return majors || [];
+    if (!formData.faculty_id) return [];
     return (majors || []).filter(
       (m) => String(m.faculty_id) === String(formData.faculty_id)
     );
@@ -45,26 +64,33 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const required = ["student_id", "username", "email"];
-    if (role === "Student") {
-      required.push("year", "gpa");
+    const required = ["username", "email", "year"];
+    for (let f of required) {
+      if (!formData[f]) return alert(`Please fill out ${f}`);
     }
-    for (let field of required) {
-      if (!formData[field]) {
-        alert(`Please fill out ${field}`);
-        return;
-      }
+    if (!isEditing) {
+      onSubmit({
+        username: formData.username,
+        email: formData.email,
+        faculty_id: formData.faculty_id,
+        major_id: formData.major_id,
+        role: "Student",
+        year: formData.year,
+        gpa: formData.gpa || 0,
+      });
+    } else {
+      onSubmit({
+        user_id: formData.student_id,
+        student_id: formData.student_id,
+        username: formData.username,
+        email: formData.email,
+        faculty_id: formData.faculty_id,
+        major_id: formData.major_id,
+        year: formData.year,
+        gpa: formData.gpa,
+      });
     }
-
-    onSubmit(formData);
   };
-
-  // Disable year/gpa for Professors/Admins
-  const isLocked = role !== "Student";
-
-  // Lock GPA to 0 for first-year students
-  const gpaValue = (!isEditing && formData.year === 1) ? 0.0 : formData.gpa;
 
   return (
     <AnimatePresence>
@@ -80,13 +106,15 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-2xl"
+            className="w-full max-w-3xl"
           >
-            <Card>
+            <Card className="p-6">
+              {/* Header */}
               <h3
-                className="text-2xl font-bold mb-6"
+                className="text-2xl font-bold mb-6 text-center"
                 style={{
-                  background: "linear-gradient(135deg, var(--accent), var(--accent-alt))",
+                  background:
+                    "linear-gradient(135deg, var(--accent), var(--accent-alt))",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -94,75 +122,43 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
                 {isEditing ? "Edit Student" : "Add Student"}
               </h3>
 
+              {/* Form */}
               <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                <input
-                  name="student_id"
-                  type="number"
-                  value={formData.student_id || ""}
-                  onChange={handleChange}
-                  placeholder="Student ID"
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                />
 
                 <input
                   name="username"
-                  type="text"
-                  value={formData.username || ""}
+                  value={formData.username}
                   onChange={handleChange}
                   placeholder="Username"
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition"
                 />
-
                 <input
                   name="email"
                   type="email"
-                  value={formData.email || ""}
+                  value={formData.email}
                   onChange={handleChange}
                   placeholder="Email"
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition"
                 />
-
-                <input
-                  name="year"
-                  type="number"
-                  value={formData.year || ""}
-                  onChange={handleChange}
-                  placeholder="Year"
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                  disabled={isLocked}
-                />
-
-                <input
-                  name="gpa"
-                  type="number"
-                  step="0.01"
-                  value={gpaValue || ""}
-                  onChange={handleChange}
-                  placeholder="GPA"
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
-                  disabled={isLocked || (!isEditing && formData.year === 1)}
-                />
-
                 <select
                   name="faculty_id"
-                  value={formData.faculty_id || ""}
+                  value={formData.faculty_id}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition cursor-pointer"
                 >
                   <option value="">Select Faculty</option>
-                  {(faculties || []).map((f) => (
+                  {faculties?.map((f) => (
                     <option key={f.faculty_id} value={f.faculty_id}>
                       {f.faculty_name}
                     </option>
                   ))}
                 </select>
-
                 <select
                   name="major_id"
-                  value={formData.major_id || ""}
+                  value={formData.major_id}
                   onChange={handleChange}
                   disabled={!formData.faculty_id}
-                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:ring-2 focus:ring-accent outline-none transition ${
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition cursor-pointer ${
                     !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
@@ -173,18 +169,38 @@ export default function StudentForm({ isOpen, onClose, onSubmit, initialData, fa
                     </option>
                   ))}
                 </select>
+                <input
+                  name="year"
+                  type="number"
+                  value={formData.year}
+                  onChange={handleChange}
+                  placeholder="Year"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition"
+                />
+                <input
+                  name="gpa"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="4"
+                  value={formData.gpa}
+                  onChange={handleChange}
+                  placeholder="GPA"
+                  className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition"
+                />
 
+                {/* Buttons */}
                 <div className="col-span-2 flex justify-end gap-3 mt-4">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 rounded-custom border border-white/20 hover:bg-white/10 transition"
+                    className="px-4 py-2 rounded-lg border-2 border-white text-white bg-transparent hover:scale-105 hover:drop-shadow-[0_0_6px_white,0_0_12px_white] transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-custom bg-accent hover:brightness-110 transition"
+                    className="px-4 py-2 rounded-lg border-2 border-accent text-accent bg-transparent hover:scale-105 hover:drop-shadow-[0_0_6px_currentColor,0_0_12px_currentColor] transition"
                   >
                     {isEditing ? "Save Changes" : "Add Student"}
                   </button>
