@@ -1,276 +1,160 @@
 import React, { useState, useEffect } from "react";
+import { FiArrowLeft } from "react-icons/fi";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
-import Card from "../../Components/Admin_Components/Card";
-import { motion } from "framer-motion";
-import * as userHandler from "../../../api/userHandler";
-
-// Form Components
 import FacultyForm from "../../Components/Admin_Components/FacultyForm";
 import MajorForm from "../../Components/Admin_Components/MajorForm";
+import FacultiesTable from "../../Components/Admin_Components/FacultyForm";
+import MajorsTable from "../../Components/Admin_Components/MajorForm";
+import * as handler from "../../../api/facultyandmajorHandler";
 
 export default function AdminAdminPage() {
   const [faculties, setFaculties] = useState([]);
-  const [majors, setMajors] = useState([]);
-  const [selectedFaculty, setSelectedFaculty] = useState(null);
-
   const [loading, setLoading] = useState(true);
+  const [isFacultyFormOpen, setIsFacultyFormOpen] = useState(false);
+  const [editFacultyData, setEditFacultyData] = useState(null);
 
-  // Forms
-  const [isAddingFaculty, setIsAddingFaculty] = useState(false);
-  const [editingFaculty, setEditingFaculty] = useState(null);
+  const [isMajorView, setIsMajorView] = useState(false);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
+  const [majors, setMajors] = useState([]);
+  const [isMajorFormOpen, setIsMajorFormOpen] = useState(false);
+  const [editMajorData, setEditMajorData] = useState(null);
 
-  const [isAddingMajor, setIsAddingMajor] = useState(false);
-  const [editingMajor, setEditingMajor] = useState(null);
-
-  // Fetch faculties + majors
-  const loadData = async () => {
+  const fetchFaculties = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const facData = await userHandler.getAllFaculties();
-      setFaculties(facData);
-
-      const majData = await userHandler.getAllMajors();
-      setMajors(majData);
-
-      setLoading(false);
+      const data = await handler.getAllFaculties();
+      setFaculties(data);
     } catch (err) {
-      console.error("Failed loading faculties & majors", err);
+      console.error(err);
+      alert("Failed to load faculties");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    loadData();
+    fetchFaculties();
   }, []);
 
-  // === Faculty CRUD ===
-  const handleAddFaculty = async (formData) => {
-    try {
-      await userHandler.addFaculty(formData);
-      setIsAddingFaculty(false);
-      await loadData();
-      alert("Faculty added successfully");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add faculty");
-    }
+  const handleOpenAddFaculty = () => {
+    setEditFacultyData(null);
+    setIsFacultyFormOpen(true);
   };
 
-  const handleUpdateFaculty = async (formData) => {
+  const handleOpenEditFaculty = (f) => {
+    setEditFacultyData(f);
+    setIsFacultyFormOpen(true);
+  };
+
+  const handleSubmitFaculty = async (payload) => {
     try {
-      await userHandler.updateFaculty(formData);
-      setEditingFaculty(null);
-      await loadData();
-      alert("Faculty updated successfully");
+      if (payload.faculty_id) await handler.updateFaculty(payload);
+      else await handler.addFaculty(payload);
+      setIsFacultyFormOpen(false);
+      fetchFaculties();
     } catch (err) {
-      console.error(err);
-      alert("Failed to update faculty");
+      alert(err.message);
     }
   };
 
   const handleDeleteFaculty = async (id) => {
     if (!window.confirm("Delete this faculty?")) return;
     try {
-      await userHandler.deleteFaculty(id);
-      if (selectedFaculty === id) setSelectedFaculty(null);
-      await loadData();
-      alert("Faculty deleted");
+      await handler.deleteFaculty(id);
+      fetchFaculties();
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete faculty");
+      alert(err.message);
     }
   };
 
-  // === Major CRUD ===
-  const handleAddMajor = async (formData) => {
+  const loadMajors = async (faculty_id) => {
     try {
-      await userHandler.addMajor(formData);
-      setIsAddingMajor(false);
-      await loadData();
-      alert("Major added successfully");
+      const data = await handler.getAllMajors();
+      setMajors(data.filter((m) => m.faculty_id === faculty_id));
     } catch (err) {
       console.error(err);
-      alert("Failed to add major");
+      alert("Failed to load majors");
     }
   };
 
-  const handleUpdateMajor = async (formData) => {
+  const handleViewMajors = async (faculty) => {
+    setSelectedFaculty(faculty);
+    await loadMajors(faculty.faculty_id);
+    setIsMajorView(true);
+  };
+
+  const handleBackToFaculties = () => {
+    setIsMajorView(false);
+    setSelectedFaculty(null);
+    setMajors([]);
+  };
+
+  const handleAddMajor = () => {
+    setEditMajorData(null);
+    setIsMajorFormOpen(true);
+  };
+
+  const handleEditMajor = (major) => {
+    setEditMajorData(major);
+    setIsMajorFormOpen(true);
+  };
+
+  const handleSubmitMajor = async (payload) => {
     try {
-      await userHandler.updateMajor(formData);
-      setEditingMajor(null);
-      await loadData();
-      alert("Major updated successfully");
+      if (payload.major_id) await handler.updateMajor(payload);
+      else await handler.addMajor(payload);
+      setIsMajorFormOpen(false);
+      await loadMajors(selectedFaculty.faculty_id);
     } catch (err) {
-      console.error(err);
-      alert("Failed to update major");
+      alert(err.message);
     }
   };
 
-  const handleDeleteMajor = async (major_id) => {
+  const handleDeleteMajor = async (id) => {
     if (!window.confirm("Delete this major?")) return;
     try {
-      await userHandler.deleteMajor(major_id);
-      await loadData();
-      alert("Major deleted");
+      await handler.deleteMajor(id);
+      await loadMajors(selectedFaculty.faculty_id);
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete major");
+      alert(err.message);
     }
   };
 
-  const filteredMajors = selectedFaculty
-    ? majors.filter((m) => m.faculty_id === selectedFaculty)
-    : [];
-
   return (
-    <div className="flex bg-dark min-h-screen text-white">
+    <div className="flex bg-bg min-h-screen text-main font-main">
       <Sidebar />
-
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1 p-8"
-      >
-        <h1 className="text-2xl font-bold mb-6">Manage Faculties & Majors</h1>
-
-        {/* ======================== FACULTIES ======================== */}
-        <Card className="mb-8">
-          <div className="flex justify-between items-center mb-4 px-4">
-            <h2 className="text-xl font-bold text-accent">Faculties</h2>
-            <button
-              onClick={() => setIsAddingFaculty(true)}
-              className="px-4 py-2 bg-accent rounded-lg hover:bg-accent/80"
-            >
-              + Add Faculty
-            </button>
-          </div>
-
-          {/* Faculties list */}
-          <div className="space-y-2">
-            {faculties.map((f) => (
-              <div
-                key={f.faculty_id}
-                className={`flex justify-between items-center px-4 py-3 rounded-lg transition cursor-pointer ${
-                  selectedFaculty === f.faculty_id
-                    ? "bg-accent/20"
-                    : "bg-white/5 hover:bg-white/10"
-                }`}
-                onClick={() => setSelectedFaculty(f.faculty_id)}
-              >
-                <span className="text-lg font-medium">{f.faculty_name}</span>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingFaculty(f);
-                    }}
-                    className="px-3 py-1 bg-blue-600 rounded-md text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteFaculty(f.faculty_id);
-                    }}
-                    className="px-3 py-1 bg-red-600 rounded-md text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {faculties.length === 0 && (
-              <p className="text-center text-white/50 py-6">
-                No faculties available
-              </p>
-            )}
-          </div>
-        </Card>
-
-        {/* ========================= MAJORS ========================== */}
-        <Card>
-          <div className="flex justify-between items-center mb-4 px-4">
-            <h2 className="text-xl font-bold text-accent">Majors</h2>
-
-            {selectedFaculty && (
+      <div className="flex-1 p-6">
+        {!isMajorView ? (
+          <>
+            <FacultiesTable
+              faculties={faculties}
+              onAddFaculty={handleOpenAddFaculty}
+              onEditFaculty={handleOpenEditFaculty}
+              onDeleteFaculty={handleDeleteFaculty}
+              onViewMajors={handleViewMajors}
+              onRefresh={fetchFaculties}
+            />
+          </>
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-4">
               <button
-                onClick={() => setIsAddingMajor(true)}
-                className="px-4 py-2 bg-accent rounded-lg hover:bg-accent/80"
+                onClick={handleBackToFaculties}
+                className="p-2 rounded-full cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor] hover:bg-white/10 flex items-center justify-center gap-2"
+                title="Back to Faculties"
               >
-                + Add Major
+                <FiArrowLeft size={18} />
               </button>
-            )}
-          </div>
-
-          {!selectedFaculty ? (
-            <p className="text-center text-white/50 py-6">
-              Select a faculty to manage its majors.
-            </p>
-          ) : filteredMajors.length === 0 ? (
-            <p className="text-center text-white/50 py-6">
-              No majors for this faculty.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {filteredMajors.map((m) => (
-                <div
-                  key={m.major_id}
-                  className="flex justify-between items-center px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
-                >
-                  <span className="text-lg">{m.major_name}</span>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingMajor(m)}
-                      className="px-3 py-1 bg-blue-600 rounded-md text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteMajor(m.major_id)}
-                      className="px-3 py-1 bg-red-600 rounded-md text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
-          )}
-        </Card>
-
-        {/* ========== FORMS ========= */}
-        <FacultyForm
-          isOpen={isAddingFaculty}
-          onClose={() => setIsAddingFaculty(false)}
-          onSubmit={handleAddFaculty}
-        />
-
-        <FacultyForm
-          isOpen={!!editingFaculty}
-          onClose={() => setEditingFaculty(null)}
-          onSubmit={handleUpdateFaculty}
-          initialData={editingFaculty}
-        />
-
-        <MajorForm
-          isOpen={isAddingMajor}
-          onClose={() => setIsAddingMajor(false)}
-          onSubmit={handleAddMajor}
-          faculty_id={selectedFaculty}
-        />
-
-        <MajorForm
-          isOpen={!!editingMajor}
-          onClose={() => setEditingMajor(null)}
-          onSubmit={handleUpdateMajor}
-          initialData={editingMajor}
-          faculty_id={selectedFaculty}
-        />
-      </motion.div>
+            <MajorsTable
+              majors={majors}
+              facultyName={selectedFaculty?.faculty_name}
+              onAddMajor={handleAddMajor}
+              onEditMajor={handleEditMajor}
+              onDeleteMajor={handleDeleteMajor}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
