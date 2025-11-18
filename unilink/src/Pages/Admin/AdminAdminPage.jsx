@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
-import FacultyForm from "../../Components/Admin_Components/FacultyForm";
-import MajorForm from "../../Components/Admin_Components/MajorForm";
+import FacultyFormModal from "../../Components/Admin_Components/FacultyFormModal";
+import MajorFormModal from "../../Components/Admin_Components/MajorFormModal";
 import FacultiesTable from "../../Components/Admin_Components/FacultyForm";
 import MajorsTable from "../../Components/Admin_Components/MajorForm";
 import * as handler from "../../../api/facultyandmajorHandler";
@@ -45,11 +45,17 @@ export default function AdminAdminPage() {
     setIsFacultyFormOpen(true);
   };
 
+  const handleCloseFacultyForm = () => {
+    setIsFacultyFormOpen(false);
+    setEditFacultyData(null);
+  };
+
   const handleSubmitFaculty = async (payload) => {
     try {
       if (payload.faculty_id) await handler.updateFaculty(payload);
       else await handler.addFaculty(payload);
       setIsFacultyFormOpen(false);
+      setEditFacultyData(null);
       fetchFaculties();
     } catch (err) {
       alert(err.message);
@@ -98,11 +104,17 @@ export default function AdminAdminPage() {
     setIsMajorFormOpen(true);
   };
 
+  const handleCloseMajorForm = () => {
+    setIsMajorFormOpen(false);
+    setEditMajorData(null);
+  };
+
   const handleSubmitMajor = async (payload) => {
     try {
       if (payload.major_id) await handler.updateMajor(payload);
       else await handler.addMajor(payload);
       setIsMajorFormOpen(false);
+      setEditMajorData(null);
       await loadMajors(selectedFaculty.faculty_id);
     } catch (err) {
       alert(err.message);
@@ -155,6 +167,24 @@ export default function AdminAdminPage() {
           </>
         )}
       </div>
+
+      {/* Faculty Form Modal */}
+      <FacultyFormModal
+        isOpen={isFacultyFormOpen}
+        onClose={handleCloseFacultyForm}
+        onSubmit={handleSubmitFaculty}
+        initialData={editFacultyData}
+      />
+
+      {/* Major Form Modal */}
+      <MajorFormModal
+        isOpen={isMajorFormOpen}
+        onClose={handleCloseMajorForm}
+        onSubmit={handleSubmitMajor}
+        initialData={editMajorData}
+        faculties={faculties}
+        selectedFaculty={selectedFaculty}
+      />
     </div>
   );
 }
