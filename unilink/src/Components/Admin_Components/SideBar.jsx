@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen } from "react-icons/fi";
+import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen, FiGlobe } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar() {
@@ -13,6 +13,7 @@ export default function Sidebar() {
     { label: "Students", icon: <FiBookOpen />, path: "/admin/students" },
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },
     { label: "Admin", icon: <FiUsers />, path: "/admin/manage-tas" },
+    { label: "University", icon: <FiGlobe />, path: "/admin/university" },  
     { label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];
 

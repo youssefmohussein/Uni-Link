@@ -14,7 +14,7 @@ export default function App() {
         <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/admin/students" element={<AdminStudentsPage />} />
         <Route path="/admin/manage-professors" element={<AdminProfessorPage />} />
-        <Route path="/admin/manage-tas" element={<AdminAdminPage />} />
+        <Route path="/admin/university" element={<AdminAdminPage />} />
         <Route path="/admin/settings" element={<AdminUsersPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="*" element={<AdminUsersPage />} />
