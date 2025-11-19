@@ -163,6 +163,17 @@ export default function AdminDashboardPage() {
   }, []);
 
   // -------------------- Render --------------------
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-bg text-main">
+        <Sidebar />
+        <div className="flex-1 p-10 flex items-center justify-center">
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-bg text-main">
       <Sidebar />
@@ -177,13 +188,13 @@ export default function AdminDashboardPage() {
 
         {/* Charts & Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>
-          <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>
-          <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>
+          {lineData && <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>}
+          {barData && <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>}
+          {doughnutData && <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>}
         </div>
 
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <ChartCard title="System Health Score"><Radar data={radarData} /></ChartCard>
+          {radarData && <ChartCard title="System Health Score"><Radar data={radarData} /></ChartCard>}
           <ActivityTimeline activities={activities} />
         </div> */}
       </div>
