@@ -14,11 +14,6 @@ function registerAdminRoutes($request, $method) {
         case $request === '/getAllAdmins' && $method === 'GET':
             AdminController::getAllAdmins();
             break;
-
-        // 📊 Get dashboard statistics
-        case $request === '/getDashboardStats' && $method === 'GET':
-            AdminController::getDashboardStats();
-            break;
         
 
         default:

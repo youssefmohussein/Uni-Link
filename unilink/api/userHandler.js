@@ -57,11 +57,7 @@ export const getAllMajors = async () => {
 };
 
 
-/**
- * Get dashboard statistics
- */
 export const getDashboardStats = async () => {
   const res = await apiRequest("index.php/getDashboardStats", "GET");
-  if (res.status !== "success") throw new Error(res.message || "Failed to fetch dashboard stats");
-  return res.data;
+  return res.data ?? [];
 };

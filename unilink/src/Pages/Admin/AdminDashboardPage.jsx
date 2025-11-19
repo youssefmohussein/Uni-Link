@@ -1,5 +1,5 @@
 // src/Pages/Admin/AdminDashboardPage.jsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import StatsCard from "../../Components/Admin_Components/StatsCard";
 import ChartCard from "../../Components/Admin_Components/ChartCard";
@@ -18,7 +18,6 @@ import {
   Tooltip,
   Legend
 } from "chart.js";
-import { getDashboardStats } from "../../../api/userHandler";
 
 ChartJS.register(
   ArcElement,
@@ -33,12 +32,41 @@ ChartJS.register(
 );
 
 export default function AdminDashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState([]);
-  const [lineData, setLineData] = useState(null);
-  const [barData, setBarData] = useState(null);
-  const [doughnutData, setDoughnutData] = useState(null);
-  const [radarData, setRadarData] = useState(null);
+
+  // -------------------- Static Data --------------------
+  const stats = [
+    {
+      label: "Students",
+      value: 1240,
+      icon: FiUsers,
+      color: "text-accent",
+      sparklineData: {
+        labels: ["Mon","Tue","Wed","Thu","Fri"],
+        datasets:[{ data:[200,250,180,300,400], borderColor:"#20B2AA", backgroundColor:"rgba(32,178,170,0.2)" }]
+      }
+    },
+    {
+      label: "Professors",
+      value: 85,
+      icon: FiUserCheck,
+      color: "text-accent",
+      sparklineData: {
+        labels: ["Mon","Tue","Wed","Thu","Fri"],
+        datasets:[{ data:[10,15,12,14,18], borderColor:"#ffb547", backgroundColor:"rgba(255,181,71,0.2)" }]
+      }
+    },
+    { label: "Admins", value: 12, icon: FiShield, color: "text-accent" },
+    {
+      label: "Total Users",
+      value: 1337,
+      icon: FiUser,
+      color: "text-accent",
+      sparklineData: {
+        labels:["Mon","Tue","Wed","Thu","Fri"],
+        datasets:[{ data:[220,280,190,320,418], borderColor:"#008080", backgroundColor:"rgba(0,128,128,0.2)" }]
+      }
+    }
+  ];
 
   const activities = [
     { time:"10:15 AM", description:"John Doe logged in." },
@@ -48,132 +76,21 @@ export default function AdminDashboardPage() {
     { time:"08:45 AM", description:"New professor registered." },
   ];
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const dashboardData = await getDashboardStats();
-        
-        const { counts, studentsPerFaculty, weeklyActiveUsers, userStatusDistribution, systemHealth } = dashboardData;
+  const lineData = {
+    labels:["Mon","Tue","Wed","Thu","Fri"],
+    datasets:[{ label:"Active Users", data:[320,410,380,460,520], borderColor:"#20B2AA", backgroundColor:"rgba(32,178,170,0.2)", tension:0.4 }]
+  };
 
-        // Set stats cards
-        setStats([
-          {
-            label: "Students",
-            value: counts.students,
-            icon: FiUsers,
-            color: "text-accent",
-            sparklineData: {
-              labels: weeklyActiveUsers.labels,
-              datasets:[{ 
-                data: weeklyActiveUsers.data.map((_, i) => Math.floor(counts.students * (0.6 + i * 0.05))), 
-                borderColor:"#20B2AA", 
-                backgroundColor:"rgba(32,178,170,0.2)" 
-              }]
-            }
-          },
-          {
-            label: "Professors",
-            value: counts.professors,
-            icon: FiUserCheck,
-            color: "text-accent",
-            sparklineData: {
-              labels: weeklyActiveUsers.labels,
-              datasets:[{ 
-                data: weeklyActiveUsers.data.map((_, i) => Math.floor(counts.professors * (0.7 + i * 0.03))), 
-                borderColor:"#ffb547", 
-                backgroundColor:"rgba(255,181,71,0.2)" 
-              }]
-            }
-          },
-          { 
-            label: "Admins", 
-            value: counts.admins, 
-            icon: FiShield, 
-            color: "text-accent" 
-          },
-          {
-            label: "Total Users",
-            value: counts.totalUsers,
-            icon: FiUser,
-            color: "text-accent",
-            sparklineData: {
-              labels: weeklyActiveUsers.labels,
-              datasets:[{ 
-                data: weeklyActiveUsers.data, 
-                borderColor:"#008080", 
-                backgroundColor:"rgba(0,128,128,0.2)" 
-              }]
-            }
-          }
-        ]);
+  const barData = {
+    labels:["Engineering","Business","CS"],
+    datasets:[{ label:"Students", data:[450,380,410], backgroundColor:["#008080","#20B2AA","#E0FFFF"] }]
+  };
 
-        // Set line chart data (Weekly Active Users)
-        setLineData({
-          labels: weeklyActiveUsers.labels,
-          datasets:[{ 
-            label:"Active Users", 
-            data: weeklyActiveUsers.data, 
-            borderColor:"#20B2AA", 
-            backgroundColor:"rgba(32,178,170,0.2)", 
-            tension:0.4 
-          }]
-        });
+  const doughnutData = { labels:["Active","Idle","Suspended"], datasets:[{ data:[72,20,8], backgroundColor:["#20B2AA","#ffb547","#555"] }] };
 
-        // Set bar chart data (Students per Faculty)
-        const facultyColors = ["#008080","#20B2AA","#E0FFFF","#48D1CC","#00CED1","#5F9EA0","#4682B4","#87CEEB"];
-        setBarData({
-          labels: studentsPerFaculty.labels.length > 0 ? studentsPerFaculty.labels : ["No Data"],
-          datasets:[{ 
-            label:"Students", 
-            data: studentsPerFaculty.data.length > 0 ? studentsPerFaculty.data : [0], 
-            backgroundColor: studentsPerFaculty.labels.map((_, i) => facultyColors[i % facultyColors.length])
-          }]
-        });
-
-        // Set doughnut chart data (User Status Distribution)
-        setDoughnutData({ 
-          labels: userStatusDistribution.labels, 
-          datasets:[{ 
-            data: userStatusDistribution.data, 
-            backgroundColor:["#20B2AA","#ffb547","#555"] 
-          }] 
-        });
-
-        // Set radar chart data (System Health)
-        setRadarData({ 
-          labels: systemHealth.labels, 
-          datasets:[{ 
-            label:"Health", 
-            data: systemHealth.data, 
-            backgroundColor:"rgba(32,178,170,0.3)", 
-            borderColor:"#20B2AA", 
-            borderWidth:2 
-          }] 
-        });
-
-      } catch (err) {
-        console.error("Failed to load dashboard data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  const radarData = { labels:["System","Users","Security","Performance","Stability"], datasets:[{ label:"Health", data:[90,75,88,92,86], backgroundColor:"rgba(32,178,170,0.3)", borderColor:"#20B2AA", borderWidth:2 }] };
 
   // -------------------- Render --------------------
-  if (loading) {
-    return (
-      <div className="flex min-h-screen bg-bg text-main">
-        <Sidebar />
-        <div className="flex-1 p-10 flex items-center justify-center">
-          <p className="text-gray-400">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen bg-bg text-main">
       <Sidebar />
@@ -188,13 +105,13 @@ export default function AdminDashboardPage() {
 
         {/* Charts & Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {lineData && <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>}
-          {barData && <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>}
-          {doughnutData && <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>}
+          <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>
+          <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>
+          <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>
         </div>
 
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          {radarData && <ChartCard title="System Health Score"><Radar data={radarData} /></ChartCard>}
+          <ChartCard title="System Health Score"><Radar data={radarData} /></ChartCard>
           <ActivityTimeline activities={activities} />
         </div> */}
       </div>
