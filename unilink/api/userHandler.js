@@ -55,3 +55,13 @@ export const getAllMajors = async () => {
   const res = await apiRequest("index.php/getAllMajors", "GET");
   return res.data ?? [];
 };
+
+
+/**
+ * Get dashboard statistics
+ */
+export const getDashboardStats = async () => {
+  const res = await apiRequest("index.php/getDashboardStats", "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch dashboard stats");
+  return res.data;
+};
