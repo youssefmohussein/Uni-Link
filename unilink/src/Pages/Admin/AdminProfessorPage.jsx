@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import ProfessorTable from "../../Components/Admin_Components/ProfessorTable";
 import ProfessorForm from "../../Components/Admin_Components/ProfessorForm";
@@ -50,6 +50,15 @@ export default function AdminProfessorPage() {
     getFacultiesAndMajors();
   }, []);
 
+  const rankOptions = useMemo(() => {
+    const unique = new Set(
+      (professors || [])
+        .map((p) => p.academic_rank)
+        .filter((rank) => typeof rank === "string" && rank.trim().length > 0)
+    );
+    return Array.from(unique).sort((a, b) => a.localeCompare(b));
+  }, [professors]);
+
   // Update Professor
   const handleUpdateProfessor = async (formData) => {
     try {
@@ -99,6 +108,7 @@ export default function AdminProfessorPage() {
             setQuery={setQuery}
             setEditingProfessor={setEditingProfessor}
             handleDeleteProfessor={handleDeleteProfessor}
+            onRefresh={getProfessorsFromService}
           />
         )}
 
@@ -110,6 +120,7 @@ export default function AdminProfessorPage() {
           initialData={editingProfessor}
           faculties={faculties}
           majors={majors}
+          rankOptions={rankOptions}
         />
       </motion.div>
     </div>

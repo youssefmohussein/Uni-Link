@@ -3,10 +3,16 @@
 // 🌐 UniLink API Router
 // ============================
 
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, X-USER-ID");
+header("Access-Control-Allow-Headers: Content-Type, X-USER-ID, Authorization, X-Requested-With");
 header("Content-Type: application/json");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';

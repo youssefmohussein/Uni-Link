@@ -1,41 +1,58 @@
 import { apiRequest } from "./apiClient";
 
+/* ============================================================
+   PROFESSOR HANDLER
+   Handles: users, professors, faculties, majors
+============================================================ */
+
 /**
- * Fetch all users with the role "professor"
+ * Fetch ALL users (just like getUsers, optional)
  */
-export const getProfessors = async () => {
+export const getUsers = async () => {
   const data = await apiRequest("index.php/getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
-
-  // Filter only users whose role is "professor"
-  return (data.data ?? []).filter(user => user.role?.toLowerCase() === "professor");
+  return data.data ?? [];
 };
 
 /**
- * Add a new professor
- * @param {Object} professorData
+ * Fetch ONLY professors
+ * Uses the ProfessorController's getAllProfessors endpoint
+ * Returns professor + user + faculty + major info
+ */
+export const getProfessors = async () => {
+  const data = await apiRequest("index.php/getAllProfessors", "GET");
+  if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
+  return data.data ?? [];
+};
+
+/* ============================================================
+   PROFESSOR MANAGEMENT (Add / Update / Delete)
+   Note: Users table is managed separately; this only adds the Professor record
+============================================================ */
+
+/**
+ * Add a new professor record
+ * @param {Object} professorData - must include professor_id, academic_rank, office_location
  */
 export const addProfessor = async (professorData) => {
-  // Ensure role is always professor
-  const payload = { ...professorData, role: "professor" };
-  const res = await apiRequest("index.php/addUser", "POST", payload);
+  const res = await apiRequest("index.php/addProfessor", "POST", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add professor");
-  return res.user_id;
+  return true;
 };
 
 /**
- * Update an existing professor
- * @param {Object} professorData — must include user_id
+ * Update existing professor record
+ * @param {Object} professorData - must include professor_id, optional academic_rank/office_location
  */
 export const updateProfessor = async (professorData) => {
-  if (!professorData.user_id) throw new Error("Missing user_id for update");
-  const res = await apiRequest("index.php/updateUser", "POST", professorData);
+  if (!professorData.professor_id) throw new Error("Missing professor_id for update");
+  const res = await apiRequest("index.php/updateProfessor", "POST", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to update professor");
   return true;
 };
 
 /**
- * Delete a professor by user_id
+ * Delete a professor (actually deletes user, Professor record cascades)
  * @param {number} user_id
  */
 export const deleteProfessor = async (user_id) => {
@@ -44,16 +61,24 @@ export const deleteProfessor = async (user_id) => {
   return true;
 };
 
+/* ============================================================
+   FACULTY / MAJOR
+============================================================ */
 
+/**
+ * Get all faculties
+ */
 export const getAllFaculties = async () => {
-  const res = await apiRequest("index.php/getAllFaculties", "GET");
-  if (res.status !== "success") throw new Error(res.message || "Failed to fetch faculties");
-  return res.data ?? [];
+  const res = await apiRequest("index.php/getAllFaculties", "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch faculties");
+  return res.data ?? [];
 };
 
-
+/**
+ * Get all majors
+ */
 export const getAllMajors = async () => {
-  const res = await apiRequest("index.php/getAllMajors", "GET");
-  if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
-  return res.data ?? [];
+  const res = await apiRequest("index.php/getAllMajors", "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
+  return res.data ?? [];
 };
