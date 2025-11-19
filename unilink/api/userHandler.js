@@ -57,7 +57,4 @@ export const getAllMajors = async () => {
 };
 
 
-export const getDashboardStats = async () => {
-  const res = await apiRequest("index.php/getDashboardStats", "GET");
-  return res.data ?? [];
-};
+
