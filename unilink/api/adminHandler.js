@@ -1,45 +1,62 @@
 import { apiRequest } from "./apiClient";
 
+/* ============================================================
+   PROFESSOR HANDLER
+   Handles: users, professors, faculties, majors
+============================================================ */
+
 /**
- * Fetch all users with the role "admin"
+ * Fetch ALL users (just like getUsers, optional)
  */
-export const getAdmins = async () => {
+export const getUsers = async () => {
   const data = await apiRequest("index.php/getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
-  
-  // Filter users to only include admins
-  return (data.data ?? []).filter(user => user.role?.toLowerCase() === "admin");
+  return data.data ?? [];
 };
 
 /**
- * Add a new admin
- * @param {Object} adminData
+ * Fetch ONLY professors
+ * Uses the ProfessorController's getAllProfessors endpoint
+ * Returns professor + user + faculty + major info
  */
-export const addAdmin = async (adminData) => {
-  // Ensure role is always admin
-  const payload = { ...adminData, role: "admin" };
-  const res = await apiRequest("index.php/addUser", "POST", payload);
-  if (res.status !== "success") throw new Error(res.message || "Failed to add admin");
-  return res.user_id;
+export const getProfessors = async () => {
+  const data = await apiRequest("index.php/getAllProfessors", "GET");
+  if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
+  return data.data ?? [];
 };
 
+/* ============================================================
+   PROFESSOR MANAGEMENT (Add / Update / Delete)
+   Note: Users table is managed separately; this only adds the Professor record
+============================================================ */
+
 /**
- * Update an existing admin
- * @param {Object} adminData — must include user_id
+ * Add a new professor record
+ * @param {Object} professorData - must include professor_id, academic_rank, office_location
  */
-export const updateAdmin = async (adminData) => {
-  if (!adminData.user_id) throw new Error("Missing user_id for update");
-  const res = await apiRequest("index.php/updateUser", "POST", adminData);
-  if (res.status !== "success") throw new Error(res.message || "Failed to update admin");
+export const addProfessor = async (professorData) => {
+  const res = await apiRequest("index.php/addProfessor", "POST", professorData);
+  if (res.status !== "success") throw new Error(res.message || "Failed to add professor");
   return true;
 };
 
 /**
- * Delete an admin by user_id
+ * Update existing professor record
+ * @param {Object} professorData - must include professor_id, optional academic_rank/office_location
+ */
+export const updateProfessor = async (professorData) => {
+  if (!professorData.professor_id) throw new Error("Missing professor_id for update");
+  const res = await apiRequest("index.php/updateProfessor", "POST", professorData);
+  if (res.status !== "success") throw new Error(res.message || "Failed to update professor");
+  return true;
+};
+
+/**
+ * Delete a professor (actually deletes user, Professor record cascades)
  * @param {number} user_id
  */
-export const deleteAdmin = async (user_id) => {
+export const deleteProfessor = async (user_id) => {
   const res = await apiRequest("index.php/deleteUser", "POST", { user_id });
-  if (res.status !== "success") throw new Error(res.message || "Failed to delete admin");
+  if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };

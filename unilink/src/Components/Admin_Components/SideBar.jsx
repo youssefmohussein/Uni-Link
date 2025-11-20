@@ -13,8 +13,8 @@ export default function Sidebar() {
     { label: "Students", icon: <FiBookOpen />, path: "/admin/students" },
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },
     { label: "Admin", icon: <FiUsers />, path: "/admin/manage-tas" },
-    { label: "University", icon: <FiGlobe />, path: "/admin/university" },  
-    { label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
+    { label: "University", icon: <FiGlobe />, path: "/admin/university" }
+    // ,{ label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];
 
   // Sidebar expand/collapse animation
