@@ -12,7 +12,7 @@ export default function Sidebar() {
     { label: "Users", icon: <FiUsers />, path: "/admin/users" },
     { label: "Students", icon: <FiBookOpen />, path: "/admin/students" },
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },
-    { label: "Admin", icon: <FiUsers />, path: "/admin/manage-tas" },
+    { label: "Admin", icon: <FiUsers />, path: "/admin/admin" },
     { label: "University", icon: <FiGlobe />, path: "/admin/university" }
     // ,{ label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];

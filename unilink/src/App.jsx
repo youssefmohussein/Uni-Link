@@ -5,18 +5,19 @@ import AdminStudentsPage from "./Pages/Admin/AdminStudentsPage";
 import AdminProfessorPage from "./Pages/Admin/AdminProfessorPage";
 import AdminAdminPage from "./Pages/Admin/AdminAdminPage";
 import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
+import AdminUniversityPage from "./Pages/Admin/AdminUniversityPage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/admin/students" element={<AdminStudentsPage />} />
         <Route path="/admin/manage-professors" element={<AdminProfessorPage />} />
-        <Route path="/admin/university" element={<AdminAdminPage />} />
-        <Route path="/admin/settings" element={<AdminUsersPage />} />
-        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin/admin" element={<AdminAdminPage />} /> 
+        <Route path="/admin/university" element={<AdminUniversityPage />} />
         <Route path="*" element={<AdminUsersPage />} />
       </Routes>
     </Router>

@@ -1,62 +1,26 @@
+import { API_BASE_URL } from "../config/api";
 import { apiRequest } from "./apiClient";
 
-/* ============================================================
-   PROFESSOR HANDLER
-   Handles: users, professors, faculties, majors
-============================================================ */
 
-/**
- * Fetch ALL users (just like getUsers, optional)
- */
 export const getUsers = async () => {
   const data = await apiRequest("index.php/getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
   return data.data ?? [];
 };
 
-/**
- * Fetch ONLY professors
- * Uses the ProfessorController's getAllProfessors endpoint
- * Returns professor + user + faculty + major info
- */
-export const getProfessors = async () => {
-  const data = await apiRequest("index.php/getAllProfessors", "GET");
-  if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
+
+export const getAdmins = async () => {
+  const data = await apiRequest("index.php/getAllAdmins", "GET");
+  if (data.status !== "success") throw new Error(data.message || "Failed to get admins");
   return data.data ?? [];
 };
 
-/* ============================================================
-   PROFESSOR MANAGEMENT (Add / Update / Delete)
-   Note: Users table is managed separately; this only adds the Professor record
-============================================================ */
 
-/**
- * Add a new professor record
- * @param {Object} professorData - must include professor_id, academic_rank, office_location
- */
-export const addProfessor = async (professorData) => {
-  const res = await apiRequest("index.php/addProfessor", "POST", professorData);
-  if (res.status !== "success") throw new Error(res.message || "Failed to add professor");
-  return true;
-};
+export const updateAdmin = async (adminData) => {
+  if (!adminData.admin_id) throw new Error("Missing admin_id for admin update");
 
-/**
- * Update existing professor record
- * @param {Object} professorData - must include professor_id, optional academic_rank/office_location
- */
-export const updateProfessor = async (professorData) => {
-  if (!professorData.professor_id) throw new Error("Missing professor_id for update");
-  const res = await apiRequest("index.php/updateProfessor", "POST", professorData);
-  if (res.status !== "success") throw new Error(res.message || "Failed to update professor");
-  return true;
-};
+  const data = await apiRequest("index.php/updateAdmin", "POST", adminData);
+  if (data.status !== "success") throw new Error(data.message || "Failed to update admin");
 
-/**
- * Delete a professor (actually deletes user, Professor record cascades)
- * @param {number} user_id
- */
-export const deleteProfessor = async (user_id) => {
-  const res = await apiRequest("index.php/deleteUser", "POST", { user_id });
-  if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };

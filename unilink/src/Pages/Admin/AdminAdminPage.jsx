@@ -1,190 +1,76 @@
 import React, { useState, useEffect } from "react";
-import { FiArrowLeft } from "react-icons/fi";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
-import FacultyFormModal from "../../Components/Admin_Components/FacultyFormModal";
-import MajorFormModal from "../../Components/Admin_Components/MajorFormModal";
-import FacultiesTable from "../../Components/Admin_Components/FacultyForm";
-import MajorsTable from "../../Components/Admin_Components/MajorForm";
-import * as handler from "../../../api/facultyandmajorHandler";
+import AdminTable from "../../Components/Admin_Components/AdminTable";
+import { motion } from "framer-motion";
+import * as adminHandler from "../../../api/adminHandler";
 
 export default function AdminAdminPage() {
-  const [faculties, setFaculties] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isFacultyFormOpen, setIsFacultyFormOpen] = useState(false);
-  const [editFacultyData, setEditFacultyData] = useState(null);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useState("");
 
-  const [isMajorView, setIsMajorView] = useState(false);
-  const [selectedFaculty, setSelectedFaculty] = useState(null);
-  const [majors, setMajors] = useState([]);
-  const [isMajorFormOpen, setIsMajorFormOpen] = useState(false);
-  const [editMajorData, setEditMajorData] = useState(null);
-
-  const fetchFaculties = async () => {
-    setLoading(true);
+  const fetchAdmins = async () => {
     try {
-      const data = await handler.getAllFaculties();
-      setFaculties(data);
+      setLoading(true);
+      const data = await adminHandler.getAdmins();
+      setAdmins(data);
+      setError(null);
     } catch (err) {
+      setError("Failed to fetch admins");
       console.error(err);
-      alert("Failed to load faculties");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchFaculties();
+    fetchAdmins();
   }, []);
 
-  const handleOpenAddFaculty = () => {
-    setEditFacultyData(null);
-    setIsFacultyFormOpen(true);
-  };
-
-  const handleOpenEditFaculty = (f) => {
-    setEditFacultyData(f);
-    setIsFacultyFormOpen(true);
-  };
-
-  const handleCloseFacultyForm = () => {
-    setIsFacultyFormOpen(false);
-    setEditFacultyData(null);
-  };
-
-  const handleSubmitFaculty = async (payload) => {
+  const handleUpdateStatus = async (adminData) => {
     try {
-      if (payload.faculty_id) await handler.updateFaculty(payload);
-      else await handler.addFaculty(payload);
-      setIsFacultyFormOpen(false);
-      setEditFacultyData(null);
-      fetchFaculties();
+      await adminHandler.updateAdmin(adminData);
+      await fetchAdmins();
     } catch (err) {
       alert(err.message);
     }
   };
 
-  const handleDeleteFaculty = async (id) => {
-    if (!window.confirm("Delete this faculty?")) return;
-    try {
-      await handler.deleteFaculty(id);
-      fetchFaculties();
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  const loadMajors = async (faculty_id) => {
-    try {
-      const data = await handler.getAllMajors();
-      setMajors(data.filter((m) => m.faculty_id === faculty_id));
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load majors");
-    }
-  };
-
-  const handleViewMajors = async (faculty) => {
-    setSelectedFaculty(faculty);
-    await loadMajors(faculty.faculty_id);
-    setIsMajorView(true);
-  };
-
-  const handleBackToFaculties = () => {
-    setIsMajorView(false);
-    setSelectedFaculty(null);
-    setMajors([]);
-  };
-
-  const handleAddMajor = () => {
-    setEditMajorData(null);
-    setIsMajorFormOpen(true);
-  };
-
-  const handleEditMajor = (major) => {
-    setEditMajorData(major);
-    setIsMajorFormOpen(true);
-  };
-
-  const handleCloseMajorForm = () => {
-    setIsMajorFormOpen(false);
-    setEditMajorData(null);
-  };
-
-  const handleSubmitMajor = async (payload) => {
-    try {
-      if (payload.major_id) await handler.updateMajor(payload);
-      else await handler.addMajor(payload);
-      setIsMajorFormOpen(false);
-      setEditMajorData(null);
-      await loadMajors(selectedFaculty.faculty_id);
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  const handleDeleteMajor = async (id) => {
-    if (!window.confirm("Delete this major?")) return;
-    try {
-      await handler.deleteMajor(id);
-      await loadMajors(selectedFaculty.faculty_id);
-    } catch (err) {
-      alert(err.message);
-    }
+  const handleEditAdmin = (admin) => {
+    // TODO: Implement edit admin functionality
+    alert(`Edit admin: ${admin.email}`);
   };
 
   return (
-    <div className="flex bg-bg min-h-screen text-main font-main">
+    <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
-      <div className="flex-1 p-6">
-        {!isMajorView ? (
-          <>
-            <FacultiesTable
-              faculties={faculties}
-              onAddFaculty={handleOpenAddFaculty}
-              onEditFaculty={handleOpenEditFaculty}
-              onDeleteFaculty={handleDeleteFaculty}
-              onViewMajors={handleViewMajors}
-              onRefresh={fetchFaculties}
-            />
-          </>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex-1 p-8"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Manage Admins</h1>
+        </div>
+
+        {loading ? (
+          <p className="text-gray-400">Loading admins...</p>
+        ) : error ? (
+          <p className="text-red-400">{error}</p>
         ) : (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <button
-                onClick={handleBackToFaculties}
-                className="p-2 rounded-full cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor] hover:bg-white/10 flex items-center justify-center gap-2"
-                title="Back to Faculties"
-              >
-                <FiArrowLeft size={18} />
-              </button>
-            </div>
-            <MajorsTable
-              majors={majors}
-              facultyName={selectedFaculty?.faculty_name}
-              onAddMajor={handleAddMajor}
-              onEditMajor={handleEditMajor}
-              onDeleteMajor={handleDeleteMajor}
-            />
-          </>
+          <AdminTable
+            admins={admins}
+            query={query}
+            setQuery={setQuery}
+            onRefresh={fetchAdmins}
+            onEditAdmin={handleEditAdmin}
+            onUpdateStatus={handleUpdateStatus}
+          />
         )}
-      </div>
-
-      {/* Faculty Form Modal */}
-      <FacultyFormModal
-        isOpen={isFacultyFormOpen}
-        onClose={handleCloseFacultyForm}
-        onSubmit={handleSubmitFaculty}
-        initialData={editFacultyData}
-      />
-
-      {/* Major Form Modal */}
-      <MajorFormModal
-        isOpen={isMajorFormOpen}
-        onClose={handleCloseMajorForm}
-        onSubmit={handleSubmitMajor}
-        initialData={editMajorData}
-        faculties={faculties}
-        selectedFaculty={selectedFaculty}
-      />
+      </motion.div>
     </div>
   );
 }
