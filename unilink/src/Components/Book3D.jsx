@@ -243,7 +243,7 @@ const Book3D = () => {
                         castShadow
                         letterSpacing={0.05}
                     >
-                        UNILINK
+                        UNI-LINK
                     </Text>
 
                     {/* Decorative borders */}
