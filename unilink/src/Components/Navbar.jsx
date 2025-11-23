@@ -10,7 +10,7 @@ const Navbar = () => {
             </div>
 
             {/* Center: Navigation Links */}
-            <div className="hidden md:flex items-center space-x-8 ml-20">
+            <div className="hidden md:flex items-center space-x-12 ml-40">
                 <a href="/" className="text-white/80 hover:text-white font-medium text-lg transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
                     Home
                 </a>
