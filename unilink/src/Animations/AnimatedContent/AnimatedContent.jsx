@@ -81,7 +81,7 @@ const AnimatedContent = ({
       ease
     });
 
-    // ScrollTrigger will trigger the animation when the element enters the viewport.
+    // ScrollTrigger will trigger the animation when the element enters the viewport hi
     const st = ScrollTrigger.create({
       trigger: el,
       scroller: scrollerTarget,
