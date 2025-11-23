@@ -157,7 +157,7 @@ export default function LoginRenderer() {
                     brightness={1.8}
                     intensity={2.0}
                     rayThickness={1.4}
-                    followMouse={false}
+                    followMouse={true}
                     noiseAmount={0.22}
                     distortion={0.12}
                     className="opacity-90 blur-xl scale-y-[-1]"
