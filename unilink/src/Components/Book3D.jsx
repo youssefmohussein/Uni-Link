@@ -67,7 +67,7 @@ const Book3D = () => {
         }
     });
 
-    // Better quality materials
+    // Materials
     const leatherMaterial = new THREE.MeshStandardMaterial({
         color: "#1a1a2e",
         roughness: 0.7,
@@ -75,15 +75,51 @@ const Book3D = () => {
         envMapIntensity: 0.5,
     });
 
-    // Better paper material with slight transparency
-    const paperMaterial = new THREE.MeshPhysicalMaterial({
-        color: '#fdfbf7',
-        roughness: 0.9,
-        metalness: 0,
-        clearcoat: 0.1,
-        clearcoatRoughness: 0.5,
-        side: THREE.DoubleSide,
-    });
+    // Enhanced paper material with micro-fiber texture and translucency
+    const paperMaterial = useMemo(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        // Base paper color
+        ctx.fillStyle = '#fdfbf7';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Add micro-fiber texture
+        const imageData = ctx.getImageData(0, 0, 512, 512);
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const fiber = (Math.random() - 0.5) * 8;
+            imageData.data[i] += fiber;
+            imageData.data[i + 1] += fiber;
+            imageData.data[i + 2] += fiber - 2;
+        }
+        ctx.putImageData(imageData, 0, 0);
+
+        // Add subtle imperfections and frays
+        ctx.fillStyle = 'rgba(200, 190, 180, 0.05)';
+        for (let i = 0; i < 20; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 512;
+            const size = Math.random() * 3 + 1;
+            ctx.fillRect(x, y, size, size);
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+        return new THREE.MeshPhysicalMaterial({
+            map: texture,
+            color: '#fdfbf7',
+            roughness: 0.95,
+            metalness: 0,
+            clearcoat: 0.08,
+            clearcoatRoughness: 0.7,
+            transmission: 0.02,
+            thickness: 0.4,
+            side: THREE.DoubleSide,
+        });
+    }, []);
 
     const goldFoilMaterial = new THREE.MeshStandardMaterial({
         color: "#d4af37",
@@ -93,13 +129,24 @@ const Book3D = () => {
         emissiveIntensity: 0.2,
     });
 
-    // Moderate page count - balance between quality and performance
-    const FannedPages = ({ count = 15, isLeft = true }) => {
+    // Inner cover material (Endpapers)
+    const innerCoverMaterial = useMemo(() => {
+        return new THREE.MeshStandardMaterial({
+            color: "#2c2c3a",
+            roughness: 0.9,
+            metalness: 0.0,
+            side: THREE.DoubleSide,
+        });
+    }, []);
+
+    // High-density page count for realistic stack look
+    const FannedPages = ({ count = 40, isLeft = true }) => {
         const pages = useMemo(() => {
             return Array.from({ length: count }).map((_, i) => ({
-                yOffset: (Math.random() - 0.5) * 0.01,
-                zOffset: (isLeft ? -0.15 : -0.1) + (i * 0.008),
-                widthVar: (Math.random() - 0.5) * 0.02,
+                yOffset: (Math.random() - 0.5) * 0.005,
+                zOffset: (isLeft ? -0.12 : -0.08) + (i * 0.0035),
+                widthVar: (Math.random() - 0.5) * 0.015,
+                rotY: (Math.random() - 0.5) * 0.002,
             }));
         }, [count, isLeft]);
 
@@ -111,10 +158,11 @@ const Book3D = () => {
                     <mesh
                         key={i}
                         position={[xOffset, data.yOffset, data.zOffset]}
+                        rotation={[0, data.rotY, 0]}
                         castShadow
                         receiveShadow
                     >
-                        <boxGeometry args={[2.9 + data.widthVar, 3.9, 0.01]} />
+                        <boxGeometry args={[2.9 + data.widthVar, 3.9, 0.004]} />
                         <primitive object={paperMaterial} />
                     </mesh>
                 ))}
@@ -135,43 +183,52 @@ const Book3D = () => {
                 <meshBasicMaterial color="#000000" opacity={0.6} transparent />
             </mesh>
 
-            {/* Back Cover with rounded edges */}
-            <RoundedBox
-                args={[3, 4, 0.18]}
-                radius={0.04}
-                smoothness={2}
-                position={[0, 0, -0.25]}
-                material={leatherMaterial}
-                castShadow
-                receiveShadow
-            />
+            {/* Back Cover */}
+            <group position={[0, 0, -0.25]}>
+                <RoundedBox
+                    args={[3, 4, 0.18]}
+                    radius={0.04}
+                    smoothness={2}
+                    material={leatherMaterial}
+                    castShadow
+                    receiveShadow
+                />
+                {/* Inner Cover */}
+                <mesh position={[0, 0, 0.091]} material={innerCoverMaterial}>
+                    <planeGeometry args={[2.9, 3.9]} />
+                </mesh>
+            </group>
 
             {/* Right Pages */}
             <group ref={rightPagesRef} position={[0, 0, 0]}>
-                <FannedPages count={15} isLeft={false} />
+                <FannedPages count={35} isLeft={false} />
             </group>
 
-            {/* Planets */}
+            {/* Planets/Plants */}
             <group position={[0, 0, 1]} rotation={[Math.PI / 3, 0, 0]}>
                 <Planets isOpen={isOpen} />
             </group>
 
             {/* Front Cover Group */}
             <group position={[-1.5, 0, 0.25]} ref={frontCoverRef}>
-                {/* Front Cover with rounded edges */}
-                <RoundedBox
-                    args={[3, 4, 0.18]}
-                    radius={0.04}
-                    smoothness={2}
-                    position={[1.5, 0, 0]}
-                    material={leatherMaterial}
-                    castShadow
-                    receiveShadow
-                />
+                <group position={[1.5, 0, 0]}>
+                    <RoundedBox
+                        args={[3, 4, 0.18]}
+                        radius={0.04}
+                        smoothness={2}
+                        material={leatherMaterial}
+                        castShadow
+                        receiveShadow
+                    />
+                    {/* Inner Cover */}
+                    <mesh position={[0, 0, -0.091]} rotation={[0, Math.PI, 0]} material={innerCoverMaterial}>
+                        <planeGeometry args={[2.9, 3.9]} />
+                    </mesh>
+                </group>
 
                 {/* Left Pages */}
                 <group ref={leftPagesRef} position={[0, 0, 0]}>
-                    <FannedPages count={15} isLeft={true} />
+                    <FannedPages count={35} isLeft={true} />
                 </group>
 
                 {/* Title and decorations */}
