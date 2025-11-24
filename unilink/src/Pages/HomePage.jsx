@@ -1,21 +1,46 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Scene3D from '../Components/Scene3D';
 import GlassCard from '../Components/GlassCard';
 import Navbar from '../Components/Navbar';
 import { FaBookOpen, FaLayerGroup, FaMagic } from 'react-icons/fa';
 
+// Lazy load only Galaxy (non-critical)
+const Galaxy = lazy(() => import('../Animations/Galaxy/Galaxy'));
+
 const HomePage = () => {
     return (
         <div className="relative w-full min-h-screen bg-black text-white overflow-x-hidden">
+            {/* Galaxy Background - Lazy loaded */}
+            <Suspense fallback={<div className="fixed inset-0 bg-black" />}>
+                <div className="fixed inset-0 w-full h-full z-0">
+                    <Galaxy
+                        transparent={true}
+                        hueShift={180}
+                        density={0.3}
+                        glowIntensity={0.2}
+                        saturation={0.4}
+                        speed={0.3}
+                        mouseRepulsion={false}
+                        repulsionStrength={2}
+                        twinkleIntensity={0.3}
+                        disableAnimation={false}
+                    />
+                </div>
+            </Suspense>
+
             {/* Navbar - Fixed Top */}
             <Navbar />
 
+            {/* 3D Scene - Not lazy loaded for better LCP */}
             <Scene3D>
                 <main className="w-full relative z-10">
                     {/* Section 1: Hero */}
                     <section className="h-screen flex flex-col justify-center items-start px-10 md:px-20 max-w-7xl mx-auto pt-20">
                         <div className="max-w-2xl">
-                            <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50">
+                            <h1
+                                className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50"
+                                style={{ transform: 'translateZ(0)' }}
+                            >
                                 Uni-Link
                             </h1>
                             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">

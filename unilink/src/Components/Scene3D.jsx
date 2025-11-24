@@ -5,28 +5,30 @@ import Book3D from './Book3D';
 
 const Scene3D = ({ children }) => {
     return (
-        <div className="fixed inset-0 z-0">
+        <div className="fixed inset-0 z-10">
             <Canvas
                 shadows
                 dpr={[1, 1.5]}
                 camera={{ position: [0, 0, 8], fov: 45 }}
                 gl={{
                     antialias: false,
-                    powerPreference: "high-performance"
+                    powerPreference: "high-performance",
+                    alpha: true
                 }}
+                performance={{ min: 0.5 }}
             >
                 <Suspense fallback={null}>
-                    <color attach="background" args={['#050505']} />
+                    {/* Removed black background to show Galaxy behind */}
 
-                    {/* Improved lighting */}
+                    {/* Improved lighting - Reduced intensity for performance */}
                     <spotLight
                         position={[-6, 6, 6]}
                         angle={0.5}
                         penumbra={0.8}
-                        intensity={2.5}
+                        intensity={2.0}
                         color="#fff8e1"
                         castShadow
-                        shadow-mapSize={[512, 512]}
+                        shadow-mapSize={[256, 256]}
                     />
 
                     <directionalLight
