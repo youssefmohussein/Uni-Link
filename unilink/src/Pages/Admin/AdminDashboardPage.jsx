@@ -1,11 +1,10 @@
 // src/Pages/Admin/AdminDashboardPage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import StatsCard from "../../Components/Admin_Components/StatsCard";
 import ChartCard from "../../Components/Admin_Components/ChartCard";
-// import ActivityTimeline from "../../Components/Admin_Components/ActivityTimeline";
 import { FiUsers, FiUserCheck, FiShield, FiUser } from "react-icons/fi";
-import { Line, Bar, Doughnut, Radar } from "react-chartjs-2";
+import { Line, Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -32,63 +31,168 @@ ChartJS.register(
 );
 
 export default function AdminDashboardPage() {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // -------------------- Static Data --------------------
-  const stats = [
+  // Fetch dashboard data from backend
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/getDashboardStats', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          setDashboardData(result.data);
+          setError(null);
+        } else {
+          throw new Error(result.message || 'Failed to fetch dashboard data');
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+
+    // Refresh data every 30 seconds
+    const interval = setInterval(fetchDashboardStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Loading state
+  if (loading && !dashboardData) {
+    return (
+      <div className="flex min-h-screen bg-bg text-main">
+        <Sidebar />
+        <div className="flex-1 p-10 flex items-center justify-center">
+          <div className="text-2xl text-accent">Loading dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && !dashboardData) {
+    return (
+      <div className="flex min-h-screen bg-bg text-main">
+        <Sidebar />
+        <div className="flex-1 p-10 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-2xl text-red-500 mb-4">Error loading dashboard</div>
+            <div className="text-gray-400">{error}</div>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-6 py-2 bg-accent text-bg rounded-lg hover:opacity-80"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Prepare stats cards data
+  const stats = dashboardData ? [
     {
       label: "Students",
-      value: 1240,
+      value: dashboardData.stats.students,
       icon: FiUsers,
       color: "text-accent",
+      path: "/admin/students",
       sparklineData: {
-        labels: ["Mon","Tue","Wed","Thu","Fri"],
-        datasets:[{ data:[200,250,180,300,400], borderColor:"#20B2AA", backgroundColor:"rgba(32,178,170,0.2)" }]
+        labels: dashboardData.weeklyActivity.map(d => d.day),
+        datasets: [{
+          data: dashboardData.weeklyActivity.map(d => Math.floor(d.count * 0.85)),
+          borderColor: "#20B2AA",
+          backgroundColor: "rgba(32,178,170,0.2)"
+        }]
       }
     },
     {
       label: "Professors",
-      value: 85,
+      value: dashboardData.stats.professors,
       icon: FiUserCheck,
       color: "text-accent",
       sparklineData: {
-        labels: ["Mon","Tue","Wed","Thu","Fri"],
-        datasets:[{ data:[10,15,12,14,18], borderColor:"#ffb547", backgroundColor:"rgba(255,181,71,0.2)" }]
+        labels: dashboardData.weeklyActivity.map(d => d.day),
+        datasets: [{
+          data: dashboardData.weeklyActivity.map(d => Math.floor(d.count * 0.1)),
+          borderColor: "#ffb547",
+          backgroundColor: "rgba(255,181,71,0.2)"
+        }]
       }
     },
-    { label: "Admins", value: 12, icon: FiShield, color: "text-accent" },
+    {
+      label: "Admins",
+      value: dashboardData.stats.admins,
+      icon: FiShield,
+      color: "text-accent"
+    },
     {
       label: "Total Users",
-      value: 1337,
+      value: dashboardData.stats.totalUsers,
       icon: FiUser,
       color: "text-accent",
       sparklineData: {
-        labels:["Mon","Tue","Wed","Thu","Fri"],
-        datasets:[{ data:[220,280,190,320,418], borderColor:"#008080", backgroundColor:"rgba(0,128,128,0.2)" }]
+        labels: dashboardData.weeklyActivity.map(d => d.day),
+        datasets: [{
+          data: dashboardData.weeklyActivity.map(d => d.count),
+          borderColor: "#008080",
+          backgroundColor: "rgba(0,128,128,0.2)"
+        }]
       }
     }
-  ];
+  ] : [];
 
-  const activities = [
-    { time:"10:15 AM", description:"John Doe logged in." },
-    { time:"09:55 AM", description:"Jane Smith added a new student." },
-    { time:"09:30 AM", description:"System backup completed." },
-    { time:"09:00 AM", description:"Prof. Alan updated course CS101." },
-    { time:"08:45 AM", description:"New professor registered." },
-  ];
+  // Prepare chart data
+  const lineData = dashboardData ? {
+    labels: dashboardData.weeklyActivity.map(d => d.day),
+    datasets: [{
+      label: "Active Users",
+      data: dashboardData.weeklyActivity.map(d => d.count),
+      borderColor: "#20B2AA",
+      backgroundColor: "rgba(32,178,170,0.2)",
+      tension: 0.4
+    }]
+  } : { labels: [], datasets: [] };
 
-  const lineData = {
-    labels:["Mon","Tue","Wed","Thu","Fri"],
-    datasets:[{ label:"Active Users", data:[320,410,380,460,520], borderColor:"#20B2AA", backgroundColor:"rgba(32,178,170,0.2)", tension:0.4 }]
-  };
+  const barData = dashboardData ? {
+    labels: dashboardData.facultyDistribution.map(f => f.faculty_name),
+    datasets: [{
+      label: "Students",
+      data: dashboardData.facultyDistribution.map(f => f.student_count),
+      backgroundColor: ["#008080", "#20B2AA", "#E0FFFF", "#66B2B2", "#4D9999"]
+    }]
+  } : { labels: [], datasets: [] };
 
-  const barData = {
-    labels:["Engineering","Business","CS"],
-    datasets:[{ label:"Students", data:[450,380,410], backgroundColor:["#008080","#20B2AA","#E0FFFF"] }]
-  };
-
-  const doughnutData = { labels:["Active","Idle","Suspended"], datasets:[{ data:[72,20,8], backgroundColor:["#20B2AA","#ffb547","#555"] }] };
-
-  const radarData = { labels:["System","Users","Security","Performance","Stability"], datasets:[{ label:"Health", data:[90,75,88,92,86], backgroundColor:"rgba(32,178,170,0.3)", borderColor:"#20B2AA", borderWidth:2 }] };
+  const doughnutData = dashboardData ? {
+    labels: ["Active", "Idle", "Suspended"],
+    datasets: [{
+      data: [
+        dashboardData.userStatus.active,
+        dashboardData.userStatus.idle,
+        dashboardData.userStatus.suspended
+      ],
+      backgroundColor: ["#20B2AA", "#ffb547", "#555"]
+    }]
+  } : { labels: [], datasets: [] };
 
   // -------------------- Render --------------------
   return (
@@ -96,24 +200,22 @@ export default function AdminDashboardPage() {
       <Sidebar />
 
       <div className="flex-1 p-10">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+          {loading && <div className="text-sm text-accent animate-pulse">Updating...</div>}
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-          {stats.map((s,i)=><StatsCard key={i} {...s} />)}
+          {stats.map((s, i) => <StatsCard key={i} {...s} />)}
         </div>
 
-        {/* Charts & Activity */}
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>
           <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>
           <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>
         </div>
-
-        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <ChartCard title="System Health Score"><Radar data={radarData} /></ChartCard>
-          <ActivityTimeline activities={activities} />
-        </div> */}
       </div>
     </div>
   );
