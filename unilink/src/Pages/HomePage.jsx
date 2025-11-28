@@ -44,10 +44,9 @@ const HomePage = () => {
                                 Uni-Link
                             </h1>
                             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-                                Experience the future of knowledge management.
+                                Your College Journey, Simplified.
                                 <br></br>
-                                <span className="text-[#008080]"> Liquid Glass aesthetics meet
-                                    immersive 3D interactions.</span>
+                                <span className="text-[#008080]"> The all-in-one platform where students connect, collaborate, and conquer projects.</span>
                             </p>
                             <GlassCard className="inline-block px-8 py-4 cursor-pointer">
                                 <span className="text-lg font-semibold tracking-wide">Get Started</span>

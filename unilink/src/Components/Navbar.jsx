@@ -25,10 +25,7 @@ const Navbar = () => {
             {/* Right: Auth Buttons */}
             <div className="flex items-center space-x-4">
                 <button className="px-6 py-2 rounded-full text-white font-semibold border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
-                    Log in
-                </button>
-                <button className="px-6 py-2 rounded-full text-white font-semibold bg-gradient-to-r from-cyan-500/80 to-blue-600/80 hover:from-cyan-400 hover:to-blue-500 border border-white/20 shadow-[0_0_15px_rgba(0,200,255,0.3)] hover:shadow-[0_0_25px_rgba(0,200,255,0.5)] transition-all duration-300 backdrop-blur-sm">
-                    Sign up
+                    <a href="/login">Log in</a>
                 </button>
             </div>
         </nav>
