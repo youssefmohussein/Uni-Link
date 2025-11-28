@@ -9,6 +9,7 @@ import AdminUniversityPage from "./Pages/Admin/AdminUniversityPage";
 import LoginPage from "./Pages/Login/LoginPage";
 import HomePage from "./Pages/HomePage";
 import AboutUsPage from "./Pages/AboutUs/AboutUsPage";
+import FacultiesPage from "./Pages/FacultiesPage";
 import LoadingPage from "./Pages/loadingPage";
 import "./index.css"; // Must be at the top
 
@@ -21,6 +22,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/faculties" element={<FacultiesPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/students" element={<AdminStudentsPage />} />
