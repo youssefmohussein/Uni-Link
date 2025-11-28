@@ -74,19 +74,66 @@ const GlassButton = ({ children, onClick, className = '' }) => (
 );
 
 const LiquidLoginForm = () => {
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log('Login attempt with:', { email, password });
+        setError('');
+        setSuccess('');
+        setLoading(true);
+
+        try {
+            const response = await fetch('http://localhost/backend/index.php/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    identifier,
+                    password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || 'Login failed');
+                setLoading(false);
+                return;
+            }
+
+            // Show success message
+            setSuccess('Login successful! Redirecting...');
+
+            // Redirect after showing success message
+            setTimeout(() => {
+                // Ensure admin users go to admin dashboard
+                if (data.role === 'Admin') {
+                    window.location.href = '/admin/users';
+                } else if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    window.location.href = '/';
+                }
+            }, 1000);
+
+        } catch (err) {
+            console.error('Login error:', err);
+            setError('Network error. Please try again.');
+            setLoading(false);
+        }
     };
 
     return (
         <form onSubmit={handleLogin} className="w-full max-w-sm mx-auto">
             <GlassSurface
                 width="100%"
-                height={400}
+                height={480}
                 borderRadius={25}
                 backgroundOpacity={0.001}
                 blur={120}
@@ -104,11 +151,23 @@ const LiquidLoginForm = () => {
                 </h2>
 
                 <div className="w-full h-full flex flex-col justify-center space-y-5 mt-16">
+                    {error && (
+                        <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="bg-green-500/20 border border-green-500/50 rounded-lg p-3 text-green-200 text-sm text-center">
+                            {success}
+                        </div>
+                    )}
+
                     <GlassInput
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="Email or Username"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
                     />
 
                     <GlassInput
@@ -118,8 +177,8 @@ const LiquidLoginForm = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
 
-                    <GlassButton onClick={handleLogin}>
-                        LOG IN
+                    <GlassButton onClick={handleLogin} className={loading ? 'opacity-50' : ''}>
+                        {loading ? 'LOGGING IN...' : 'LOG IN'}
                     </GlassButton>
                 </div>
 

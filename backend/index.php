@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+require_once __DIR__ . '/routes/loginRoutes.php';
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';
 require_once __DIR__ . '/routes/adminRoutes.php';
@@ -46,7 +47,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 error_log("Request path: [$request], Method: [$method]");
 
 // Check each route group in order
-if (registerUserRoutes($request, $method))
+if (registerLoginRoutes($request, $method))
+    exit;
+elseif (registerUserRoutes($request, $method))
     exit;
 elseif (registerStudentRoutes($request, $method))
     exit;
