@@ -9,6 +9,7 @@ import AdminUniversityPage from "./Pages/Admin/AdminUniversityPage";
 import LoginPage from "./Pages/Login/LoginPage";
 import HomePage from "./Pages/HomePage";
 import LoadingPage from "./Pages/loadingPage";
+import ProfilePage from "./Pages/Profile/ProfilePage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/admin/admin" element={<AdminAdminPage />} />
           <Route path="/admin/university" element={<AdminUniversityPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<AdminUsersPage />} />
         </Routes>
       </Router>
