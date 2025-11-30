@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import GlassCard from '../../Components/GlassCard';
 import Navbar from '../../Components/Navbar';
 import { FaLightbulb, FaUsers, FaRocket, FaQuoteLeft } from 'react-icons/fa';
+import CardSwap, { Card } from '../../Components/CardSwap/CardSwap';
 
 // Reuse the Galaxy animation
 const Galaxy = lazy(() => import('../../Animations/Galaxy/Galaxy'));
@@ -15,7 +16,7 @@ const AboutUsPage = () => {
                     <Galaxy
                         transparent={true}
                         hueShift={260} // Purple/Blue shift for "Visionary" vibe
-                        density={0.15}
+                        density={1.5}
                         glowIntensity={0.1}
                         saturation={0.6}
                         speed={0.15}
@@ -26,69 +27,103 @@ const AboutUsPage = () => {
 
             <Navbar />
 
-            <main className="relative z-10 pt-32 px-6 md:px-20 max-w-5xl mx-auto flex flex-col gap-24 pb-32">
+            <main className="relative z-10 pt-32 px-6 md:px-20 max-w-7xl mx-auto flex flex-col gap-24 pb-32">
 
-                {/* Hero: The Vision */}
-                <section className="text-center space-y-8 animate-fade-in-up">
-                    <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
-                        <span className="block text-white">We Dream of</span>
-                        <span className="block bg-clip-text text-transparent bg-gradient-to-r from-accent to-purple-500">
-                            Connection.
-                        </span>
-                    </h1>
-                    <p className="text-2xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
-                        Uni-Link isn't just a platform. It's a movement to dismantle the walls between disciplines, campuses, and ideas.
-                    </p>
-                </section>
+                {/* Split Layout: Journey & CardSwap */}
+                <section className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
-                {/* The Story: Vertical Timeline */}
-                <section className="relative border-l-2 border-white/10 ml-4 md:ml-0 md:pl-10 space-y-16">
-
-                    {/* Timeline Item 1 */}
-                    <div className="relative group">
-                        <div className="absolute -left-[45px] top-2 w-6 h-6 rounded-full bg-black border-4 border-accent z-10 group-hover:scale-125 transition-transform duration-300 hidden md:block" />
-                        <GlassCard className="p-8 md:p-10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-6 opacity-5">
-                                <FaLightbulb className="text-8xl" />
-                            </div>
-                            <span className="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">The Spark</span>
-                            <h2 className="text-3xl font-bold mb-4">It Started in a Dorm Room</h2>
-                            <p className="text-gray-400 leading-relaxed">
-                                Like all great ideas, Uni-Link was born from frustration. We saw brilliant students struggling to find collaborators for their passion projects. We realized that the university experience was fragmented—silos of knowledge that never touched. We decided to light a match.
+                    {/* Left Column: Text Content */}
+                    <div className="flex-1 space-y-8 text-left">
+                        <div>
+                            <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
+                                <span className="block text-white">We Dream of</span>
+                                <span className="block text-[#3b82f6]">
+                                    Connection.
+                                </span>
+                            </h1>
+                            <p className="text-xl text-gray-300 leading-relaxed">
+                                From a dorm room idea to a movement empowering students everywhere. We are redefining how collaboration happens in the academic world.
                             </p>
-                        </GlassCard>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-teal-500/20 rounded-lg text-teal-400">
+                                    <FaLightbulb className="text-2xl" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">The Spark</h3>
+                                    <p className="text-gray-400">Born from the frustration of fragmented university experiences.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400">
+                                    <FaUsers className="text-2xl" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">The Mission</h3>
+                                    <p className="text-gray-400">Empowering the collective to turn "what if" into "what is".</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-orange-500/20 rounded-lg text-orange-400">
+                                    <FaRocket className="text-2xl" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">The Future</h3>
+                                    <p className="text-gray-400">Pushing boundaries beyond zip codes and disciplines.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Timeline Item 2 */}
-                    <div className="relative group">
-                        <div className="absolute -left-[45px] top-2 w-6 h-6 rounded-full bg-black border-4 border-purple-500 z-10 group-hover:scale-125 transition-transform duration-300 hidden md:block" />
-                        <GlassCard className="p-8 md:p-10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-6 opacity-5">
-                                <FaUsers className="text-8xl" />
-                            </div>
-                            <span className="text-purple-400 font-bold tracking-widest uppercase text-sm mb-2 block">The Mission</span>
-                            <h2 className="text-3xl font-bold mb-4">Empowering the Collective</h2>
-                            <p className="text-gray-400 leading-relaxed">
-                                We believe that collaboration is the engine of innovation. Our mission is simple: to provide every student with the tools, network, and resources they need to turn "what if" into "what is." We are building the digital infrastructure for the next generation of leaders.
-                            </p>
-                        </GlassCard>
-                    </div>
+                    {/* Right Column: CardSwap */}
+                    <div className="flex-1 w-full h-[600px] relative flex items-center justify-center -mt-64">
+                        <CardSwap
+                            width={550}
+                            height={400}
+                            cardDistance={50}
+                            verticalDistance={60}
+                            delay={4000}
+                            pauseOnHover={true}
+                        >
+                            {/* Card 1: The Spark */}
+                            <Card className="bg-black/80 backdrop-blur-xl border border-white/10 p-8 flex flex-col justify-center items-start text-left shadow-2xl">
+                                <div className="mb-6 p-4 bg-teal-500/20 rounded-full inline-block">
+                                    <FaLightbulb className="text-4xl text-teal-400" />
+                                </div>
+                                <span className="text-teal-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Spark</span>
+                                <h3 className="text-3xl font-bold mb-4 text-white">It Started in a Dorm Room</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm">
+                                    We saw brilliant students struggling to find collaborators. We realized knowledge was siloed. We decided to light a match.
+                                </p>
+                            </Card>
 
-                    {/* Timeline Item 3 */}
-                    <div className="relative group">
-                        <div className="absolute -left-[45px] top-2 w-6 h-6 rounded-full bg-black border-4 border-highlight z-10 group-hover:scale-125 transition-transform duration-300 hidden md:block" />
-                        <GlassCard className="p-8 md:p-10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-6 opacity-5">
-                                <FaRocket className="text-8xl" />
-                            </div>
-                            <span className="text-highlight font-bold tracking-widest uppercase text-sm mb-2 block">The Future</span>
-                            <h2 className="text-3xl font-bold mb-4">Beyond Boundaries</h2>
-                            <p className="text-gray-400 leading-relaxed">
-                                We are just getting started. From AI-driven mentorship to cross-university research initiatives, we are constantly pushing the envelope. We envision a world where your potential is defined by your ambition, not your zip code.
-                            </p>
-                        </GlassCard>
-                    </div>
+                            {/* Card 2: The Mission */}
+                            <Card className="bg-black/80 backdrop-blur-xl border border-white/10 p-8 flex flex-col justify-center items-start text-left shadow-2xl">
+                                <div className="mb-6 p-4 bg-purple-500/10 rounded-full inline-block">
+                                    <FaUsers className="text-4xl text-purple-400" />
+                                </div>
+                                <span className="text-purple-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Mission</span>
+                                <h3 className="text-3xl font-bold mb-4 text-white">Empowering the Collective</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm">
+                                    Collaboration is the engine of innovation. We provide the tools to build the digital infrastructure for future leaders.
+                                </p>
+                            </Card>
 
+                            {/* Card 3: The Future */}
+                            <Card className="bg-black/80 backdrop-blur-xl border border-white/10 p-8 flex flex-col justify-center items-start text-left shadow-2xl">
+                                <div className="mb-6 p-4 bg-orange-500/20 rounded-full inline-block">
+                                    <FaRocket className="text-4xl text-orange-400" />
+                                </div>
+                                <span className="text-orange-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Future</span>
+                                <h3 className="text-3xl font-bold mb-4 text-white">Beyond Boundaries</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm">
+                                    From AI mentorship to cross-university research. Your potential is defined by your ambition, not your location.
+                                </p>
+                            </Card>
+                        </CardSwap>
+                    </div>
                 </section>
 
                 {/* Quote Section */}
@@ -106,7 +141,7 @@ const AboutUsPage = () => {
                 <section className="text-center">
                     <h2 className="text-2xl font-bold mb-6">Ready to write your chapter?</h2>
                     <button className="bg-accent hover:bg-accent-hover text-white font-bold py-4 px-12 rounded-full text-lg transition-all shadow-[0_0_20px_rgba(0,128,128,0.4)] hover:shadow-[0_0_40px_rgba(0,128,128,0.6)]">
-                        Join Our Story
+                        <a href="/login">Join Our Story</a>
                     </button>
                 </section>
 

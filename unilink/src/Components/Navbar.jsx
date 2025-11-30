@@ -6,7 +6,7 @@ const Navbar = () => {
         <nav className="fixed top-0 left-0 w-full z-50 px-8 py-4 flex justify-between items-center border-b border-white/10 bg-white/5 backdrop-blur-md shadow-lg">
             {/* Left: Logo */}
             <div className="flex items-center">
-                <img src={logo} alt="Uni-Link Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+                <a href="/"><img src={logo} alt="Uni-Link Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" /></a>
             </div>
 
             {/* Center: Navigation Links */}
