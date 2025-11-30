@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, ScrollControls, Float, Scroll } from '@react-three/drei';
 import Book3D from './Book3D';
 
-const Scene3D = ({ children }) => {
+const Scene3D = ({ children, pages = 5 }) => {
     return (
         <div className="fixed inset-0 z-10">
             <Canvas
@@ -51,7 +51,7 @@ const Scene3D = ({ children }) => {
                     <Environment preset="studio" blur={0.8} background={false} />
 
                     {/* Scroll Controlled Content */}
-                    <ScrollControls pages={5} damping={0.2}>
+                    <ScrollControls pages={pages} damping={0.2}>
                         <Float
                             speed={1.5}
                             rotationIntensity={0.15}

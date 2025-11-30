@@ -42,8 +42,7 @@ const AboutUsPage = () => {
                                 </span>
                             </h1>
                             <p className="text-xl text-gray-300 leading-relaxed">
-                                From a dorm room idea to a movement empowering students everywhere. We are redefining how collaboration happens in the academic world.
-                            </p>
+                                Uniting majors, elevating voices, and bringing the whole campus closer.</p>
                         </div>
 
                         <div className="space-y-6">

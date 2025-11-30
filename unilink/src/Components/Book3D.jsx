@@ -25,7 +25,11 @@ const Book3D = () => {
             const targetRotationX = THREE.MathUtils.lerp(Math.PI / 6, -Math.PI / 3, offset);
             group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, targetRotationX, 4, delta);
 
-            group.current.position.y = -0.8 + Math.sin(state.clock.elapsedTime) * 0.1;
+            // Calculate exit animation (move up when reaching footer)
+            const exitOffset = 0.9;
+            const exitY = offset > exitOffset ? ((offset - exitOffset) / (1 - exitOffset)) * 15 : 0;
+
+            group.current.position.y = -0.8 + Math.sin(state.clock.elapsedTime) * 0.1 + exitY;
 
             const targetScale = THREE.MathUtils.lerp(1.3, 1, offset);
             const currentScale = THREE.MathUtils.damp(group.current.scale.x, targetScale, 4, delta);
