@@ -212,7 +212,7 @@
             } elseif ($role === 'Professor') {
                 $pdo->prepare("INSERT INTO Professor (professor_id) VALUES (?)")->execute([$user_id]);
 
-            } elseif ($newRole === 'Admin') {
+            } elseif ($role === 'Admin') {
              $pdo->prepare("INSERT INTO Admin (admin_id, status) 
              VALUES (?, 'Active') ")->execute([$user_id]);
        }
