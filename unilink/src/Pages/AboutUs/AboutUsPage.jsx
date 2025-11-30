@@ -53,7 +53,7 @@ const AboutUsPage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-white">The Spark</h3>
-                                    <p className="text-gray-400">Born from the frustration of fragmented university experiences.</p>
+                                    <p className="text-gray-400">Breaking Down Academic Barriers.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -62,7 +62,7 @@ const AboutUsPage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-white">The Mission</h3>
-                                    <p className="text-gray-400">Empowering the collective to turn "what if" into "what is".</p>
+                                    <p className="text-gray-400">Connecting Majors. Empowering Collaboration.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -71,7 +71,7 @@ const AboutUsPage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-white">The Future</h3>
-                                    <p className="text-gray-400">Pushing boundaries beyond zip codes and disciplines.</p>
+                                    <p className="text-gray-400">A Smarter, More Connected Academic Community.</p>
                                 </div>
                             </div>
                         </div>
@@ -93,9 +93,9 @@ const AboutUsPage = () => {
                                     <FaLightbulb className="text-4xl text-teal-400" />
                                 </div>
                                 <span className="text-teal-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Spark</span>
-                                <h3 className="text-3xl font-bold mb-4 text-white">It Started in a Dorm Room</h3>
+                                <h3 className="text-3xl font-bold mb-4 text-white">It Started as an idea.</h3>
                                 <p className="text-gray-400 leading-relaxed text-sm">
-                                    We saw brilliant students struggling to find collaborators. We realized knowledge was siloed. We decided to light a match.
+                                    UniLink began as a response to the isolation between university departments, where valuable work often stayed hidden. We wanted a platform that connects majors and encourages cross-disciplinary engagement.
                                 </p>
                             </Card>
 
@@ -107,7 +107,7 @@ const AboutUsPage = () => {
                                 <span className="text-purple-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Mission</span>
                                 <h3 className="text-3xl font-bold mb-4 text-white">Empowering the Collective</h3>
                                 <p className="text-gray-400 leading-relaxed text-sm">
-                                    Collaboration is the engine of innovation. We provide the tools to build the digital infrastructure for future leaders.
+                                    To provide a unified digital space where students, professors, and admins can communicate, share projects, collaborate, and support academic growth across all fields..
                                 </p>
                             </Card>
 
@@ -117,9 +117,9 @@ const AboutUsPage = () => {
                                     <FaRocket className="text-4xl text-orange-400" />
                                 </div>
                                 <span className="text-orange-400 font-bold tracking-widest uppercase text-xs mb-2 block">The Future</span>
-                                <h3 className="text-3xl font-bold mb-4 text-white">Beyond Boundaries</h3>
+                                <h3 className="text-3xl font-bold mb-4 text-white">Growing With Every Student.</h3>
                                 <p className="text-gray-400 leading-relaxed text-sm">
-                                    From AI mentorship to cross-university research. Your potential is defined by your ambition, not your location.
+                                    UniLink aims to introduce smarter features and become the university’s main academic ecosystem—supporting research, mentorship, and innovation across the entire campus.
                                 </p>
                             </Card>
                         </CardSwap>
