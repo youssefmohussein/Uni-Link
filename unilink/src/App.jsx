@@ -12,6 +12,7 @@ import AboutUsPage from "./Pages/AboutUs/AboutUsPage";
 import FacultiesPage from "./Pages/FacultiesPage";
 import LoadingPage from "./Pages/loadingPage";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import PostPage from "./Pages/Posts/PostPage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
@@ -74,6 +75,7 @@ export default function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/posts" element={<PostPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Router>
