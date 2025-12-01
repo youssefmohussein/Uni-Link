@@ -71,8 +71,8 @@ class PostMediaController  {
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
             // Validate file type
-            $allowedImageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            $allowedVideoTypes = ['mp4', 'webm', 'mov', 'avi'];
+            $allowedImageTypes = ['jpg', 'jpeg', 'png', 'gif'];
+            $allowedVideoTypes = ['mp4', 'webm', 'mov'];
             
             $mediaType = null;
             if (in_array($fileExtension, $allowedImageTypes)) {
