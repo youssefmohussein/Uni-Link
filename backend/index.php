@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+require_once __DIR__ . '/routes/loginRoutes.php';
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';
 require_once __DIR__ . '/routes/adminRoutes.php';
@@ -32,6 +33,7 @@ require_once __DIR__ . '/routes/projectSkillRoutes.php';
 require_once __DIR__ . '/routes/userSkillRoutes.php';
 require_once __DIR__ . '/routes/announcementRoutes.php';
 require_once __DIR__ . '/routes/projectReviewRoutes.php';
+require_once __DIR__ . '/routes/dashboardRoutes.php';
 // Parse request URL without query parameters
 if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
     $request = $_SERVER['PATH_INFO'];
@@ -40,29 +42,51 @@ if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
     $request = str_replace('/backend/index.php', '', $request);
 }
 
-$method  = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD'];
 // Debug
 error_log("Request path: [$request], Method: [$method]");
 
 // Check each route group in order
-if (registerUserRoutes($request, $method)) exit;
-elseif (registerStudentRoutes($request, $method)) exit;
-elseif (registerAdminRoutes($request, $method)) exit;
-elseif (registerProfessorRoutes($request, $method)) exit;
-elseif (registerFacultyRoutes($request, $method)) exit;
-elseif (registerMajorRoutes($request, $method)) exit;
-elseif (registerPostRoutes($request, $method)) exit;
-elseif (registerPostMediaRoutes($request, $method)) exit;
-elseif (registerCommentRoutes($request, $method)) exit;
-elseif (registerPostInteractionRoutes($request, $method)) exit;
-elseif (registerCVRoutes($request, $method)) exit;
-elseif (registerProjectRoutes($request, $method)) exit;  // <-- Added
-elseif (registerSkillCategoryRoutes($request, $method)) exit;
-elseif (registerSkillRoutes($request, $method)) exit;   
-elseif (registerProjectSkillRoutes($request, $method)) exit;
-elseif (registerUserSkillRoutes($request, $method)) exit;
-elseif (registerAnnouncementRoutes($request, $method)) exit;
-elseif (registerProjectReviewRoutes($request, $method)) exit;
+if (registerLoginRoutes($request, $method))
+    exit;
+elseif (registerUserRoutes($request, $method))
+    exit;
+elseif (registerStudentRoutes($request, $method))
+    exit;
+elseif (registerAdminRoutes($request, $method))
+    exit;
+elseif (registerProfessorRoutes($request, $method))
+    exit;
+elseif (registerFacultyRoutes($request, $method))
+    exit;
+elseif (registerMajorRoutes($request, $method))
+    exit;
+elseif (registerPostRoutes($request, $method))
+    exit;
+elseif (registerPostMediaRoutes($request, $method))
+    exit;
+elseif (registerCommentRoutes($request, $method))
+    exit;
+elseif (registerPostInteractionRoutes($request, $method))
+    exit;
+elseif (registerCVRoutes($request, $method))
+    exit;
+elseif (registerProjectRoutes($request, $method))
+    exit;  // <-- Added
+elseif (registerSkillCategoryRoutes($request, $method))
+    exit;
+elseif (registerSkillRoutes($request, $method))
+    exit;
+elseif (registerProjectSkillRoutes($request, $method))
+    exit;
+elseif (registerUserSkillRoutes($request, $method))
+    exit;
+elseif (registerAnnouncementRoutes($request, $method))
+    exit;
+elseif (registerProjectReviewRoutes($request, $method))
+    exit;
+elseif (registerDashboardRoutes($request, $method))
+    exit;
 echo json_encode([
     "status" => "error",
     "message" => "Invalid route or method"

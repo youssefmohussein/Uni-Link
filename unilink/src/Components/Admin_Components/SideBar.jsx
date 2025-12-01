@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen, FiGlobe } from "react-icons/fi";
+import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen, FiGlobe, FiLogOut } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar() {
@@ -14,7 +14,6 @@ export default function Sidebar() {
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },
     { label: "Admin", icon: <FiUsers />, path: "/admin/admin" },
     { label: "University", icon: <FiGlobe />, path: "/admin/university" }
-    // ,{ label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];
 
   // Sidebar expand/collapse animation
@@ -27,6 +26,19 @@ export default function Sidebar() {
   const itemVariants = {
     hover: { scale: 1.05, backgroundColor: "rgba(128,0,255,0.15)" },
     tap: { scale: 0.95 },
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost/backend/index.php/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      window.location.href = '/login';
+    } catch (err) {
+      console.error('Logout error:', err);
+      window.location.href = '/login';
+    }
   };
 
   return (
@@ -57,7 +69,6 @@ export default function Sidebar() {
             </button>
           </>
         ) : (
-          // Hamburger 3-dashes when closed
           <div className="flex flex-col justify-center ml-3 gap-1 cursor-pointer" onClick={() => setOpen(true)}>
             {[0, 1, 2].map((i) => (
               <motion.span
@@ -126,18 +137,50 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 text-xs text-muted border-t" style={{ color: "var(--muted)", borderColor: "rgba(255,255,255,0.1)" }}>
-        <AnimatePresence>
-          {open ? (
-            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              © 2025 Admin Panel
-            </motion.span>
-          ) : (
-            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              ©
-            </motion.span>
-          )}
-        </AnimatePresence>
+      <div className="px-4 py-3 border-t space-y-3" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+        {/* Logout Button */}
+        <motion.button
+          onClick={handleLogout}
+          variants={itemVariants}
+          whileHover="hover"
+          whileTap="tap"
+          className="w-full flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all"
+          style={{
+            backgroundColor: "transparent",
+            color: "var(--muted)",
+          }}
+        >
+          <motion.div className="text-xl">
+            <FiLogOut />
+          </motion.div>
+          <AnimatePresence>
+            {open && (
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="font-medium"
+              >
+                Logout
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+
+        {/* Copyright */}
+        <div className="text-xs text-muted" style={{ color: "var(--muted)" }}>
+          <AnimatePresence>
+            {open ? (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                © 2025 Admin Panel
+              </motion.span>
+            ) : (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                ©
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </motion.aside>
   );
