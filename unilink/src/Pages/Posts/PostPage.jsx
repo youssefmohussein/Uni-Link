@@ -11,6 +11,7 @@ const PostPage = () => {
   const [filter, setFilter] = useState("all");
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostCategory, setNewPostCategory] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const postFormRef = useRef(null);
@@ -41,7 +42,13 @@ const PostPage = () => {
         timeAgo: formatTimeAgo(post.created_at),
         category: post.category,
         content: post.content,
-        image: null, // TODO: Add media support when needed
+        media: post.media && post.media.length > 0
+          ? post.media.map(m => ({
+            media_id: m.media_id,
+            type: m.media_type,
+            url: `http://localhost/backend/${m.media_path}`
+          }))
+          : [],
         reactions: post.likes_count || 0,
         isReacted: false, // TODO: Check if current user has liked
         isTrending: false, // TODO: Add trending logic
@@ -96,12 +103,23 @@ const PostPage = () => {
         status: "Published",
       });
 
+      // Upload media if files are selected
+      if (selectedFiles.length > 0) {
+        try {
+          await postHandler.uploadPostMedia(post_id, selectedFiles);
+        } catch (uploadErr) {
+          console.error("Failed to upload media:", uploadErr);
+          alert("Post created but media upload failed: " + uploadErr.message);
+        }
+      }
+
       // Refresh posts to show the new one
       await fetchPosts();
 
       // Clear form
       setNewPostContent("");
       setNewPostCategory("");
+      setSelectedFiles([]);
 
       alert("Post created successfully!");
     } catch (err) {
@@ -134,6 +152,8 @@ const PostPage = () => {
             newPostCategory={newPostCategory}
             setNewPostCategory={setNewPostCategory}
             handlePost={handlePost}
+            selectedFiles={selectedFiles}
+            setSelectedFiles={setSelectedFiles}
           />
 
           {/* 📜 Feed */}

@@ -155,12 +155,34 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
 
       {/* 📝 Content */}
       <p className="text-main/90 leading-relaxed mb-4">{post.content}</p>
-      {post.image && (
-        <img
-          src={post.image}
-          alt="Post"
-          className="w-full rounded-custom mb-4 shadow-custom"
-        />
+
+      {/* 📸 Media Gallery */}
+      {post.media && post.media.length > 0 && (
+        <div className={`grid gap-2 mb-4 ${post.media.length === 1 ? 'grid-cols-1' :
+            post.media.length === 2 ? 'grid-cols-2' :
+              'grid-cols-2 md:grid-cols-3'
+          }`}>
+          {post.media.map((item, index) => (
+            <div key={item.media_id || index} className="relative">
+              {item.type === 'Image' ? (
+                <img
+                  src={item.url}
+                  alt={`Post media ${index + 1}`}
+                  className="w-full h-48 object-cover rounded-custom shadow-custom cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => window.open(item.url, '_blank')}
+                />
+              ) : item.type === 'Video' ? (
+                <video
+                  src={item.url}
+                  controls
+                  className="w-full h-48 object-cover rounded-custom shadow-custom"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : null}
+            </div>
+          ))}
+        </div>
       )}
 
       {/* 💬 Reaction Bar */}
@@ -171,8 +193,8 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
             onClick={toggleReaction}
             disabled={loadingInteraction}
             className={`flex items-center space-x-2 transition-all duration-200 font-medium ${post.isReacted
-                ? "text-accent"
-                : "hover:text-accent text-muted transition-colors"
+              ? "text-accent"
+              : "hover:text-accent text-muted transition-colors"
               } ${loadingInteraction ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <i className={`${post.isReacted ? "fas" : "far"} fa-thumbs-up`}></i>
