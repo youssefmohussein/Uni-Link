@@ -26,7 +26,7 @@ const Book3D = () => {
             group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, targetRotationX, 4, delta);
 
             // Calculate exit animation (move up when reaching footer)
-            const exitOffset = 0.9;
+            const exitOffset = 0.85; // Start exit later to allow book opening to complete
             const exitY = offset > exitOffset ? ((offset - exitOffset) / (1 - exitOffset)) * 15 : 0;
 
             group.current.position.y = -0.8 + Math.sin(state.clock.elapsedTime) * 0.1 + exitY;
@@ -38,9 +38,10 @@ const Book3D = () => {
 
         if (frontCoverRef.current) {
             let targetOpenRotation = 0;
-            if (offset > 0.9) {
-                const openProgress = (offset - 0.9) / 0.1;
-                targetOpenRotation = -Math.PI * 0.95 * openProgress;
+            // Book starts opening at 0.6 and completes by 0.8
+            if (offset > 0.6) {
+                const openProgress = (offset - 0.6) / 0.2; // 0.6 to 0.8 range
+                targetOpenRotation = -Math.PI * 0.95 * Math.min(openProgress, 1);
 
                 if (openProgress > 0.8 && !isOpen) setIsOpen(true);
                 if (openProgress <= 0.8 && isOpen) setIsOpen(false);
