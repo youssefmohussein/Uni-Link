@@ -11,13 +11,13 @@ const Navbar = () => {
 
             {/* Center: Navigation Links */}
             <div className="hidden md:flex items-center space-x-14 ml-10">
-                <a href="/" className="text-white/80 hover:text-white font-medium text-lg transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                <a href="/" className="text-white/80 hover:text-[#008080] font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(0,128,128,0.5)]">
                     Home
                 </a>
-                <a href="/faculties" className="text-white/80 hover:text-white font-medium text-lg transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                <a href="/faculties" className="text-white/80 hover:text-[#008080] font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(0,128,128,0.5)]">
                     Faculties
                 </a>
-                <a href="/about" className="text-white/80 hover:text-white font-medium text-lg transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                <a href="/about" className="text-white/80 hover:text-[#008080] font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(0,128,128,0.5)]">
                     About Us
                 </a>
             </div>

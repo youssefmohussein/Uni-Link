@@ -3,13 +3,14 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, ScrollControls, Float, Scroll } from '@react-three/drei';
 import Book3D from './Book3D';
 
-const Scene3D = ({ children, pages = 5 }) => {
+const Scene3D = ({ children, pages = 5, onCreated }) => {
     return (
         <div className="fixed inset-0 z-10">
             <Canvas
                 shadows
                 dpr={[1, 1.5]}
                 camera={{ position: [0, 0, 8], fov: 45 }}
+                onCreated={onCreated}
                 gl={{
                     antialias: false,
                     powerPreference: "high-performance",

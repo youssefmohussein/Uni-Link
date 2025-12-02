@@ -1,9 +1,11 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import Scene3D from '../Components/Scene3D';
 import GlassCard from '../Components/GlassCard';
 import Navbar from '../Components/Navbar';
 import { FaBookOpen, FaLayerGroup, FaMagic } from 'react-icons/fa';
 import LogoLoop from '../Components/LogoLoop/LogoLoop';
+import MagicBento from '../Components/MagicBento';
+import HeroSection from '../Components/HeroSection';
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
 
 // Lazy load only Galaxy (non-critical)
@@ -17,8 +19,18 @@ const techLogos = [
 ];
 
 const HomePage = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+
     return (
         <div className="relative w-full min-h-screen bg-black text-white overflow-x-hidden">
+            {/* Static Hero for LCP - Fades out when 3D loads */}
+            <div
+                className={`fixed inset-0 z-20 pointer-events-none transition-opacity duration-1000 ease-in-out ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
+                style={{ zIndex: 20 }}
+            >
+                <HeroSection />
+            </div>
+
             {/* Galaxy Background - Lazy loaded */}
             <Suspense fallback={<div className="fixed inset-0 bg-black" />}>
                 <div className="fixed inset-0 w-full h-full z-0">
@@ -41,49 +53,25 @@ const HomePage = () => {
             <Navbar />
 
             {/* 3D Scene - Not lazy loaded for better LCP */}
-            <Scene3D pages={5}>
+            <Scene3D pages={5} onCreated={() => setIsLoaded(true)}>
                 <main className="w-full relative z-10">
-                    {/* Section 1: Hero */}
-                    <section className="h-screen flex flex-col justify-center items-start px-10 md:px-20 max-w-7xl mx-auto pt-20">
-                        <div className="max-w-2xl">
-                            <h1
-                                className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50"
-                                style={{ transform: 'translateZ(0)' }}
-                            >
-                                Uni-Link
-                            </h1>
-                            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-                                Your College Journey, Simplified.
-                                <br></br>
-                                <span className="text-[#008080]"> The all-in-one platform where students connect, collaborate, and conquer projects.</span>
-                            </p>
-                            <GlassCard className="inline-block px-8 py-4 cursor-pointer">
-                                <span className="text-lg font-semibold tracking-wide">Get Started</span>
-                            </GlassCard>
-                        </div>
-                    </section>
+                    {/* Section 1: Hero (Scrollable version) */}
+                    <HeroSection />
 
-                    {/* Section 2: Features */}
-                    <section className="h-screen flex items-center px-10 md:px-20 max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                            <GlassCard className="p-8 flex flex-col items-center text-center h-80 justify-center">
-                                <FaBookOpen className="text-5xl text-[#008080] mb-6" />
-                                <h3 className="text-2xl font-bold mb-4">Smart Library</h3>
-                                <p className="text-gray-400">Access thousands of resources with our intelligent indexing system.</p>
-                            </GlassCard>
-
-                            <GlassCard className="p-8 flex flex-col items-center text-center h-80 justify-center md:mt-20">
-                                <FaLayerGroup className="text-5xl text-[#ffb547] mb-6" />
-                                <h3 className="text-2xl font-bold mb-4">Liquid Design</h3>
-                                <p className="text-gray-400">Immersive glassmorphism interface that feels premium and modern.</p>
-                            </GlassCard>
-
-                            <GlassCard className="p-8 flex flex-col items-center text-center h-80 justify-center">
-                                <FaMagic className="text-5xl text-purple-400 mb-6" />
-                                <h3 className="text-2xl font-bold mb-4">AI Powered</h3>
-                                <p className="text-gray-400">Advanced algorithms to help you find exactly what you need.</p>
-                            </GlassCard>
-                        </div>
+                    {/* Section 2: MagicBento Features */}
+                    <section className="h-screen flex items-center justify-center px-10 md:px-20 max-w-7xl mx-auto">
+                        <MagicBento
+                            textAutoHide={true}
+                            enableStars={true}
+                            enableSpotlight={true}
+                            enableBorderGlow={true}
+                            enableTilt={true}
+                            enableMagnetism={true}
+                            clickEffect={true}
+                            spotlightRadius={300}
+                            particleCount={12}
+                            glowColor="0, 128, 128"
+                        />
                     </section>
 
                     {/* Section 3: CTA */}
