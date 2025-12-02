@@ -128,7 +128,11 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
 
   return (
     <div
-      className={`bg-panel rounded-custom shadow-custom p-6 border-l-4 ${borderColor} transition-theme hover-glow`}
+      className={`backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 border border-white/20 ${borderColor} transition-all duration-300 hover:shadow-accent/20 hover:border-white/30 hover:bg-white/15`}
+      style={{
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      }}
     >
       {/* 👤 Post Header */}
       <div className="flex items-center space-x-3 mb-4">
@@ -159,8 +163,8 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
       {/* 📸 Media Gallery */}
       {post.media && post.media.length > 0 && (
         <div className={`grid gap-2 mb-4 ${post.media.length === 1 ? 'grid-cols-1' :
-            post.media.length === 2 ? 'grid-cols-2' :
-              'grid-cols-2 md:grid-cols-3'
+          post.media.length === 2 ? 'grid-cols-2' :
+            'grid-cols-2 md:grid-cols-3'
           }`}>
           {post.media.map((item, index) => (
             <div key={item.media_id || index} className="relative">
@@ -254,7 +258,11 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
             comments.map((comment, index) => (
               <div
                 key={comment.comment_id || index}
-                className="flex items-start space-x-3 p-3 bg-panel border border-accent/10 rounded-custom shadow-sm transition-theme"
+                className="flex items-start space-x-3 p-3 backdrop-blur-lg bg-white/5 dark:bg-black/10 border border-white/10 rounded-custom shadow-lg transition-all duration-200 hover:bg-white/10"
+                style={{
+                  backdropFilter: 'blur(12px) saturate(150%)',
+                  WebkitBackdropFilter: 'blur(12px) saturate(150%)',
+                }}
               >
                 <img
                   src={comment.userPic}

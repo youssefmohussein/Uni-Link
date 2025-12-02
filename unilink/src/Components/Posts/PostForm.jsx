@@ -43,7 +43,11 @@ const PostForm = ({
   return (
     <div
       ref={postFormRef}
-      className="bg-panel rounded-custom shadow-custom p-6 mb-6 border border-accent/10 transition-theme hover-glow"
+      className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 mb-6 border border-white/20 transition-all duration-300 hover:shadow-accent/20 hover:border-white/30 hover:bg-white/15"
+      style={{
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      }}
     >
       {/* 🧑‍🎓 User input area */}
       <div className="flex items-start space-x-3">

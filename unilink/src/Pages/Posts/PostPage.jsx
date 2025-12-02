@@ -4,6 +4,7 @@ import LeftSidebar from "../../components/Posts/LeftSidebar";
 import RightSidebar from "../../components/Posts/RightSidebar";
 import PostCard from "../../components/Posts/PostCard";
 import PostForm from "../../components/Posts/PostForm";
+import Galaxy from "../../Animations/Galaxy/Galaxy";
 import * as postHandler from "../../../api/postHandler";
 
 const PostPage = () => {
@@ -135,63 +136,82 @@ const PostPage = () => {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme">
-      {/* 🌟 Header */}
-      <Header logoSize="large" onShareActivity={scrollToPostForm} />
+    <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
+      {/* 🌌 Galaxy Background */}
+      <div className="fixed inset-0 z-0">
+        <Galaxy
+          transparent={true}
+          hueShift={180}
+          density={0.3}
+          glowIntensity={0.2}
+          saturation={0.4}
+          speed={0.3}
+          mouseRepulsion={false}
+          repulsionStrength={2}
+          twinkleIntensity={0.3}
+          disableAnimation={false}
+        />
+      </div>
 
-      <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
-        {/* 📁 Left Sidebar */}
-        <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* 🌟 Header */}
+        <Header logoSize="large" onShareActivity={scrollToPostForm} />
 
-        {/* 📰 Main Feed */}
-        <main className="flex-grow space-y-8">
-          {/* ✏️ Post Form */}
-          <PostForm
-            newPostContent={newPostContent}
-            setNewPostContent={setNewPostContent}
-            newPostCategory={newPostCategory}
-            setNewPostCategory={setNewPostCategory}
-            handlePost={handlePost}
-            selectedFiles={selectedFiles}
-            setSelectedFiles={setSelectedFiles}
-          />
+        <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
+          {/* 📁 Left Sidebar */}
+          <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
 
-          {/* 📜 Feed */}
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-              <p className="mt-4 text-muted">Loading posts...</p>
-            </div>
-          ) : error ? (
-            <div className="bg-panel rounded-custom shadow-custom p-6 text-center">
-              <p className="text-red-500 mb-4">{error}</p>
-              <button
-                onClick={fetchPosts}
-                className="px-4 py-2 bg-accent text-white rounded-custom hover:bg-accent/80 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          ) : filteredPosts.length === 0 ? (
-            <div className="bg-panel rounded-custom shadow-custom p-6 text-center">
-              <p className="text-muted">No posts found. Be the first to share something!</p>
-            </div>
-          ) : (
-            <div className="space-y-8">
-              {filteredPosts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  initialPost={post}
-                  onRefresh={fetchPosts}
-                  currentUserId={TEMP_USER_ID}
-                />
-              ))}
-            </div>
-          )}
-        </main>
+          {/* 📰 Main Feed */}
+          <main className="flex-grow space-y-8">
+            {/* ✏️ Post Form */}
+            <PostForm
+              newPostContent={newPostContent}
+              setNewPostContent={setNewPostContent}
+              newPostCategory={newPostCategory}
+              setNewPostCategory={setNewPostCategory}
+              handlePost={handlePost}
+              selectedFiles={selectedFiles}
+              setSelectedFiles={setSelectedFiles}
+            />
 
-        {/* 💬 Right Sidebar */}
-        <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
+            {/* 📜 Feed */}
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+                <p className="mt-4 text-muted">Loading posts...</p>
+              </div>
+            ) : error ? (
+              <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+                <p className="text-red-500 mb-4">{error}</p>
+                <button
+                  onClick={fetchPosts}
+                  className="px-4 py-2 bg-accent text-white rounded-custom hover:bg-accent/80 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : filteredPosts.length === 0 ? (
+              <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+                <p className="text-muted">No posts found. Be the first to share something!</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {filteredPosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    initialPost={post}
+                    onRefresh={fetchPosts}
+                    currentUserId={TEMP_USER_ID}
+                  />
+                ))}
+              </div>
+            )}
+          </main>
+
+          {/* 💬 Right Sidebar */}
+          <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
+        </div>
       </div>
     </div>
   );
