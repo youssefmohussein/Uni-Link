@@ -3,6 +3,10 @@ require_once __DIR__ . '/../controllers/PostMediaController.php';
 
 function registerPostMediaRoutes($request, $method) {
     switch (true) {
+        case $request === '/uploadMedia' && $method === 'POST':
+            PostMediaController::uploadMedia();
+            break;
+
         case $request === '/addMedia' && $method === 'POST':
             PostMediaController::addMedia();
             break;

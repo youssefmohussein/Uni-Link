@@ -156,3 +156,48 @@ export const deleteComment = async (comment_id, user_id) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to delete comment");
     return true;
 };
+
+/* ============================================================
+   POST MEDIA UPLOAD
+   ============================================================ */
+
+/**
+ * Upload media files (images/videos) for a post
+ * @param {number} post_id
+ * @param {FileList} files - Files from input[type="file"]
+ */
+export const uploadPostMedia = async (post_id, files) => {
+    const formData = new FormData();
+    formData.append('post_id', post_id);
+
+    // Append all files
+    for (let i = 0; i < files.length; i++) {
+        formData.append('media[]', files[i]);
+    }
+
+    try {
+        const response = await fetch('http://localhost/backend/index.php/uploadMedia', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData, // Don't set Content-Type header, browser will set it with boundary
+        });
+
+        const data = await response.json();
+        if (data.status !== "success") throw new Error(data.message || "Failed to upload media");
+        return data.data;
+    } catch (error) {
+        console.error("Upload error:", error);
+        throw error;
+    }
+};
+
+/**
+ * Get media for a specific post
+ * @param {number} post_id
+ */
+export const getMediaByPost = async (post_id) => {
+    const res = await apiRequest(`index.php/getMediaById?post_id=${post_id}`, "GET");
+    if (res.status !== "success") throw new Error(res.message || "Failed to fetch media");
+    return res.data ?? [];
+};
+
