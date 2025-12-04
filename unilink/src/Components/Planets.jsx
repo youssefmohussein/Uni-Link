@@ -137,11 +137,36 @@ const Planets = ({ isOpen }) => {
             {/* Central Planet - Realistic Sun */}
             <Sun position={[0, centralPlanetY, 0]} />
 
-            {/* Orbit Ring Visual */}
-            <mesh position={[0, centralPlanetY, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                <torusGeometry args={[orbitRadius, 0.01, 16, 100]} />
-                <meshBasicMaterial color="#4a90e2" transparent opacity={0.3} />
-            </mesh>
+            {/* Orbit Ring - Milky Way Style */}
+            <group position={[0, centralPlanetY, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                {/* Main ring with galaxy gradient */}
+                <mesh>
+                    <torusGeometry args={[orbitRadius, 0.02, 16, 100]} />
+                    <meshBasicMaterial
+                        color="#9D84B7"
+                        transparent
+                        opacity={0.4}
+                    />
+                </mesh>
+                {/* Inner glow */}
+                <mesh>
+                    <torusGeometry args={[orbitRadius, 0.04, 16, 100]} />
+                    <meshBasicMaterial
+                        color="#E8D5F2"
+                        transparent
+                        opacity={0.15}
+                    />
+                </mesh>
+                {/* Outer cosmic dust */}
+                <mesh>
+                    <torusGeometry args={[orbitRadius, 0.06, 16, 100]} />
+                    <meshBasicMaterial
+                        color="#4A3B5C"
+                        transparent
+                        opacity={0.1}
+                    />
+                </mesh>
+            </group>
 
             {/* Orbiting Faculty Planets */}
             {faculties.map((faculty, index) => {
@@ -175,7 +200,7 @@ const Planets = ({ isOpen }) => {
                                 color="#ffffff"
                                 anchorX="center"
                                 anchorY="bottom"
-                                font="https://raw.githubusercontent.com/google/fonts/main/ofl/patrickhand/PatrickHand-Regular.ttf"
+                                font="https://raw.githubusercontent.com/google/fonts/main/ofl/greatvibes/GreatVibes-Regular.ttf"
                                 outlineWidth={0.01}
                                 outlineColor="#000000"
                             >
