@@ -77,7 +77,7 @@ const AboutUsPage = () => {
                     </div>
 
                     {/* Right Column: CardSwap */}
-                    <div className="flex-1 w-full h-[600px] relative flex items-center justify-center -mt-64">
+                    <div className="w-full lg:flex-1 h-[400px] lg:h-[600px] relative z-0 flex items-center justify-center mt-24 mb-24 lg:mt-0 lg:mb-0 lg:-mt-64">
                         <CardSwap
                             width={550}
                             height={400}
@@ -126,7 +126,7 @@ const AboutUsPage = () => {
                 </section>
 
                 {/* Quote Section */}
-                <section className="py-10">
+                <section className="py-10 relative z-30">
                     <div className="text-center max-w-3xl mx-auto">
                         <FaQuoteLeft className="text-4xl text-white/20 mx-auto mb-6" />
                         <blockquote className="text-3xl md:text-4xl font-serif italic text-gray-200 leading-normal mb-6">
@@ -137,7 +137,7 @@ const AboutUsPage = () => {
                 </section>
 
                 {/* Simple CTA */}
-                <section className="text-center">
+                <section className="text-center relative z-30">
                     <h2 className="text-2xl font-bold mb-6">Ready to write your chapter?</h2>
                     <button className="bg-accent hover:bg-accent-hover text-white font-bold py-4 px-12 rounded-full text-lg transition-all shadow-[0_0_20px_rgba(0,128,128,0.4)] hover:shadow-[0_0_40px_rgba(0,128,128,0.6)]">
                         <a href="/login">Join Our Story</a>
