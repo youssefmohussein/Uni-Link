@@ -15,6 +15,14 @@ function registerPostInteractionRoutes($request, $method) {
             PostInteractionController::deleteInteraction();
             break;
 
+        case $request === '/getUserReaction' && $method === 'POST':
+            PostInteractionController::getUserReaction();
+            break;
+
+        case $request === '/getReactionCounts' && $method === 'POST':
+            PostInteractionController::getReactionCounts();
+            break;
+
         default:
             return false;
     }

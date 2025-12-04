@@ -69,7 +69,8 @@ export const getInteractionsByPost = async (post_id) => {
 };
 
 /**
- * Add an interaction (like, love, etc.) to a post
+ * Add an interaction to a post
+ * If user already has a different reaction, it will be updated automatically
  * @param {number} post_id
  * @param {number} user_id
  * @param {string} type - 'Like', 'Love', 'celberation', 'Share', 'Save'
@@ -81,7 +82,39 @@ export const addInteraction = async (post_id, user_id, type = "Like") => {
         type,
     });
     if (res.status !== "success") throw new Error(res.message || "Failed to add interaction");
-    return res.interaction_id;
+    return {
+        interaction_id: res.interaction_id,
+        action: res.action // 'added' or 'updated'
+    };
+};
+
+/**
+ * Get the current user's reaction for a specific post
+ * @param {number} post_id
+ * @param {number} user_id
+ * @returns {Object|null} - { interaction_id, type, created_at } or null if no reaction
+ */
+export const getUserReaction = async (post_id, user_id) => {
+    const res = await apiRequest("index.php/getUserReaction", "POST", {
+        post_id,
+        user_id,
+    });
+    if (res.status !== "success") throw new Error(res.message || "Failed to get user reaction");
+    return res.data; // null if user hasn't reacted
+};
+
+/**
+ * Get reaction counts breakdown for a post
+ * @param {number} post_id
+ * @returns {Object} - { Like: number, Love: number, celberation: number, Share: number, Save: number, total: number }
+ */
+export const getReactionCounts = async (post_id) => {
+    const res = await apiRequest("index.php/getReactionCounts", "POST", { post_id });
+    if (res.status !== "success") throw new Error(res.message || "Failed to get reaction counts");
+    return {
+        ...res.data,
+        total: res.total
+    };
 };
 
 /**

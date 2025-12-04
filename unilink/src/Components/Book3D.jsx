@@ -11,6 +11,7 @@ const Book3D = () => {
     const rightPagesRef = useRef();
     const scroll = useScroll();
     const [isOpen, setIsOpen] = useState(false);
+    const [textProgress, setTextProgress] = useState(0);
 
     useFrame((state, delta) => {
         const offset = scroll.offset;
@@ -69,6 +70,13 @@ const Book3D = () => {
                 const targetRotation = -fanProgress * (i * 0.015 + Math.cos(i * 0.5) * 0.002);
                 page.rotation.y = THREE.MathUtils.damp(page.rotation.y, targetRotation, 3 - (i * 0.05), delta);
             });
+        }
+
+        // Animate text writing when book is open
+        if (isOpen && textProgress < 1) {
+            setTextProgress(prev => Math.min(prev + delta * 0.5, 1));
+        } else if (!isOpen && textProgress > 0) {
+            setTextProgress(prev => Math.max(prev - delta * 2, 0));
         }
     });
 
@@ -212,6 +220,40 @@ const Book3D = () => {
             {/* Planets/Plants */}
             <group position={[0, 0, 1]} rotation={[Math.PI / 3, 0, 0]}>
                 <Planets isOpen={isOpen} />
+            </group>
+
+            {/* Animated Text on Left Page */}
+            <group position={[-1.5, 0, -0.05]}>
+                <Text
+                    position={[0.75, 0.5, 0]}
+                    fontSize={0.15}
+                    anchorX="center"
+                    anchorY="top"
+                    font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff"
+                    color="#1a1a2e"
+                    maxWidth={2.5}
+                    lineHeight={1.4}
+                    textAlign="left"
+                >
+                    {"Welcome to\nUni-Link\n\nYour journey\nstarts here...".substring(0, Math.floor(textProgress * 50))}
+                </Text>
+            </group>
+
+            {/* Animated Text on Right Page */}
+            <group position={[0, 0, -0.05]}>
+                <Text
+                    position={[0, 0.5, 0]}
+                    fontSize={0.15}
+                    anchorX="center"
+                    anchorY="top"
+                    font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff"
+                    color="#1a1a2e"
+                    maxWidth={2.5}
+                    lineHeight={1.4}
+                    textAlign="left"
+                >
+                    {"Connect with\nstudents\n\nShare ideas\n\nCollaborate\non projects".substring(0, Math.floor(textProgress * 60))}
+                </Text>
             </group>
 
             {/* Front Cover Group */}

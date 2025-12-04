@@ -137,19 +137,28 @@ const PostPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
-      {/* 🌌 Galaxy Background */}
+      {/* 🌌 Starry Night Sky Background */}
+      {/* Deep blue background layer */}
+      <div
+        className="fixed inset-0 z-0"
+        style={{
+          background: 'linear-gradient(to bottom, #0a1628 0%, #1a2744 50%, #0a1628 100%)'
+        }}
+      />
+      {/* Animated stars layer with fixed shader */}
       <div className="fixed inset-0 z-0">
         <Galaxy
           transparent={true}
-          hueShift={180}
-          density={0.3}
-          glowIntensity={0.2}
-          saturation={0.4}
-          speed={0.3}
-          mouseRepulsion={false}
-          repulsionStrength={2}
-          twinkleIntensity={0.3}
+          hueShift={0}             // No hue shift for pure white stars
+          density={1.2}            // Good density for starfield
+          glowIntensity={0.5}      // Moderate glow for white halos
+          saturation={0.05}        // Near-zero saturation for white stars
+          speed={0.08}             // Very slow, peaceful movement
+          mouseRepulsion={false}   // No interaction
+          repulsionStrength={0}
+          twinkleIntensity={0.45}  // Gentle twinkling stars
           disableAnimation={false}
+          rotationSpeed={0.01}     // Very slow rotation
         />
       </div>
 
