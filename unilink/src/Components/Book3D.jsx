@@ -218,7 +218,7 @@ const Book3D = () => {
             </group>
 
             {/* Planets/Plants */}
-            <group position={[0, 0, 1]} rotation={[Math.PI / 3, 0, 0]}>
+            <group position={[-1.5, -0.8, 1.35]} rotation={[Math.PI / 3, 0, 0]}>
                 <Planets isOpen={isOpen} />
             </group>
 
