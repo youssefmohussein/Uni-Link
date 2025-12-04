@@ -1,7 +1,7 @@
 export default function Stats() {
   return (
-    <div className="flex gap-8 mb-10 font-main transition-smooth">
-      
+    <div className="flex flex-wrap gap-4 md:gap-8 mb-10 font-main transition-smooth">
+
       <div>
         <p className="text-2xl font-semibold text-main font-secondary">
           1,250

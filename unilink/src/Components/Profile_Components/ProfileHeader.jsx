@@ -1,11 +1,11 @@
 export default function ProfileHeader() {
   return (
-    <div className="flex items-center gap-4 mb-8 font-main transition-smooth">
+    <div className="flex flex-col md:flex-row items-center gap-4 mb-8 font-main transition-smooth">
       <img
         src="Public/Images/Logo_png.png"
         alt="Profile"
         className="
-          w-40 h-40 rounded-full 
+          w-24 h-24 md:w-40 md:h-40 rounded-full 
           border-4 
           object-cover 
           border-[var(--accent)] 
@@ -14,8 +14,8 @@ export default function ProfileHeader() {
         "
       />
 
-      <div>
-        <h1 className="text-3xl font-semibold text-main font-secondary">
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl md:text-3xl font-semibold text-main font-secondary">
           OMAR EHAB
         </h1>
 
@@ -29,7 +29,7 @@ export default function ProfileHeader() {
           technologies.
         </p>
 
-        <div className="flex gap-4 mt-2 text-sm text-accent-alt" >
+        <div className="flex flex-wrap gap-2 md:gap-4 mt-2 text-sm text-accent-alt justify-center md:justify-start" >
           <span>📍 San Francisco, CA</span>
           <span>🔗 Omar.dev</span>
           <span>📅 Joined January 2023</span>

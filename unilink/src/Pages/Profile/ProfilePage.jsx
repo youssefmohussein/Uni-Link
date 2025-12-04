@@ -8,9 +8,9 @@ import GlassCard from "../../Components/GlassCard";
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen bg-bg text-main p-20 font-main transition-smooth">
-      <div className="bg-bg text-main p-6 font-main transition-smooth">
-        <Navbar/>
+    <div className="min-h-screen bg-bg text-main p-6 md:p-20 font-main transition-smooth">
+      <div className="bg-bg text-main font-main transition-smooth">
+        <Navbar />
         <ProfileHeader />
         <Stats />
         <CVSection />
