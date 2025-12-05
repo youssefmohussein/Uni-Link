@@ -82,3 +82,60 @@ export const getAllMajors = async () => {
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
   return res.data ?? [];
 };
+
+/* ============================================================
+   NEW PROFESSOR FEATURES (Profile, Reviews, Analytics)
+   ============================================================ */
+
+/**
+ * Get professor details by ID
+ * @param {number} professor_id
+ */
+export const getProfessorById = async (professor_id) => {
+  const data = await apiRequest(`index.php/getProfessorById/${professor_id}`, "GET");
+  if (data.status !== "success") throw new Error(data.message || "Failed to fetch professor details");
+  return data.data;
+};
+
+/**
+ * Get aggregated dashboard statistics (for analytics)
+ */
+export const getDashboardStats = async () => {
+  const data = await apiRequest("index.php/getDashboardStats", "GET");
+  if (data.status !== "success") throw new Error(data.message || "Failed to fetch dashboard stats");
+  return data.data;
+};
+
+/* ============================================================
+   PROJECT REVIEWS
+   ============================================================ */
+
+/**
+ * Add a review to a project
+ * @param {Object} reviewData - { project_id, professor_id, comment, mark }
+ */
+export const addReview = async (reviewData) => {
+  const res = await apiRequest("index.php/addReview", "POST", reviewData);
+  if (res.status !== "success") throw new Error(res.message || "Failed to add review");
+  return true;
+};
+
+/**
+ * Get reviews for a specific project
+ * @param {number} project_id
+ */
+export const getReviewsByProject = async (project_id) => {
+  const res = await apiRequest("index.php/getReviewsByProject", "POST", { project_id });
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch reviews");
+  return res.reviews ?? [];
+};
+
+/**
+ * Delete a review
+ * @param {number} review_id
+ */
+export const deleteReview = async (review_id) => {
+  const res = await apiRequest("index.php/deleteReview", "POST", { review_id });
+  if (res.status !== "success") throw new Error(res.message || "Failed to delete review");
+  return true;
+};

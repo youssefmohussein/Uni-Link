@@ -52,6 +52,9 @@ class LoginController
         echo json_encode([
             "message" => "Login successful",
             "role" => $user["role"],
+            "id" => $user["user_id"], // Explicitly return ID for frontend usage
+            "username" => $user["username"],
+            "email" => $user["email"],
             "redirect" => $this->redirectUrl($user["role"])
         ]);
     }

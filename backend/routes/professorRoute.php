@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../controllers/ProfessorController.php';
 
-function registerProfessorRoutes($request, $method) {
+function registerProfessorRoutes($request, $method)
+{
     switch (true) {
 
         // ➕ Add professor
@@ -12,6 +13,11 @@ function registerProfessorRoutes($request, $method) {
         // 📋 Get all professors
         case $request === '/getAllProfessors' && $method === 'GET':
             ProfessorController::getAllProfessors();
+            return true;
+
+        // 🔍 Get professor by ID
+        case preg_match('#^/getProfessorById/(\d+)$#', $request, $matches) && $method === 'GET':
+            ProfessorController::getProfessorById($matches[1]);
             return true;
 
         // ✏️ Update professor

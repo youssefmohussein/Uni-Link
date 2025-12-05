@@ -5,6 +5,7 @@ import RightSidebar from "../../components/Posts/RightSidebar";
 import PostCard from "../../components/Posts/PostCard";
 import PostForm from "../../components/Posts/PostForm";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
+import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
 
 const PostPage = () => {
@@ -15,6 +16,7 @@ const PostPage = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const postFormRef = useRef(null);
 
   // TODO: Replace with actual session user_id once authentication is integrated
@@ -84,8 +86,12 @@ const PostPage = () => {
     return postDate.toLocaleDateString();
   };
 
-  const scrollToPostForm = () => {
-    postFormRef.current?.scrollIntoView({ behavior: "smooth" });
+  const openPostModal = () => {
+    setIsPostModalOpen(true);
+  };
+
+  const closePostModal = () => {
+    setIsPostModalOpen(false);
   };
 
   const handlePost = async () => {
@@ -138,34 +144,39 @@ const PostPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
       {/* 🌌 Starry Night Sky Background */}
-      {/* Deep blue background layer */}
+      {/* Static Image Layer - For the exact "Starry Night" look */}
       <div
         className="fixed inset-0 z-0"
         style={{
-          background: 'linear-gradient(to bottom, #0a1628 0%, #1a2744 50%, #0a1628 100%)'
+          backgroundImage: `url(${starryNightBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       />
-      {/* Animated stars layer with fixed shader */}
-      <div className="fixed inset-0 z-0">
+
+      {/* Animated stars overlay - Subtle twinkling on top of the image */}
+      <div className="fixed inset-0 z-0 mix-blend-screen opacity-60">
         <Galaxy
           transparent={true}
-          hueShift={0}             // No hue shift for pure white stars
-          density={1.2}            // Good density for starfield
-          glowIntensity={0.5}      // Moderate glow for white halos
-          saturation={0.05}        // Near-zero saturation for white stars
-          speed={0.08}             // Very slow, peaceful movement
-          mouseRepulsion={false}   // No interaction
-          repulsionStrength={0}
-          twinkleIntensity={0.45}  // Gentle twinkling stars
+          hueShift={0}             // Keep stars white/natural to blend with image
+          density={0.8}            // Low density, just adding accents
+          glowIntensity={0.3}      // Very low glow to avoid "huge shine"
+          saturation={0.0}         // White stars
+          speed={0.05}             // Very slow movement
+          mouseRepulsion={true}
+          repulsionStrength={0.5}
+          twinkleIntensity={1.0}   // High twinkle for effect
           disableAnimation={false}
-          rotationSpeed={0.01}     // Very slow rotation
+          rotationSpeed={0.005}    // Almost static rotation
+          starSpeed={0.2}
         />
       </div>
 
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* 🌟 Header */}
-        <Header logoSize="large" onShareActivity={scrollToPostForm} />
+        <Header logoSize="large" onShareActivity={openPostModal} />
 
         <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
           {/* 📁 Left Sidebar */}
@@ -173,16 +184,8 @@ const PostPage = () => {
 
           {/* 📰 Main Feed */}
           <main className="flex-grow space-y-8">
-            {/* ✏️ Post Form */}
-            <PostForm
-              newPostContent={newPostContent}
-              setNewPostContent={setNewPostContent}
-              newPostCategory={newPostCategory}
-              setNewPostCategory={setNewPostCategory}
-              handlePost={handlePost}
-              selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
-            />
+            {/* ✏️ Post Form - Removed from inline flow */}
+            {/* <PostForm ... /> */}
 
             {/* 📜 Feed */}
             {loading ? (
@@ -222,7 +225,36 @@ const PostPage = () => {
           <RightSidebar currentFilter={filter} onFilterChange={setFilter} />
         </div>
       </div>
-    </div>
+
+      {/* 📝 Post Creation Modal */}
+      {
+        isPostModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="w-full max-w-2xl relative animate-scale-in">
+              <button
+                onClick={closePostModal}
+                className="absolute -top-10 right-0 text-white hover:text-accent transition-colors"
+              >
+                <i className="fas fa-times text-2xl"></i>
+              </button>
+              <PostForm
+                postFormRef={postFormRef}
+                newPostContent={newPostContent}
+                setNewPostContent={setNewPostContent}
+                newPostCategory={newPostCategory}
+                setNewPostCategory={setNewPostCategory}
+                handlePost={() => {
+                  handlePost();
+                  closePostModal();
+                }}
+                selectedFiles={selectedFiles}
+                setSelectedFiles={setSelectedFiles}
+              />
+            </div>
+          </div>
+        )
+      }
+    </div >
   );
 };
 

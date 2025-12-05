@@ -107,6 +107,14 @@ const LiquidLoginForm = () => {
                 return;
             }
 
+            // Store user info in localStorage for easy access
+            localStorage.setItem('user', JSON.stringify({
+                id: data.user?.id || data.id, // Handle different backend response structures if needed
+                role: data.role,
+                username: data.username,
+                email: data.email
+            }));
+
             // Show success message
             setSuccess('Login successful! Redirecting...');
 
@@ -115,6 +123,8 @@ const LiquidLoginForm = () => {
                 // Ensure admin users go to admin dashboard
                 if (data.role === 'Admin') {
                     window.location.href = '/admin/users';
+                } else if (data.role === 'Professor') {
+                    window.location.href = '/professor';
                 } else if (data.redirect) {
                     window.location.href = data.redirect;
                 } else {

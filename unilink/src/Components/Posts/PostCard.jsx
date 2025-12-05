@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as postHandler from "../../../api/postHandler";
+import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
 const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
   const [post, setPost] = useState(initialPost);
@@ -127,163 +128,197 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
   };
 
   return (
-    <div
-      className={`backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 border border-white/20 ${borderColor} transition-all duration-300 hover:shadow-accent/20 hover:border-white/30 hover:bg-white/15`}
-      style={{
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      }}
+    <GlassSurface
+      width="100%"
+      height="auto"
+      borderRadius={20}
+      opacity={0.5}
+      blur={10}
+      borderWidth={0.05}
+      className="mb-6 !items-start !justify-start"
     >
-      {/* 👤 Post Header */}
-      <div className="flex items-center space-x-3 mb-4">
-        <img
-          src={post.user.profilePic}
-          alt="Profile"
-          className="w-10 h-10 rounded-full border-2 border-accent/30"
-        />
-        <div className="flex-grow">
-          <span className="font-semibold text-main">{post.user.name}</span>
-          <span className="text-muted text-sm block">
-            {post.user.major} • {post.timeAgo}
+      <div className="w-full relative z-10">
+        {/* 👤 Post Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center space-x-4">
+            <div className="relative group cursor-pointer">
+              <div className="absolute -inset-0.5 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full opacity-75 group-hover:opacity-100 transition duration-200 blur-[2px]"></div>
+              <img
+                src={post.user.profilePic}
+                alt="Profile"
+                className="relative w-12 h-12 rounded-full border-2 border-[#0d1117] object-cover"
+              />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-lg leading-tight hover:text-blue-400 transition-colors cursor-pointer">
+                {post.user.name}
+              </h3>
+              <div className="flex items-center text-gray-400 text-xs mt-0.5 space-x-2">
+                <span>{post.user.major}</span>
+                <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
+                <span>{post.timeAgo}</span>
+              </div>
+            </div>
+          </div>
+
+          <button className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+            <i className="fas fa-ellipsis-h text-lg"></i>
+          </button>
+        </div>
+
+        {/* 🏷️ Category Badge */}
+        <div className="mb-4">
+          <span className={`
+            inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase
+            bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-blue-400
+            hover:border-blue-500/40 transition-colors cursor-pointer
+          `}>
+            #{post.category.replace(/\s/g, "")}
           </span>
         </div>
-        <i className="fas fa-ellipsis-h text-muted hover:text-accent cursor-pointer"></i>
-      </div>
 
-      {/* 🏷️ Category */}
-      <div className="mb-4">
-        <span className="inline-block bg-accent/20 text-accent text-xs font-semibold px-3 py-1 rounded-full">
-          #{post.category.replace(/\s/g, "")}
-        </span>
-      </div>
-
-      {/* 📝 Content */}
-      <p className="text-main/90 leading-relaxed mb-4">{post.content}</p>
-
-      {/* 📸 Media Gallery */}
-      {post.media && post.media.length > 0 && (
-        <div className={`grid gap-2 mb-4 ${post.media.length === 1 ? 'grid-cols-1' :
-          post.media.length === 2 ? 'grid-cols-2' :
-            'grid-cols-2 md:grid-cols-3'
-          }`}>
-          {post.media.map((item, index) => (
-            <div key={item.media_id || index} className="relative">
-              {item.type === 'Image' ? (
-                <img
-                  src={item.url}
-                  alt={`Post media ${index + 1}`}
-                  className="w-full h-48 object-cover rounded-custom shadow-custom cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => window.open(item.url, '_blank')}
-                />
-              ) : item.type === 'Video' ? (
-                <video
-                  src={item.url}
-                  controls
-                  className="w-full h-48 object-cover rounded-custom shadow-custom"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : null}
-            </div>
-          ))}
+        {/* 📝 Content */}
+        <div className="mb-5">
+          <p className="text-gray-200 text-[15px] leading-relaxed whitespace-pre-line">
+            {post.content}
+          </p>
         </div>
-      )}
 
-      {/* 💬 Reaction Bar */}
-      <div className="reaction-bar flex items-center justify-between text-muted border-t border-accent/10 pt-3 mt-4">
-        <div className="flex items-center space-x-6">
-          {/* 👍 Reaction */}
-          <button
-            onClick={toggleReaction}
-            disabled={loadingInteraction}
-            className={`flex items-center space-x-2 transition-all duration-200 font-medium ${post.isReacted
-              ? "text-accent"
-              : "hover:text-accent text-muted transition-colors"
-              } ${loadingInteraction ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            <i className={`${post.isReacted ? "fas" : "far"} fa-thumbs-up`}></i>
-            <span>{post.reactions} Reactions</span>
-          </button>
+        {/* 📸 Media Gallery */}
+        {post.media && post.media.length > 0 && (
+          <div className={`grid gap-3 mb-6 rounded-xl overflow-hidden ${post.media.length === 1 ? 'grid-cols-1' :
+            post.media.length === 2 ? 'grid-cols-2' :
+              'grid-cols-2 md:grid-cols-3'
+            }`}>
+            {post.media.map((item, index) => (
+              <div key={item.media_id || index} className="relative group overflow-hidden bg-black/20">
+                {item.type === 'Image' ? (
+                  <div className="overflow-hidden h-64 w-full">
+                    <img
+                      src={item.url}
+                      alt={`Post media ${index + 1}`}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+                      onClick={() => window.open(item.url, '_blank')}
+                    />
+                  </div>
+                ) : item.type === 'Video' ? (
+                  <video
+                    src={item.url}
+                    controls
+                    className="w-full h-64 object-cover"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
 
-          {/* 💭 Comment Toggle */}
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="flex items-center space-x-2 hover:text-accent transition-all duration-200 font-medium"
-          >
-            <i className={`${showComments ? "fas" : "far"} fa-comment`}></i>
-            <span>
-              {comments.length || post.comments.length} Comment
-              {(comments.length || post.comments.length) !== 1 ? "s" : ""}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* 🗨️ Comments Section */}
-      {showComments && (
-        <div className="comment-section mt-4 space-y-4 animate-fade-in">
-          {/* ✏️ Add Comment */}
-          <div className="flex items-start space-x-2 pt-2">
-            <img
-              src={`https://placehold.co/30x30/E5E7EB/6B7280?text=U`}
-              alt="User"
-              className="w-8 h-8 rounded-full"
-            />
-            <input
-              type="text"
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleCommentSubmit()}
-              disabled={loadingCommentSubmit}
-              className="flex-grow bg-panel text-main rounded-full py-2 px-4 text-sm border border-accent/20 focus:outline-none focus:ring-1 focus:ring-accent/40 transition-theme disabled:opacity-50"
-            />
+        {/* 💬 Reaction Bar */}
+        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+          <div className="flex items-center space-x-4">
+            {/* 👍 Reaction */}
             <button
-              onClick={handleCommentSubmit}
-              disabled={loadingCommentSubmit || !newComment.trim()}
-              className="text-accent hover:text-accent/80 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={toggleReaction}
+              disabled={loadingInteraction}
+              className={`
+                flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200
+                ${post.isReacted
+                  ? "bg-blue-500/20 text-blue-400"
+                  : "hover:bg-white/5 text-gray-400 hover:text-white"
+                }
+                ${loadingInteraction ? "opacity-50 cursor-not-allowed" : "active:scale-95"}
+              `}
             >
-              {loadingCommentSubmit ? "..." : "Send"}
+              <i className={`${post.isReacted ? "fas" : "far"} fa-thumbs-up text-lg`}></i>
+              <span className="font-medium text-sm">{post.reactions}</span>
+            </button>
+
+            {/* 💭 Comment Toggle */}
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className={`
+                flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200
+                ${showComments ? "bg-white/10 text-white" : "hover:bg-white/5 text-gray-400 hover:text-white"}
+                active:scale-95
+              `}
+            >
+              <i className={`${showComments ? "fas" : "far"} fa-comment text-lg`}></i>
+              <span className="font-medium text-sm">
+                {comments.length || post.comments.length}
+              </span>
             </button>
           </div>
 
-          {/* 💬 Existing Comments */}
-          {loadingComments ? (
-            <div className="text-center py-4">
-              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div>
-            </div>
-          ) : comments.length === 0 ? (
-            <p className="text-muted text-sm text-center py-2">No comments yet. Be the first to comment!</p>
-          ) : (
-            comments.map((comment, index) => (
-              <div
-                key={comment.comment_id || index}
-                className="flex items-start space-x-3 p-3 backdrop-blur-lg bg-white/5 dark:bg-black/10 border border-white/10 rounded-custom shadow-lg transition-all duration-200 hover:bg-white/10"
-                style={{
-                  backdropFilter: 'blur(12px) saturate(150%)',
-                  WebkitBackdropFilter: 'blur(12px) saturate(150%)',
-                }}
-              >
-                <img
-                  src={comment.userPic}
-                  alt="Commenter"
-                  className="w-8 h-8 rounded-full"
-                />
-                <div>
-                  <p className="text-main font-medium text-sm">
-                    {comment.userName}{" "}
-                    <span className="text-muted font-normal text-xs ml-2">
-                      {comment.timeAgo}
-                    </span>
-                  </p>
-                  <p className="text-main/80 text-sm mt-1">{comment.content}</p>
-                </div>
-              </div>
-            ))
-          )}
+          <button className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors">
+            <i className="far fa-bookmark"></i>
+          </button>
         </div>
-      )}
-    </div>
+
+        {/* 🗨️ Comments Section */}
+        {showComments && (
+          <div className="mt-6 space-y-5 animate-fade-in">
+            {/* ✏️ Add Comment */}
+            <div className="flex items-center space-x-3 pt-2">
+              <img
+                src={`https://placehold.co/30x30/E5E7EB/6B7280?text=U`}
+                alt="User"
+                className="w-9 h-9 rounded-full border border-white/10"
+              />
+              <div className="flex-grow relative">
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleCommentSubmit()}
+                  disabled={loadingCommentSubmit}
+                  className="w-full bg-black/20 text-white rounded-full py-2.5 pl-4 pr-12 text-sm border border-white/10 focus:outline-none focus:border-blue-500/50 focus:bg-black/30 transition-all placeholder:text-gray-500"
+                />
+                <button
+                  onClick={handleCommentSubmit}
+                  disabled={loadingCommentSubmit || !newComment.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-300 p-1.5 rounded-full hover:bg-blue-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <i className="fas fa-paper-plane text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* 💬 Existing Comments */}
+            {loadingComments ? (
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+              </div>
+            ) : comments.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-2">No comments yet. Be the first to share your thoughts!</p>
+            ) : (
+              <div className="space-y-4">
+                {comments.map((comment, index) => (
+                  <div key={comment.comment_id || index} className="flex space-x-3 group">
+                    <img
+                      src={comment.userPic}
+                      alt="Commenter"
+                      className="w-8 h-8 rounded-full border border-white/5 mt-1"
+                    />
+                    <div className="flex-grow">
+                      <div className="bg-white/5 rounded-2xl px-4 py-2.5 inline-block min-w-[200px]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-white text-sm">{comment.userName}</span>
+                          <span className="text-gray-500 text-xs">{comment.timeAgo}</span>
+                        </div>
+                        <p className="text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </GlassSurface>
   );
 };
 
