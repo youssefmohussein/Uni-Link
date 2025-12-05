@@ -6,6 +6,7 @@ import AdminProfessorPage from "./Pages/Admin/AdminProfessorPage";
 import AdminAdminPage from "./Pages/Admin/AdminAdminPage";
 import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
 import AdminUniversityPage from "./Pages/Admin/AdminUniversityPage";
+import AdminRoomsPage from "./Pages/Admin/AdminRoomsPage";
 import LoginPage from "./Pages/Login/LoginPage";
 import HomePage from "./Pages/HomePage";
 import AboutUsPage from "./Pages/AboutUs/AboutUsPage";
@@ -74,6 +75,14 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="Admin">
                 <AdminUniversityPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/rooms"
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <AdminRoomsPage />
               </ProtectedRoute>
             }
           />

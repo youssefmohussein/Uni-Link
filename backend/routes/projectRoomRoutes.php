@@ -24,6 +24,15 @@ function registerProjectRoomRoutes($request, $method)
         return true;
     }
 
+    if ($request === '/updateRoom' && $method === 'POST') {
+        ProjectRoomController::updateRoom();
+        return true;
+    }
+    if ($request === '/deleteRoom' && $method === 'POST') {
+        ProjectRoomController::deleteRoom();
+        return true;
+    }
+
     // Chat
     if ($request === '/sendMessage' && $method === 'POST') {
         ProjectRoomController::sendMessage();

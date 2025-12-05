@@ -149,5 +149,44 @@ class ProjectRoomController
             echo json_encode(["status" => "error", "message" => $e->getMessage()]);
         }
     }
+    public static function updateRoom()
+    {
+        global $pdo;
+        $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($input['room_id'], $input['room_name'])) {
+            echo json_encode(["status" => "error", "message" => "Missing required fields"]);
+            return;
+        }
+
+        try {
+            $stmt = $pdo->prepare("UPDATE ProjectRooms SET room_name = ?, description = ? WHERE room_id = ?");
+            $stmt->execute([$input['room_name'], $input['description'] ?? '', $input['room_id']]);
+
+            echo json_encode(["status" => "success", "message" => "Room updated successfully"]);
+        } catch (PDOException $e) {
+            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+        }
+    }
+
+    public static function deleteRoom()
+    {
+        global $pdo;
+        $input = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($input['room_id'])) {
+            echo json_encode(["status" => "error", "message" => "Missing room_id"]);
+            return;
+        }
+
+        try {
+            $stmt = $pdo->prepare("DELETE FROM ProjectRooms WHERE room_id = ?");
+            $stmt->execute([$input['room_id']]);
+
+            echo json_encode(["status" => "success", "message" => "Room deleted successfully"]);
+        } catch (PDOException $e) {
+            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+        }
+    }
 }
 ?>
