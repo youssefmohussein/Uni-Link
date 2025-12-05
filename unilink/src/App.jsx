@@ -15,6 +15,8 @@ import ProfilePage from "./Pages/Profile/ProfilePage";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PostPage from "./Pages/Posts/PostPage";
 import ProfessorPage from "./Pages/Professor/ProfessorPage";
+import ProjectRoomsPage from "./Pages/ProjectRooms/ProjectRoomsPage";
+import ProjectChatPage from "./Pages/ProjectRooms/ProjectChatPage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
@@ -80,6 +82,8 @@ export default function App() {
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/posts" element={<PostPage />} />
           <Route path="/professor" element={<ProfessorPage />} />
+          <Route path="/project-rooms" element={<ProjectRoomsPage />} />
+          <Route path="/project-room/:id" element={<ProjectChatPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Router>
