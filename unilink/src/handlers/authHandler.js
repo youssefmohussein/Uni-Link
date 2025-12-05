@@ -31,14 +31,18 @@ class AuthHandler {
                 throw new Error(data.error || data.message || 'Login failed');
             }
 
+            // Save user data to localStorage for frontend authentication checks
+            const userData = {
+                id: data.id,
+                username: data.username,
+                email: data.email,
+                role: data.role
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+
             return {
                 success: true,
-                user: {
-                    id: data.id,
-                    username: data.username,
-                    email: data.email,
-                    role: data.role
-                },
+                user: userData,
                 redirect: data.redirect
             };
         } catch (error) {
@@ -65,6 +69,9 @@ class AuthHandler {
             if (!response.ok) {
                 throw new Error(data.message || 'Logout failed');
             }
+
+            // Clear user data from localStorage
+            localStorage.removeItem('user');
 
             return {
                 success: true,
@@ -93,6 +100,13 @@ class AuthHandler {
 
             if (!response.ok) {
                 throw new Error(data.message || 'Session check failed');
+            }
+
+            // Sync session data with localStorage
+            if (data.authenticated && data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            } else {
+                localStorage.removeItem('user');
             }
 
             return {
