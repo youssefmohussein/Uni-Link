@@ -3,6 +3,7 @@ import Header from "../../Components/Posts/Header";
 import * as professorHandler from "../../../api/professorHandler";
 import * as postHandler from "../../../api/postHandler";
 import PostCard from "../../Components/Posts/PostCard";
+import authHandler from "../../handlers/authHandler";
 
 const ProfessorPage = () => {
     const [professor, setProfessor] = useState(null);
@@ -11,30 +12,35 @@ const ProfessorPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("overview"); // overview, reviews, qna
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // Get user from localStorage
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    const currentUserId = savedUser?.id;
-
-    // Redirect or show error if not logged in
+    // Check authentication and get current user
     useEffect(() => {
-        if (!currentUserId) {
-            setError("Please log in to view your profile.");
-            setLoading(false);
-        }
-    }, [currentUserId]);
-
-    useEffect(() => {
-        fetchData();
+        const checkAuth = async () => {
+            const user = await authHandler.getCurrentUser();
+            if (!user) {
+                setError("Please log in to view your profile.");
+                setLoading(false);
+            } else {
+                setCurrentUser(user);
+            }
+        };
+        checkAuth();
     }, []);
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchData();
+        }
+    }, [currentUser]);
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            if (!currentUserId) return;
+            if (!currentUser?.id) return;
 
             const [profData, statsData, postsData] = await Promise.all([
-                professorHandler.getProfessorById(currentUserId),
+                professorHandler.getProfessorById(currentUser.id),
                 professorHandler.getDashboardStats(),
                 postHandler.getAllPosts()
             ]);
@@ -160,7 +166,7 @@ const ProfessorPage = () => {
                                         key={post.post_id}
                                         initialPost={post}
                                         onRefresh={fetchData}
-                                        currentUserId={currentUserId}
+                                        currentUserId={currentUser?.id}
                                     />
                                 ))
                             )}
@@ -178,7 +184,7 @@ const ProfessorPage = () => {
                                         key={post.post_id}
                                         initialPost={post}
                                         onRefresh={fetchData}
-                                        currentUserId={currentUserId}
+                                        currentUserId={currentUser?.id}
                                     />
                                 ))
                             )}
