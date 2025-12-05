@@ -7,6 +7,7 @@ export async function apiRequest(endpoint, method = "GET", data = null) {
   const options = {
     method,
     headers: { "Content-Type": "application/json" },
+    credentials: "include", // Important for session-based authentication
   };
 
   if (data) {

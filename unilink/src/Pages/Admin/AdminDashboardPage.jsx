@@ -17,6 +17,7 @@ import {
   Tooltip,
   Legend
 } from "chart.js";
+import { apiRequest } from "../../../api/apiClient";
 
 ChartJS.register(
   ArcElement,
@@ -40,19 +41,7 @@ export default function AdminDashboardPage() {
     const fetchDashboardStats = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/getDashboardStats', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
+        const result = await apiRequest("index.php/getDashboardStats", "GET");
 
         if (result.status === 'success') {
           setDashboardData(result.data);
