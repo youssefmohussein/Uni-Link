@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { FiEdit, FiTrash2, FiPlus, FiRefreshCw, FiEye } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiPlus, FiRefreshCw, FiEye } from "react-icons/fi";
 import Card from "./Card";
 import Pagination from "./Paganation";
 
@@ -82,21 +82,21 @@ export default function FacultiesTable({
           <div className="col-span-3 text-right flex justify-end gap-2">
             <button
               onClick={() => onViewMajors(f)}
-              className="p-2 rounded-full cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor] hover:bg-white/10"
+              className="p-2 rounded cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor]"
               title="View Majors"
             >
               <FiEye size={18} />
             </button>
             <button
               onClick={() => onEditFaculty(f)}
-              className="p-2 rounded-full cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor] hover:bg-white/10"
+              className="p-2 rounded cursor-pointer text-accent transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor]"
               title="Edit"
             >
-              <FiEdit size={18} />
+              <FiEdit2 size={18} />
             </button>
             <button
               onClick={() => onDeleteFaculty(f.faculty_id)}
-              className="p-2 rounded-full cursor-pointer text-red-600 transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor] hover:bg-white/10"
+              className="p-2 rounded cursor-pointer text-red-500 transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor]"
               title="Delete"
             >
               <FiTrash2 size={18} />

@@ -101,23 +101,6 @@ export default function AdminUsersPage() {
       >
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Manage Users</h1>
-
-          {/* Add User button matching edit button color */}
-          <button
-            onClick={() => setIsAdding(true)}
-            className="
-              px-4 py-2 rounded-lg font-medium
-              text-accent
-              bg-transparent
-              border-2 border-accent
-              transition-all duration-200
-              hover:scale-105
-              hover:drop-shadow-[0_0_6px_currentColor,0_0_12px_currentColor]
-              cursor-pointer
-            "
-          >
-            + Add User
-          </button>
         </div>
 
         {loading ? (
@@ -132,6 +115,7 @@ export default function AdminUsersPage() {
             setEditingUser={setEditingUser}
             handleDeleteUser={handleDeleteUser}
             onRefresh={getUsersFromService}
+            onAddUser={() => setIsAdding(true)}
           />
         )}
 
