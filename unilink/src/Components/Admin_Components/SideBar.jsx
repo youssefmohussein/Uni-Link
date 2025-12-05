@@ -12,6 +12,7 @@ export default function Sidebar() {
     { label: "Users", icon: <FiUsers />, path: "/admin/users" },
     { label: "Students", icon: <FiBookOpen />, path: "/admin/students" },
     { label: "Professors", icon: <FiUserCheck />, path: "/admin/manage-professors" },
+    { label: "Rooms", icon: <FiUsers />, path: "/admin/rooms" },
     { label: "Admin", icon: <FiUsers />, path: "/admin/admin" },
     { label: "University", icon: <FiGlobe />, path: "/admin/university" }
   ];

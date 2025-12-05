@@ -35,3 +35,16 @@ export const getRoomMessages = async (room_id, after_id = 0) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch messages");
     return res.data;
 };
+
+export const updateRoom = async (roomData) => {
+    // roomData: { room_id, room_name, description }
+    const res = await apiRequest("index.php/updateRoom", "POST", roomData);
+    if (res.status !== "success") throw new Error(res.message || "Failed to update room");
+    return true;
+};
+
+export const deleteRoom = async (room_id) => {
+    const res = await apiRequest("index.php/deleteRoom", "POST", { room_id });
+    if (res.status !== "success") throw new Error(res.message || "Failed to delete room");
+    return true;
+};
