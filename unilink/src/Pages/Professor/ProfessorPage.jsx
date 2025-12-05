@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../components/Posts/Header";
+import Header from "../../Components/Posts/Header";
 import * as professorHandler from "../../../api/professorHandler";
 import * as postHandler from "../../../api/postHandler";
-import PostCard from "../../components/Posts/PostCard";
+import PostCard from "../../Components/Posts/PostCard";
 
 const ProfessorPage = () => {
     const [professor, setProfessor] = useState(null);

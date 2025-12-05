@@ -29,6 +29,10 @@ function registerPostRoutes($request, $method) {
             PostController::deletePost();
             break;
 
+        case $request === '/searchPosts' && $method === 'GET':
+            PostController::searchPosts();
+            break;
+
         default:
             return false;
     }
