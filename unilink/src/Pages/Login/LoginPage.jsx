@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import LightRays from "../../Components/Login_Components/LightRays/LightRays";
 import GlassSurface from "../../Components/Login_Components/LiquidGlass/GlassSurface";
 import AnimatedContent from '../../Animations/AnimatedContent/AnimatedContent';
+import authHandler from '../../handlers/authHandler';
 
 const GlassInput = ({ type, placeholder, value, onChange, className = '' }) => {
     const isPassword = type === 'password';
@@ -86,57 +87,42 @@ const LiquidLoginForm = () => {
         setSuccess('');
         setLoading(true);
 
-        try {
-            const response = await fetch('http://localhost/backend/index.php/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    identifier,
-                    password
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || 'Login failed');
-                setLoading(false);
-                return;
-            }
-
-            // Store user info in localStorage for easy access
-            localStorage.setItem('user', JSON.stringify({
-                id: data.user?.id || data.id, // Handle different backend response structures if needed
-                role: data.role,
-                username: data.username,
-                email: data.email
-            }));
-
-            // Show success message
-            setSuccess('Login successful! Redirecting...');
-
-            // Redirect after showing success message
-            setTimeout(() => {
-                // Ensure admin users go to admin dashboard
-                if (data.role === 'Admin') {
-                    window.location.href = '/admin/users';
-                } else if (data.role === 'Professor') {
-                    window.location.href = '/professor';
-                } else if (data.redirect) {
-                    window.location.href = data.redirect;
-                } else {
-                    window.location.href = '/';
-                }
-            }, 1000);
-
-        } catch (err) {
-            console.error('Login error:', err);
-            setError('Network error. Please try again.');
+        // Validate input
+        if (!identifier.trim() || !password) {
+            setError('Please enter both email/username and password');
             setLoading(false);
+            return;
         }
+
+        // Use centralized auth handler
+        const result = await authHandler.login(identifier, password);
+
+        if (!result.success) {
+            setError(result.error);
+            setLoading(false);
+            return;
+        }
+
+        // Show success message
+        setSuccess('Login successful! Redirecting...');
+
+        // Redirect based on user role
+        setTimeout(() => {
+            const { role } = result.user;
+
+            // Role-based redirection
+            if (role === 'Admin') {
+                window.location.href = '/admin/users';
+            } else if (role === 'Professor') {
+                window.location.href = '/professor';
+            } else if (role === 'Student') {
+                window.location.href = '/student/home';
+            } else if (result.redirect) {
+                window.location.href = result.redirect;
+            } else {
+                window.location.href = '/';
+            }
+        }, 1000);
     };
 
     return (
