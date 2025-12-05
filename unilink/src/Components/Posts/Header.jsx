@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiBell, FiUser, FiPlus, FiSearch } from "react-icons/fi";
+import { FiBell, FiUser, FiPlus, FiSearch, FiX } from "react-icons/fi";
 import Logo from "../../Uni-Link-Logo.webp";
 
-const Header = ({ onShareActivity }) => {
+const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch }) => {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-[#0d1117] to-[#161b22] shadow-lg border-b border-[#21262d] backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16 text-white font-main">
@@ -25,11 +25,22 @@ const Header = ({ onShareActivity }) => {
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
           <input
             type="text"
-            placeholder="Search people, projects, or events..."
-            className="w-full bg-[#0d1117]/80 text-[#c9d1d9] rounded-full py-2.5 pl-11 pr-4 
+            placeholder="Search posts by content or hashtags..."
+            value={searchQuery || ""}
+            onChange={(e) => onSearch?.(e.target.value)}
+            className="w-full bg-[#0d1117]/80 text-[#c9d1d9] rounded-full py-2.5 pl-11 pr-10 
             focus:outline-none focus:ring-2 focus:ring-[#58a6ff] 
             transition-all placeholder:text-gray-500 border border-[#21262d] hover:border-[#30363d]"
           />
+          {searchQuery && (
+            <button
+              onClick={onClearSearch}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              aria-label="Clear search"
+            >
+              <FiX className="text-lg" />
+            </button>
+          )}
         </div>
 
         {/* Right: Actions */}

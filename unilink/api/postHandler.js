@@ -234,3 +234,16 @@ export const getMediaByPost = async (post_id) => {
     return res.data ?? [];
 };
 
+/**
+ * Search posts by content or hashtags
+ * @param {string} query - Search query
+ */
+export const searchPosts = async (query) => {
+    if (!query || !query.trim()) {
+        return [];
+    }
+    const data = await apiRequest(`index.php/searchPosts?q=${encodeURIComponent(query)}`, "GET");
+    if (data.status !== "success") throw new Error(data.message || "Failed to search posts");
+    return data.data ?? [];
+};
+

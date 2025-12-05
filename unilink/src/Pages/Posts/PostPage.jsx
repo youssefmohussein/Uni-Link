@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import Header from "../../components/Posts/Header";
-import LeftSidebar from "../../components/Posts/LeftSidebar";
-import RightSidebar from "../../components/Posts/RightSidebar";
-import PostCard from "../../components/Posts/PostCard";
-import PostForm from "../../components/Posts/PostForm";
+import Header from "../../Components/Posts/Header";
+import LeftSidebar from "../../Components/Posts/LeftSidebar";
+import RightSidebar from "../../Components/Posts/RightSidebar";
+import PostCard from "../../Components/Posts/PostCard";
+import PostForm from "../../Components/Posts/PostForm";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
 import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
@@ -16,8 +16,12 @@ const PostPage = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const postFormRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
   // TODO: Replace with actual session user_id once authentication is integrated
   const TEMP_USER_ID = 1;
@@ -135,7 +139,82 @@ const PostPage = () => {
     }
   };
 
-  const filteredPosts = posts.filter((post) => {
+  // Search handler with debouncing
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setError(null); // Clear any previous errors
+
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // If query is empty, clear search results
+    if (!query || !query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    // Set searching state
+    setIsSearching(true);
+
+    // Debounce search with 300ms delay
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const results = await postHandler.searchPosts(query);
+
+        // Transform search results to match PostCard expected format
+        const transformedResults = results.map((post) => ({
+          id: post.post_id,
+          user: {
+            name: post.author_name || "Unknown User",
+            major: post.faculty_name || "Unknown Faculty",
+            profilePic: `https://placehold.co/40x40/E5E7EB/6B7280?text=${(post.author_name || "U")[0]}`,
+          },
+          timeAgo: formatTimeAgo(post.created_at),
+          category: post.category,
+          content: post.content,
+          media: post.media && post.media.length > 0
+            ? post.media.map(m => ({
+              media_id: m.media_id,
+              type: m.media_type,
+              url: `http://localhost/backend/${m.media_path}`
+            }))
+            : [],
+          reactions: post.likes_count || 0,
+          isReacted: false,
+          isTrending: false,
+          comments: [],
+          post_id: post.post_id,
+        }));
+
+        setSearchResults(transformedResults);
+        setError(null); // Clear error on successful search
+      } catch (err) {
+        console.error("Search failed:", err);
+        // Only show error for actual failures, not empty results
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  };
+
+  // Clear search handler
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearching(false);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+  };
+
+  // Determine which posts to display
+  const displayPosts = searchQuery ? searchResults : posts;
+
+  const filteredPosts = displayPosts.filter((post) => {
     if (filter === "all") return true;
     if (filter === "trending") return post.isTrending;
     return post.category === filter;
@@ -176,7 +255,13 @@ const PostPage = () => {
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* 🌟 Header */}
-        <Header logoSize="large" onShareActivity={openPostModal} />
+        <Header
+          logoSize="large"
+          onShareActivity={openPostModal}
+          onSearch={handleSearch}
+          searchQuery={searchQuery}
+          onClearSearch={handleClearSearch}
+        />
 
         <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
           {/* 📁 Left Sidebar */}
@@ -205,7 +290,11 @@ const PostPage = () => {
               </div>
             ) : filteredPosts.length === 0 ? (
               <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
-                <p className="text-muted">No posts found. Be the first to share something!</p>
+                <p className="text-muted">
+                  {searchQuery
+                    ? `No posts found matching "${searchQuery}". Try a different search term.`
+                    : "No posts found. Be the first to share something!"}
+                </p>
               </div>
             ) : (
               <div className="space-y-8">
