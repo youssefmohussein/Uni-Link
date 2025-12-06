@@ -2,29 +2,94 @@
 
 require_once __DIR__ . '/../utils/DbConnection.php';
 
-class ProjectRoomController {
+class ProjectRoomController
+{
 
     // ===============================
     // 🆕 Create a Room
     // ===============================
-    public static function createRoom() {
+    public static function createRoom()
+    {
         global $pdo;
 
-        $input = json_decode(file_get_contents("php://input"), true);
+        // Determine input source: JSON or POST (form-data)
+        $input = [];
+        $jsonData = json_decode(file_get_contents("php://input"), true);
 
-        if (!$input || !isset($input['owner_id'], $input['name'], $input['password'])) {
+        if (!empty($_POST)) {
+            $input = $_POST;
+        } elseif (is_array($jsonData)) {
+            $input = $jsonData;
+        }
+
+        // Validate required fields
+        $missingFields = [];
+        if (!isset($input['owner_id']) || $input['owner_id'] === '') {
+            $missingFields[] = 'owner_id';
+        }
+        if (!isset($input['name']) || trim($input['name']) === '') {
+            $missingFields[] = 'name';
+        }
+        if (!isset($input['password']) || trim($input['password']) === '') {
+            $missingFields[] = 'password';
+        }
+
+        if (!empty($missingFields)) {
             echo json_encode([
                 "status" => "error",
-                "message" => "Missing required fields: owner_id, name, password"
+                "message" => "Missing required fields: " . implode(', ', $missingFields),
+                "debug_input" => $input,
+                "debug_post" => $_POST,
+                "debug_files" => array_keys($_FILES)
             ]);
             return;
         }
 
-        $owner_id = (int)$input['owner_id'];
+        $owner_id = (int) $input['owner_id'];
         $name = $input['name'];
         $description = $input['description'] ?? null;
-        $photo_url = $input['photo_url'] ?? null;
         $password = $input['password'];
+
+        // Handle Photo Upload
+        $photo_url = $input['photo_url'] ?? null; // Fallback to URL if provided
+
+        if (isset($_FILES['room_photo']) && $_FILES['room_photo']['error'] === UPLOAD_ERR_OK) {
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $fileType = mime_content_type($_FILES['room_photo']['tmp_name']);
+
+            if (!in_array($fileType, $allowedTypes)) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed."
+                ]);
+                return;
+            }
+
+            // Ensure upload directory exists
+            $uploadDir = __DIR__ . '/../uploads/room_photos/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            // Generate unique filename
+            $extension = pathinfo($_FILES['room_photo']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid('room_', true) . '.' . $extension;
+            $targetPath = $uploadDir . $filename;
+
+            if (move_uploaded_file($_FILES['room_photo']['tmp_name'], $targetPath)) {
+                // Store relative path (accessible via web)
+                // Assuming index.php routing or web server points /uploads to root or backend/uploads
+                // Let's us standard relative from API root for now, user might need to prepend base URL in frontend
+                // Or we store 'uploads/room_photos/filename' and frontend serves it from API_BASE_URL + path
+                $photo_url = 'uploads/room_photos/' . $filename;
+            } else {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Failed to upload photo"
+                ]);
+                return;
+            }
+        }
 
         // Hash the password for security
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -48,7 +113,8 @@ class ProjectRoomController {
             echo json_encode([
                 "status" => "success",
                 "message" => "Room created successfully",
-                "room_id" => $room_id
+                "room_id" => $room_id,
+                "photo_url" => $photo_url
             ]);
 
         } catch (PDOException $e) {
@@ -62,7 +128,8 @@ class ProjectRoomController {
     // ===============================
     // 📜 Get All Rooms
     // ===============================
-    public static function getAllRooms() {
+    public static function getAllRooms()
+    {
         global $pdo;
 
         try {
@@ -92,7 +159,8 @@ class ProjectRoomController {
     // ===============================
     // 🔍 Get Room by ID
     // ===============================
-    public static function getRoom() {
+    public static function getRoom()
+    {
         global $pdo;
 
         if (!isset($_GET['room_id'])) {
@@ -103,7 +171,7 @@ class ProjectRoomController {
             return;
         }
 
-        $room_id = (int)$_GET['room_id'];
+        $room_id = (int) $_GET['room_id'];
 
         try {
             $stmt = $pdo->prepare("
@@ -140,7 +208,8 @@ class ProjectRoomController {
     // ===============================
     // 👤 Get User's Rooms (where user is a member)
     // ===============================
-    public static function getUserRooms() {
+    public static function getUserRooms()
+    {
         global $pdo;
 
         // Start session if not already started
@@ -157,7 +226,7 @@ class ProjectRoomController {
             return;
         }
 
-        $user_id = (int)$_SESSION['user']['id'];
+        $user_id = (int) $_SESSION['user']['id'];
 
         try {
             $stmt = $pdo->prepare("

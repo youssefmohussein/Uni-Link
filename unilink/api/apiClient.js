@@ -10,7 +10,10 @@ export async function apiRequest(endpoint, method = "GET", data = null) {
     credentials: "include", // Important for session-based authentication
   };
 
-  if (data) {
+  if (data instanceof FormData) {
+    delete options.headers["Content-Type"];
+    options.body = data;
+  } else if (data) {
     options.body = JSON.stringify(data);
   }
 

@@ -255,11 +255,56 @@ const NetworkLines = ({ size, color }) => {
 const HolographicEarth = ({ isOpen }) => {
     const groupRef = useRef();
     const [hovered, setHovered] = useState(false);
+    const [dbConnected, setDbConnected] = useState(false);
+    const [dbStatus, setDbStatus] = useState('Checking...');
 
     const { scale } = useSpring({
         scale: isOpen ? (hovered ? 1.05 : 1) : 0,
         config: { tension: 100, friction: 20 }
     });
+
+    // Check database connection on mount
+    React.useEffect(() => {
+        const checkDatabase = async () => {
+            try {
+                console.log('🔍 Checking database connection...');
+
+                // Add timeout to make check faster (1 second max)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+                // Use existing working endpoint that requires database access
+                const response = await fetch('http://localhost/backend/index.php/getUsers', {
+                    credentials: 'include',
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                console.log('📡 Response status:', response.status);
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+
+                // If we get data back (even if not authenticated), database is working
+                if (response.ok && data.status === 'success' && data.data) {
+                    setDbConnected(true);
+                    setDbStatus('Database Connected');
+                    console.log('✅ Database is connected');
+                } else {
+                    setDbConnected(false);
+                    setDbStatus('Database Not Connected');
+                    console.log('❌ Database NOT connected');
+                }
+            } catch (error) {
+                setDbConnected(false);
+                setDbStatus('Database Not Connected');
+                console.log('❌ Error checking database:', error.name === 'AbortError' ? 'Timeout' : error);
+            }
+        };
+
+        if (isOpen) {
+            checkDatabase();
+        }
+    }, [isOpen]);
 
     useFrame((state) => {
         if (groupRef.current) {
@@ -274,7 +319,8 @@ const HolographicEarth = ({ isOpen }) => {
         <animated.group position={[0, 0.7, 0]} scale={scale}>
             <group ref={groupRef}>
                 <PointCloudSphere size={size} color={color} />
-                <NetworkLines size={size} color={color} />
+                {/* Only render NetworkLines if database is connected */}
+                {dbConnected && <NetworkLines size={size} color={color} />}
 
                 <mesh frustumCulled={false}>
                     <sphereGeometry args={[size * 0.98, 12, 12]} />
@@ -309,8 +355,8 @@ const HolographicEarth = ({ isOpen }) => {
                         style={{
                             background: 'rgba(0, 20, 40, 0.85)',
                             backdropFilter: 'blur(12px)',
-                            border: `1px solid ${color}`,
-                            boxShadow: `0 0 20px ${color}60`,
+                            border: `1px solid ${dbConnected ? color : '#ff4444'}`,
+                            boxShadow: `0 0 20px ${dbConnected ? color : '#ff4444'}60`,
                             color: '#ffffff',
                             fontFamily: "'Orbitron', sans-serif",
                             letterSpacing: '0.1em',
@@ -319,7 +365,13 @@ const HolographicEarth = ({ isOpen }) => {
                         }}
                     >
                         <div>Global Network</div>
-                        <div style={{ fontSize: '0.6em', color: color, marginTop: '4px' }}>Connected</div>
+                        <div style={{
+                            fontSize: '0.6em',
+                            color: dbConnected ? color : '#ff4444',
+                            marginTop: '4px'
+                        }}>
+                            {dbStatus}
+                        </div>
                     </div>
                 </Html>
             )}

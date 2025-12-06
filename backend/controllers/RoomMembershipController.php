@@ -2,12 +2,14 @@
 
 require_once __DIR__ . '/../utils/DbConnection.php';
 
-class RoomMembershipController {
+class RoomMembershipController
+{
 
     // ===============================
     // ➕ Join Room (password required)
     // ===============================
-    public static function joinRoom() {
+    public static function joinRoom()
+    {
         global $pdo;
 
         $input = json_decode(file_get_contents("php://input"), true);
@@ -20,8 +22,8 @@ class RoomMembershipController {
             return;
         }
 
-        $room_id = (int)$input['room_id'];
-        $user_id = (int)$input['user_id'];
+        $room_id = (int) $input['room_id'];
+        $user_id = (int) $input['user_id'];
         $password = $input['password'];
 
         try {
@@ -76,7 +78,8 @@ class RoomMembershipController {
     // ===============================
     // 👥 Get room members
     // ===============================
-    public static function getRoomMembers() {
+    public static function getRoomMembers()
+    {
         global $pdo;
 
         if (!isset($_GET['room_id'])) {
@@ -87,7 +90,7 @@ class RoomMembershipController {
             return;
         }
 
-        $room_id = (int)$_GET['room_id'];
+        $room_id = (int) $_GET['room_id'];
 
         try {
             $stmt = $pdo->prepare("

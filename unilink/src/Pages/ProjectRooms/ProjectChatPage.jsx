@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Header from "../../components/Posts/Header";
+import Header from "../../Components/Posts/Header";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 
 const ProjectChatPage = () => {
@@ -89,7 +89,7 @@ const ProjectChatPage = () => {
 
     return (
         <div className="min-h-screen bg-main text-white font-main flex flex-col">
-            <Header logoSize="small" />
+            <Header logoSize="small" hideShareButton={true} />
 
             <div className="pt-20 flex-grow container mx-auto px-4 md:px-8 max-w-6xl flex flex-col h-[calc(100vh-20px)]">
                 {/* Chat Header */}
