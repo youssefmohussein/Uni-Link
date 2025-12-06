@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw, FiPlus } from "react-icons/fi";
 import AnimatedUserRow from "./AnimatedUserRow";
 import Card from "./Card";
 import Pagination from "../Admin_Components/Paganation";
@@ -10,7 +10,8 @@ export default function UsersTable({
   setQuery,
   setEditingUser,
   handleDeleteUser,
-  onRefresh
+  onRefresh,
+  onAddUser
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
@@ -40,20 +41,36 @@ export default function UsersTable({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 px-4">
         <h2 className="text-xl font-bold text-accent">Users</h2>
-        <button
-          onClick={onRefresh}
-          className="
-            p-2 rounded-full cursor-pointer
-            text-accent
-            transition-all duration-200
-            hover:scale-110
-            hover:drop-shadow-[0_0_6px_currentColor]
-            hover:bg-white/10
-          "
-          title="Refresh Users"
-        >
-          <FiRefreshCw size={20} />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={onRefresh}
+            className="
+                p-2 rounded-full cursor-pointer
+                text-accent
+                transition-all duration-200
+                hover:scale-110
+                hover:drop-shadow-[0_0_6px_currentColor]
+                hover:bg-white/10
+            "
+            title="Refresh Users"
+          >
+            <FiRefreshCw size={20} />
+          </button>
+          <button
+            onClick={onAddUser}
+            className="
+                p-2 rounded-full cursor-pointer
+                text-accent
+                transition-all duration-200
+                hover:scale-110
+                hover:drop-shadow-[0_0_6px_currentColor]
+                hover:bg-white/10
+            "
+            title="Add User"
+          >
+            <FiPlus size={20} />
+          </button>
+        </div>
       </div>
 
       {/* Search */}

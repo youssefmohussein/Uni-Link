@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FiRefreshCw, FiEdit2 } from "react-icons/fi";
+import { FiRefreshCw, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Card from "./Card";
 import Pagination from "../Admin_Components/Paganation";
 
@@ -8,6 +8,7 @@ export default function ProfessorTable({
   query = "",
   setQuery,
   setEditingProfessor,
+  handleDeleteProfessor,
   onRefresh
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -96,7 +97,7 @@ export default function ProfessorTable({
             <div className="col-span-2 truncate">{p.major_name ?? "-"}</div>
             <div className="col-span-2 truncate">{p.academic_rank ?? "-"}</div>
             <div className="col-span-2 truncate">{p.office_location ?? "-"}</div>
-            <div className="col-span-1 flex justify-end">
+            <div className="col-span-1 flex justify-end gap-2">
               <button
                 onClick={() => setEditingProfessor(p)}
                 className="
@@ -109,6 +110,19 @@ export default function ProfessorTable({
                 title="Edit professor"
               >
                 <FiEdit2 size={16} />
+              </button>
+              <button
+                onClick={() => handleDeleteProfessor(p.user_id)}
+                className="
+                  p-2 rounded cursor-pointer
+                  text-red-500
+                  transition-all duration-200
+                  hover:scale-110
+                  hover:drop-shadow-[0_0_6px_currentColor]
+                "
+                title="Delete professor"
+              >
+                <FiTrash2 size={16} />
               </button>
             </div>
           </div>
@@ -129,3 +143,4 @@ export default function ProfessorTable({
     </Card>
   );
 }
+
