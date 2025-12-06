@@ -247,3 +247,60 @@ export const searchPosts = async (query) => {
     return data.data ?? [];
 };
 
+/* ============================================================
+   SAVED POSTS / COLLECTIONS
+   ============================================================ */
+
+/**
+ * Save a post to user's collection
+ * @param {number} user_id
+ * @param {number} post_id
+ */
+export const savePost = async (user_id, post_id) => {
+    const res = await apiRequest("index.php/savePost", "POST", { user_id, post_id });
+    if (res.status !== "success") throw new Error(res.message || "Failed to save post");
+    return {
+        saved_id: res.saved_id,
+        already_saved: res.already_saved
+    };
+};
+
+/**
+ * Unsave/remove a post from user's collection
+ * @param {number} user_id
+ * @param {number} post_id
+ */
+export const unsavePost = async (user_id, post_id) => {
+    const res = await apiRequest("index.php/unsavePost", "POST", { user_id, post_id });
+    if (res.status !== "success") throw new Error(res.message || "Failed to unsave post");
+    return {
+        removed: res.removed
+    };
+};
+
+/**
+ * Get all saved posts for a user
+ * @param {number} user_id
+ * @returns {Array} - Array of saved posts with full details
+ */
+export const getSavedPosts = async (user_id) => {
+    const data = await apiRequest(`index.php/getSavedPosts?user_id=${user_id}`, "GET");
+    if (data.status !== "success") throw new Error(data.message || "Failed to fetch saved posts");
+    return data.data ?? [];
+};
+
+/**
+ * Check if a specific post is saved by user
+ * @param {number} user_id
+ * @param {number} post_id
+ * @returns {Object} - { is_saved: boolean, saved_id: number|null }
+ */
+export const checkIfPostSaved = async (user_id, post_id) => {
+    const res = await apiRequest(`index.php/isPostSaved?user_id=${user_id}&post_id=${post_id}`, "GET");
+    if (res.status !== "success") throw new Error(res.message || "Failed to check save status");
+    return {
+        is_saved: res.is_saved,
+        saved_id: res.saved_id
+    };
+};
+

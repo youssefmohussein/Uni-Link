@@ -15,6 +15,7 @@ import LoadingPage from "./Pages/loadingPage";
 import ProfilePage from "./Pages/Profile/ProfilePage";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PostPage from "./Pages/Posts/PostPage";
+import CollectionsPage from "./Pages/Collections/Collections";
 import ProfessorPage from "./Pages/Professor/ProfessorPage";
 import ProjectRoomsPage from "./Pages/ProjectRooms/ProjectRoomsPage";
 import ProjectChatPage from "./Pages/ProjectRooms/ProjectChatPage";
@@ -89,31 +90,11 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/about" element={<AboutUsPage />} />
-          <Route
-            path="/posts"
-            element={
-              <ProtectedRoute>
-                <PostPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/posts" element={<PostPage />} />
+          <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/professor" element={<ProfessorPage />} />
-          <Route
-            path="/project-rooms"
-            element={
-              <ProtectedRoute>
-                <ProjectRoomsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/project-room/:id"
-            element={
-              <ProtectedRoute>
-                <ProjectChatPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/project-rooms" element={<ProjectRoomsPage />} />
+          <Route path="/project-room/:id" element={<ProjectChatPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Router>
