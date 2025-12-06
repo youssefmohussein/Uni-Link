@@ -22,6 +22,11 @@ function registerProjectRoutes($request, $method) {
         case $request === '/getProjectById' && $method === 'GET':
             ProjectController::getProjectById();
             break;
+
+        case $request === '/getUserProjects' && $method === 'GET':
+            ProjectController::getUserProjects();
+            break;
+
         default:
             return false;
     }

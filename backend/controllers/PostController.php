@@ -306,6 +306,67 @@ class PostController {
             ]);
         }
     }
+
+    // Get all posts for a specific user
+    public static function getUserPosts() {
+        global $pdo;
+
+        // Get user_id from query string or request body
+        $user_id = null;
+        if (isset($_GET['user_id'])) {
+            $user_id = (int)$_GET['user_id'];
+        } else {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $user_id = isset($input['user_id']) ? (int)$input['user_id'] : null;
+        }
+
+        if (!$user_id) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "User ID is required"
+            ]);
+            return;
+        }
+
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    p.*, 
+                    u.username AS author_name,
+                    f.faculty_name,
+                    COUNT(DISTINCT pi.interaction_id) AS likes_count
+                FROM Post p
+                JOIN Users u ON p.author_id = u.user_id
+                JOIN Faculty f ON p.faculty_id = f.faculty_id
+                LEFT JOIN PostInteraction pi ON p.post_id = pi.post_id AND pi.type = 'Like'
+                WHERE p.author_id = ?
+                GROUP BY p.post_id
+                ORDER BY p.created_at DESC
+                LIMIT 5
+            ");
+            $stmt->execute([$user_id]);
+            $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fetch media for each post
+            foreach ($posts as &$post) {
+                $mediaStmt = $pdo->prepare("SELECT * FROM Media WHERE post_id = ?");
+                $mediaStmt->execute([$post['post_id']]);
+                $post['media'] = $mediaStmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+
+            echo json_encode([
+                "status" => "success",
+                "count" => count($posts),
+                "data" => $posts
+            ]);
+
+        } catch (PDOException $e) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+    }
 }
 
 ?>

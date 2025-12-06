@@ -24,6 +24,10 @@ function registerUserRoutes($request, $method) {
             UserController::deleteUser();
             break;
 
+        case $request === '/getUserProfile' && $method === 'GET':
+            UserController::getUserProfile();
+            break;
+
         default:
             return false;
     }

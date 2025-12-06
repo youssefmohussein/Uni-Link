@@ -28,9 +28,14 @@ class UserSkillController {
             return;
         }
         $stmt = $pdo->prepare("
-            SELECT us.skill_id, s.skill_name, s.category_id
+            SELECT 
+                us.skill_id, 
+                s.skill_name, 
+                s.category_id,
+                sc.category_name
             FROM UserSkill us
             JOIN Skill s ON us.skill_id = s.skill_id
+            LEFT JOIN SkillCategory sc ON s.category_id = sc.category_id
             WHERE us.user_id=?
         ");
         $stmt->execute([$input['user_id']]);

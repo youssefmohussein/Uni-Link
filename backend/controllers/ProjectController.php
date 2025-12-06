@@ -259,4 +259,60 @@ class ProjectController {
             echo json_encode(["status" => "error", "message" => $e->getMessage()]);
         }
     }
+
+    // Get all projects for a specific user
+    public static function getUserProjects() {
+        global $pdo;
+
+        // Get user_id from query string or request body
+        $user_id = null;
+        if (isset($_GET['user_id'])) {
+            $user_id = (int)$_GET['user_id'];
+        } else {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $user_id = isset($input['user_id']) ? (int)$input['user_id'] : null;
+        }
+
+        if (!$user_id) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "User ID is required"
+            ]);
+            return;
+        }
+
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    p.project_id,
+                    p.title,
+                    p.description,
+                    p.file_path,
+                    p.status,
+                    p.grade,
+                    p.created_at,
+                    p.updated_at,
+                    u.username as supervisor_name
+                FROM Project p
+                LEFT JOIN Users u ON p.supervisor_id = u.user_id
+                WHERE p.owner_id = ?
+                ORDER BY p.created_at DESC
+            ");
+            $stmt->execute([$user_id]);
+            $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "status" => "success",
+                "count" => count($projects),
+                "data" => $projects
+            ]);
+
+        } catch (PDOException $e) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+    }
 }
+

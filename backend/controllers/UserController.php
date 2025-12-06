@@ -551,5 +551,78 @@ if ($oldRole !== $newRole) {
                 ]);
             }
         }
+
+        // 🔹 Get user profile with complete information
+        public static function getUserProfile() {
+            global $pdo;
+
+            // Get user_id from query string or request body
+            $user_id = null;
+            if (isset($_GET['user_id'])) {
+                $user_id = (int)$_GET['user_id'];
+            } else {
+                $input = json_decode(file_get_contents("php://input"), true);
+                $user_id = isset($input['user_id']) ? (int)$input['user_id'] : null;
+            }
+
+            if (!$user_id) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "User ID is required"
+                ]);
+                return;
+            }
+
+            try {
+                // Fetch user with faculty and major information
+                $stmt = $pdo->prepare("
+                    SELECT 
+                        u.user_id, 
+                        u.username, 
+                        u.email, 
+                        u.phone,
+                        u.profile_image,
+                        u.bio,
+                        u.job_title,
+                        u.role,
+                        u.faculty_id,
+                        u.major_id,
+                        f.faculty_name,
+                        m.major_name,
+                        s.year,
+                        s.gpa,
+                        s.points
+                    FROM Users u
+                    LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
+                    LEFT JOIN Major m ON u.major_id = m.major_id
+                    LEFT JOIN Student s ON u.user_id = s.student_id
+                    WHERE u.user_id = ?
+                ");
+                $stmt->execute([$user_id]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "User not found"
+                    ]);
+                    return;
+                }
+
+                // Remove password from response
+                unset($user['password']);
+
+                echo json_encode([
+                    "status" => "success",
+                    "data" => $user
+                ]);
+
+            } catch (PDOException $e) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Database error: " . $e->getMessage()
+                ]);
+            }
+        }
     }
     ?>
