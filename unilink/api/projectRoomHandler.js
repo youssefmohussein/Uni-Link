@@ -5,7 +5,7 @@ export const initRoomsDB = async () => {
 };
 
 export const createRoom = async (roomData) => {
-    // roomData: { room_name, description, created_by }
+    // roomData: { owner_id, name, description, password, photo_url }
     const res = await apiRequest("index.php/createRoom", "POST", roomData);
     if (res.status !== "success") throw new Error(res.message || "Failed to create room");
     return res;
@@ -17,8 +17,14 @@ export const getAllRooms = async () => {
     return res.data;
 };
 
+export const getUserRooms = async () => {
+    const res = await apiRequest("index.php/getUserRooms", "GET");
+    if (res.status !== "success") throw new Error(res.message || "Failed to fetch your rooms");
+    return res.data;
+};
+
 export const getRoomById = async (room_id) => {
-    const res = await apiRequest(`index.php/getRoomById/${room_id}`, "GET");
+    const res = await apiRequest(`index.php/getRoom?room_id=${room_id}`, "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch room details");
     return res.data;
 };
@@ -31,7 +37,7 @@ export const sendMessage = async (msgData) => {
 };
 
 export const getRoomMessages = async (room_id, after_id = 0) => {
-    const res = await apiRequest(`index.php/getRoomMessages/${room_id}?after_id=${after_id}`, "GET");
+    const res = await apiRequest(`index.php/getMessages?room_id=${room_id}&after_id=${after_id}`, "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch messages");
     return res.data;
 };

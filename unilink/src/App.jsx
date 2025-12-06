@@ -89,10 +89,31 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/about" element={<AboutUsPage />} />
-          <Route path="/posts" element={<PostPage />} />
+          <Route
+            path="/posts"
+            element={
+              <ProtectedRoute>
+                <PostPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/professor" element={<ProfessorPage />} />
-          <Route path="/project-rooms" element={<ProjectRoomsPage />} />
-          <Route path="/project-room/:id" element={<ProjectChatPage />} />
+          <Route
+            path="/project-rooms"
+            element={
+              <ProtectedRoute>
+                <ProjectRoomsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/project-room/:id"
+            element={
+              <ProtectedRoute>
+                <ProjectChatPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Router>

@@ -73,7 +73,7 @@ const ProjectChatPage = () => {
         try {
             await projectRoomHandler.sendMessage({
                 room_id: roomId,
-                user_id: user.id,
+                sender_id: user.id,
                 content: newMessage
             });
             setNewMessage("");
@@ -96,7 +96,7 @@ const ProjectChatPage = () => {
                 <div className="flex items-center justify-between py-4 border-b border-white/10 mb-4">
                     <div>
                         <h1 className="text-2xl font-bold flex items-center gap-2">
-                            <span className="text-accent">#{room?.room_name}</span>
+                            <span className="text-accent">#{room?.name}</span>
                         </h1>
                         <p className="text-gray-400 text-sm">{room?.description}</p>
                     </div>
@@ -117,13 +117,13 @@ const ProjectChatPage = () => {
                     )}
 
                     {messages.map((msg) => {
-                        const isMe = msg.user_id === user.id;
+                        const isMe = msg.sender_id === user.id;
                         return (
                             <div key={msg.message_id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[80%] md:max-w-[60%] flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
                                     {/* Avatar */}
                                     <img
-                                        src={msg.profile_image || `https://ui-avatars.com/api/?name=${msg.username}`}
+                                        src={`https://ui-avatars.com/api/?name=${msg.username}&background=random`}
                                         className="w-8 h-8 rounded-full bg-gray-700 object-cover flex-shrink-0 mt-1"
                                         alt={msg.username}
                                     />

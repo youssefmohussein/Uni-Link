@@ -1,7 +1,11 @@
 <?php
+require_once __DIR__ . '/../middlewares/AuthMiddleware.php';
 require_once __DIR__ . '/../controllers/PostController.php';
 
 function registerPostRoutes($request, $method) {
+    // Require authentication for all post routes
+    AuthMiddleware::requireAuth();
+    
     switch (true) {
         case $request === '/addPost' && $method === 'POST':
             PostController::addPost();

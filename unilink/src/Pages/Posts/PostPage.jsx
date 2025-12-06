@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import Header from "../../Components/Posts/Header";
-import LeftSidebar from "../../Components/Posts/LeftSidebar";
-import RightSidebar from "../../Components/Posts/RightSidebar";
-import PostCard from "../../Components/Posts/PostCard";
-import PostForm from "../../Components/Posts/PostForm";
+import { useNavigate } from "react-router-dom";
+import Header from "../../components/Posts/Header";
+import LeftSidebar from "../../components/Posts/LeftSidebar";
+import RightSidebar from "../../components/Posts/RightSidebar";
+import PostCard from "../../components/Posts/PostCard";
+import PostForm from "../../components/Posts/PostForm";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
 import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
@@ -22,15 +23,24 @@ const PostPage = () => {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const postFormRef = useRef(null);
   const searchTimeoutRef = useRef(null);
+  const navigate = useNavigate();
 
-  // TODO: Replace with actual session user_id once authentication is integrated
-  const TEMP_USER_ID = 1;
-  const TEMP_FACULTY_ID = 1;
+  // Get current user from storage
+  const user = JSON.parse(localStorage.getItem('user'));
 
-  // Fetch posts from backend on mount
+  // Use actual user values or null (redirect handles null)
+  const currentUserId = user?.id || 1;
+  const currentFacultyId = user?.faculty_id || 1; // Fallback if missing
+
+  // Check auth and fetch posts
   useEffect(() => {
+    if (!user) {
+      alert("Please log in to access Posts");
+      navigate('/login');
+      return;
+    }
     fetchPosts();
-  }, []);
+  }, [user, navigate]);
 
   const fetchPosts = async () => {
     try {
@@ -107,8 +117,8 @@ const PostPage = () => {
     try {
       // Create post via API
       const post_id = await postHandler.addPost({
-        author_id: TEMP_USER_ID,
-        faculty_id: TEMP_FACULTY_ID,
+        author_id: currentUserId,
+        faculty_id: currentFacultyId,
         category: newPostCategory,
         content: newPostContent,
         status: "Published",
@@ -220,6 +230,8 @@ const PostPage = () => {
     return post.category === filter;
   });
 
+  if (!user) return null; // Prevent rendering while redirecting
+
   return (
     <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
       {/* 🌌 Starry Night Sky Background */}
@@ -303,7 +315,7 @@ const PostPage = () => {
                     key={post.id}
                     initialPost={post}
                     onRefresh={fetchPosts}
-                    currentUserId={TEMP_USER_ID}
+                    currentUserId={currentUserId}
                   />
                 ))}
               </div>

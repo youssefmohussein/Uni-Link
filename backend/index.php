@@ -35,6 +35,7 @@ require_once __DIR__ . '/routes/announcementRoutes.php';
 require_once __DIR__ . '/routes/projectReviewRoutes.php';
 require_once __DIR__ . '/routes/dashboardRoutes.php';
 require_once __DIR__ . '/routes/projectRoomRoutes.php'; // Added Project Room Routes
+
 // Parse request URL without query parameters
 if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
     $request = $_SERVER['PATH_INFO'];
