@@ -5,7 +5,7 @@ import Book3D from './Book3D';
 
 const Scene3D = ({ children, pages = 5, onCreated }) => {
     return (
-        <div className="fixed inset-0 z-10">
+        <div className="fixed inset-0 z-0 md:z-10">
             <Canvas
                 shadows
                 dpr={[1, 1.5]}
