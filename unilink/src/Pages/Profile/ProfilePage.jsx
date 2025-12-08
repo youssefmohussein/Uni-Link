@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ProjectCard from "../../components/Student/ProjectCard.jsx";
-import ProjectModal from "../../components/Student/ProjectModal.jsx";
-import SkillsSection from "../../components/Student/SkillsSection.jsx";
-import ProfileHeader from "../../components/Student/ProfileHeader.jsx";
-import CVSection from "../../components/Student/CvSection.jsx";
-import PostsSection from "../../components/Student/PostsSection.jsx";
+import ProjectCard from "../../Components/Student/ProjectCard.jsx";
+import ProjectModal from "../../Components/Student/ProjectModal.jsx";
+import SkillsSection from "../../Components/Student/SkillsSection.jsx";
+import ProfileHeader from "../../Components/Student/ProfileHeader.jsx";
+import CVSection from "../../Components/Student/CvSection.jsx";
+import PostsSection from "../../Components/Student/PostsSection.jsx";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
 import * as profileHandler from "../../../api/profileHandler";
+import * as studentHandler from "../../../api/studentHandler";
 
 function ProfilePageUser() {
   const navigate = useNavigate();
@@ -39,9 +40,9 @@ function ProfilePageUser() {
 
       // Fetch user profile, projects, and posts - handle each independently
       const [profileResult, projectsResult, postsResult] = await Promise.allSettled([
-        profileHandler.getUserProfile(userId),
-        profileHandler.getUserProjects(userId),
-        profileHandler.getUserPosts(userId)
+        studentHandler.getStudentProfile(userId),
+        studentHandler.getStudentProjects(userId),
+        studentHandler.getStudentPosts(userId)
       ]);
 
       // Handle profile data

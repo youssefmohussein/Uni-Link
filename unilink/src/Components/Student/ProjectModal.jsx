@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import * as studentHandler from "../../../api/studentHandler";
 
-function ProjectModal({ isOpen, onClose, addProject }) {
+function ProjectModal({ isOpen, onClose, addProject, userId, onSuccess }) {
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -8,8 +9,9 @@ function ProjectModal({ isOpen, onClose, addProject }) {
     team: "",
     code: "",
     docs: "",
-    image: null,
+    file: null,
   });
+  const [uploading, setUploading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -21,38 +23,58 @@ function ProjectModal({ isOpen, onClose, addProject }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
-    const skillsArray = form.skills
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s);
+    if (!form.title.trim() || !form.description.trim()) {
+      alert("Please fill in title and description");
+      return;
+    }
 
-    const imageUrl = form.image ? URL.createObjectURL(form.image) : null;
+    try {
+      setUploading(true);
 
-    const newProject = {
-      title: form.title,
-      description: form.description,
-      skills: skillsArray,
-      image: imageUrl,
-    };
+      // Prepare project data for upload
+      const projectData = {
+        user_id: userId,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        status: 'Pending' // Default status
+      };
 
-    
-    addProject(newProject);
+      // Add optional file if provided
+      if (form.file) {
+        projectData.project_file = form.file;
+      }
 
-    
-    setForm({
-      title: "",
-      description: "",
-      skills: "",
-      team: "",
-      code: "",
-      docs: "",
-      image: null,
-    });
-    onClose();
+      // Upload project to backend
+      const uploadedProject = await studentHandler.uploadProject(projectData);
+
+      alert("Project uploaded successfully!");
+
+      // Reset form
+      setForm({
+        title: "",
+        description: "",
+        skills: "",
+        team: "",
+        code: "",
+        docs: "",
+        file: null,
+      });
+
+      // Call onSuccess to refresh the project list
+      if (onSuccess) {
+        await onSuccess();
+      }
+
+      onClose();
+    } catch (err) {
+      console.error("Failed to upload project:", err);
+      alert(err.message || "Failed to upload project. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -94,30 +116,32 @@ function ProjectModal({ isOpen, onClose, addProject }) {
           />
 
           <label className="block w-full cursor-pointer">
-            <span className="text-sm text-muted">Upload Project Image</span>
+            <span className="text-sm text-muted">Upload Project File (PDF, ZIP, etc.)</span>
             <input
               type="file"
-              name="image"
-              accept="image/*"
+              name="file"
+              accept=".pdf,.zip,.rar,.doc,.docx"
               onChange={handleChange}
               className="mt-2 block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-white hover:file:bg-accent/80"
             />
           </label>
 
-        
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-muted/20 text-muted hover:bg-muted/30 transition"
+              disabled={uploading}
+              className="px-5 py-2 rounded-xl bg-muted/20 text-muted hover:bg-muted/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-xl bg-accent text-white font-semibold shadow-md hover:shadow-lg hover:bg-accent/90 transition"
+              disabled={uploading}
+              className="px-6 py-2 rounded-xl bg-accent text-white font-semibold shadow-md hover:shadow-lg hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Upload 🚀
+              {uploading ? "Uploading..." : "Upload 🚀"}
             </button>
           </div>
         </form>

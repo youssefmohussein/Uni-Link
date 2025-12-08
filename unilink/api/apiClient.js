@@ -19,10 +19,29 @@ export async function apiRequest(endpoint, method = "GET", data = null) {
 
   try {
     const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+
+    // Get response text first
+    const responseText = await response.text();
+
+    // Try to parse as JSON
+    let json;
+    try {
+      json = JSON.parse(responseText);
+    } catch (parseError) {
+      // If not JSON, it's likely an HTML error page
+      console.error("❌ Backend returned HTML instead of JSON:", responseText.substring(0, 500));
+
+      // Try to extract error message from HTML
+      const errorMatch = responseText.match(/<b>(.+?)<\/b>/);
+      const errorMessage = errorMatch ? errorMatch[1] : "Backend error - check console for details";
+
+      throw new Error(`Backend Error: ${errorMessage}`);
     }
-    const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} - ${json.message || 'Unknown error'}`);
+    }
+
     console.log("Response:", json);
     return json;
   } catch (err) {

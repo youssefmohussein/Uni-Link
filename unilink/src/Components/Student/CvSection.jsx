@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import * as studentHandler from "../../../api/studentHandler";
 
 function CVSection({ userId }) {
   const [cvFile, setCvFile] = useState(null);
@@ -14,24 +15,22 @@ function CVSection({ userId }) {
   const fetchExistingCV = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost/backend/index.php/getCV?user_id=${userId}`, {
-        method: 'GET',
-        credentials: 'include'
-      });
-      const data = await response.json();
+      const cvData = await studentHandler.getCV(userId);
 
-      if (data.status === 'success' && data.data) {
+      if (cvData) {
         // Extract filename from path
-        const fileName = data.data.file_path.split('/').pop();
+        const fileName = cvData.file_path.split('/').pop();
         setCvFile({
           name: fileName,
-          uploadedOn: new Date(data.data.created_at).toISOString().split("T")[0],
-          url: `http://localhost/backend/${data.data.file_path}`,
-          filePath: data.data.file_path
+          uploadedOn: new Date(cvData.created_at).toISOString().split("T")[0],
+          url: `http://localhost/backend/${cvData.file_path}`,
+          filePath: cvData.file_path
         });
       }
     } catch (err) {
       console.error("Failed to fetch CV:", err);
+      // Set to null if no CV exists
+      setCvFile(null);
     } finally {
       setLoading(false);
     }
@@ -55,28 +54,15 @@ function CVSection({ userId }) {
     try {
       setUploading(true);
 
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('cv_file', file);
-      formData.append('user_id', userId);
+      // Use studentHandler to upload CV
+      await studentHandler.uploadCV(userId, file);
 
-      const response = await fetch('http://localhost/backend/index.php/uploadCV', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        // Fetch the updated CV
-        await fetchExistingCV();
-        alert("CV uploaded successfully!");
-      } else {
-        throw new Error(data.message || 'Upload failed');
-      }
+      // Fetch the updated CV
+      await fetchExistingCV();
+      alert("CV uploaded successfully!");
     } catch (err) {
       console.error("Failed to upload CV:", err);
-      alert("Failed to upload CV. Please try again.");
+      alert(err.message || "Failed to upload CV. Please try again.");
     } finally {
       setUploading(false);
     }

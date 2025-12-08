@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import * as profileHandler from "../../../api/profileHandler";
+import * as studentHandler from "../../../api/studentHandler";
 
 export default function SkillsSection({ userId }) {
   const [skills, setSkills] = useState({});
@@ -9,17 +9,34 @@ export default function SkillsSection({ userId }) {
   const [newCategory, setNewCategory] = useState("");
   const [newSkill, setNewSkill] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [allSkills, setAllSkills] = useState([]);
+  const [skillCategories, setSkillCategories] = useState([]);
 
   useEffect(() => {
     if (userId) {
       fetchUserSkills();
+      fetchSkillsData();
     }
   }, [userId]);
+
+  const fetchSkillsData = async () => {
+    try {
+      const [skillsData, categoriesData] = await Promise.all([
+        studentHandler.getAllSkills(),
+        studentHandler.getSkillCategories()
+      ]);
+      setAllSkills(skillsData);
+      setSkillCategories(categoriesData);
+    } catch (err) {
+      console.error("Failed to fetch skills data:", err);
+    }
+  };
 
   const fetchUserSkills = async () => {
     try {
       setLoading(true);
-      const userSkills = await profileHandler.getUserSkills(userId);
+      const userSkills = await studentHandler.getStudentSkills(userId);
 
       // Group skills by category
       const groupedSkills = {};
@@ -32,7 +49,10 @@ export default function SkillsSection({ userId }) {
         if (!groupedSkills[categoryName]) {
           groupedSkills[categoryName] = [];
         }
-        groupedSkills[categoryName].push(skill.skill_name);
+        groupedSkills[categoryName].push({
+          name: skill.skill_name,
+          id: skill.skill_id
+        });
       });
 
       setSkills(groupedSkills);
@@ -56,13 +76,51 @@ export default function SkillsSection({ userId }) {
     setNewCategory("");
   };
 
-  const handleAddSkill = () => {
-    if (!selectedCategory || !newSkill.trim()) return;
-    setSkills({
-      ...skills,
-      [selectedCategory]: [...(skills[selectedCategory] || []), newSkill],
-    });
-    setNewSkill("");
+  const handleAddSkill = async () => {
+    if (!selectedCategory || !newSkill.trim()) {
+      alert("Please select a category and enter a skill name");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      // Find or create the skill in the database
+      let skillToAdd = allSkills.find(
+        s => s.skill_name.toLowerCase() === newSkill.trim().toLowerCase()
+      );
+
+      // If skill doesn't exist, we need to create it first
+      // For now, we'll just add it locally and show a message
+      // You may need to add a createSkill endpoint in the backend
+      if (!skillToAdd) {
+        alert("Skill not found in database. Please contact admin to add this skill.");
+        return;
+      }
+
+      // Add skill to user's skills
+      await studentHandler.addStudentSkills(userId, [{ skill_id: skillToAdd.skill_id }]);
+
+      // Update local state
+      setSkills({
+        ...skills,
+        [selectedCategory]: [...(skills[selectedCategory] || []), {
+          name: newSkill.trim(),
+          id: skillToAdd.skill_id
+        }],
+      });
+
+      setNewSkill("");
+      alert("Skill added successfully!");
+
+      // Refresh skills from backend
+      await fetchUserSkills();
+    } catch (err) {
+      console.error("Failed to add skill:", err);
+      alert(err.message || "Failed to add skill. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -120,9 +178,10 @@ export default function SkillsSection({ userId }) {
             </button>
             <button
               onClick={handleAddSkill}
-              className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent/90 transition"
+              disabled={saving}
+              className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Skill
+              {saving ? "Adding..." : "Add Skill"}
             </button>
           </div>
         </div>
@@ -147,10 +206,10 @@ export default function SkillsSection({ userId }) {
               <div className="flex flex-wrap gap-2">
                 {skills[category]?.map((skill, index) => (
                   <span
-                    key={`${skill}-${index}`}
+                    key={`${skill.id || skill.name}-${index}`}
                     className="px-2.5 py-1 text-sm rounded-md bg-white/10 border border-white/10 text-gray-200 hover:bg-white/20 transition"
                   >
-                    {skill}
+                    {typeof skill === 'string' ? skill : skill.name}
                   </span>
                 ))}
               </div>

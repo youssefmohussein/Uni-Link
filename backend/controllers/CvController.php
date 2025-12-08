@@ -23,6 +23,15 @@ class CVController {
 
         $file = $_FILES['cv_file'];
         $uploadDir = __DIR__ . '/../uploads/';
+        
+        // Create uploads directory if it doesn't exist
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0755, true)) {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to create uploads directory']);
+                return;
+            }
+        }
+        
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
         // Only allow PDF
