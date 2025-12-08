@@ -1,9 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
 const LeftSidebar = ({ currentFilter, onFilterChange }) => {
+  const navigate = useNavigate();
+
   const navItems = [
     { label: "Home Feed", icon: "fas fa-home", category: "all", count: null },
+    { label: "Saved Posts", icon: "fas fa-bookmark", category: "saved", count: null, isRoute: true, route: "/collections" },
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
     { label: "Project Groups", icon: "fas fa-user-friends", category: "Projects", count: 3 },
     { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: 5, countColor: "bg-red-500" },
@@ -34,7 +38,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
           {navItems.map((item) => (
             <button
               key={item.category}
-              onClick={() => onFilterChange(item.category)}
+              onClick={() => item.isRoute ? navigate(item.route) : onFilterChange(item.category)}
               className={`flex items-center space-x-3 p-3 rounded-lg w-full text-left transition-all duration-300 ${currentFilter === item.category
                 ? "font-semibold text-accent bg-accent/20 hover:bg-accent/30 shadow-md"
                 : "font-medium text-main hover:bg-white/10 hover:text-accent"

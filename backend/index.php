@@ -14,32 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Parse request URL EARLY for health check
-if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
-    $request = $_SERVER['PATH_INFO'];
-} else {
-    $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $request = str_replace('/backend/index.php', '', $request);
-}
-
-$method = $_SERVER['REQUEST_METHOD'];
-
-// Debug logging
-error_log("=== HEALTH CHECK DEBUG ===");
-error_log("Request: [$request]");
-error_log("Method: [$method]");
-error_log("Match result: " . ($request === '/health/db' && $method === 'GET' ? 'YES' : 'NO'));
-
-// Health check endpoint (no auth required) - CHECK BEFORE LOADING ANY ROUTES
-if ($request === '/health/db' && $method === 'GET') {
-    error_log("✅ HEALTH CHECK MATCHED - Executing");
-    require_once __DIR__ . '/controllers/HealthController.php';
-    HealthController::checkDbConnection();
-    exit;
-}
-error_log("❌ HEALTH CHECK NOT MATCHED - Continuing to routes");
-
-// Now load all route files
 require_once __DIR__ . '/routes/loginRoutes.php';
 require_once __DIR__ . '/routes/userRoutes.php';
 require_once __DIR__ . '/routes/studentRoutes.php';
@@ -61,7 +35,16 @@ require_once __DIR__ . '/routes/announcementRoutes.php';
 require_once __DIR__ . '/routes/projectReviewRoutes.php';
 require_once __DIR__ . '/routes/dashboardRoutes.php';
 require_once __DIR__ . '/routes/projectRoomRoutes.php'; // Added Project Room Routes
+require_once __DIR__ . '/routes/savedPostRoutes.php';
+// Parse request URL without query parameters
+if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
+    $request = $_SERVER['PATH_INFO'];
+} else {
+    $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $request = str_replace('/backend/index.php', '', $request);
+}
 
+$method = $_SERVER['REQUEST_METHOD'];
 // Debug
 error_log("Request path: [$request], Method: [$method]");
 
@@ -107,6 +90,8 @@ elseif (registerProjectReviewRoutes($request, $method))
 elseif (registerDashboardRoutes($request, $method))
     exit;
 elseif (registerProjectRoomRoutes($request, $method))
+    exit;
+elseif (registerSavedPostRoutes($request, $method))
     exit;
 echo json_encode([
     "status" => "error",

@@ -54,12 +54,12 @@ const HomePage = () => {
 
             {/* 3D Scene - Not lazy loaded for better LCP */}
             <Scene3D pages={5} onCreated={() => setIsLoaded(true)}>
-                <main className="w-full relative z-10">
+                <main className="w-full relative z-30">
                     {/* Section 1: Hero (Scrollable version) */}
                     <HeroSection />
 
                     {/* Section 2: MagicBento Features */}
-                    <section className="h-screen flex items-center justify-center px-10 md:px-20 max-w-7xl mx-auto">
+                    <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-20 max-w-7xl mx-auto py-10 md:py-0 relative z-40">
                         <MagicBento
                             textAutoHide={true}
                             enableStars={true}
@@ -75,26 +75,26 @@ const HomePage = () => {
                     </section>
 
                     {/* Section 3: CTA */}
-                    <section className="h-screen flex flex-col justify-center items-center px-10 text-center">
-                        <GlassCard className="p-12 max-w-3xl w-full">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-8">Ready to Dive In?</h2>
-                            <p className="text-xl text-gray-300 mb-10">
+                    <section className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 md:px-10 text-center py-10 md:py-0 relative z-40">
+                        <GlassCard className="p-6 sm:p-8 md:p-12 max-w-3xl w-full">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 md:mb-8">Ready to Dive In?</h2>
+                            <p className="text-lg sm:text-xl text-gray-300 mb-8 md:mb-10">
                                 Join thousands of students and professors using Uni-Link today.
                             </p>
-                            <button className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-4 px-10 rounded-full text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
+                            <button className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
                                 Join Now
                             </button>
                         </GlassCard>
                     </section>
 
-                    {/* Spacer for 3D Book Reveal */}
-                    <section className="h-[150vh] w-full pointer-events-none" />
+                    {/* Spacer for 3D Book Reveal - Hidden on mobile */}
+                    <section className="hidden md:block h-[150vh] w-full pointer-events-none" />
 
                     {/* Full Footer */}
-                    <footer className="w-full bg-black border-t border-white/10 pt-20 pb-10 relative z-50">
+                    <footer className="w-full bg-black border-t border-white/10 pt-12 md:pt-20 pb-20 md:pb-10 relative z-50">
                         {/* LogoLoop Section */}
-                        <div className="mb-20">
-                            <h3 className="text-center text-gray-500 mb-8 text-sm uppercase tracking-widest">Powered By Modern Tech</h3>
+                        <div className="mb-12 md:mb-20">
+                            <h3 className="text-center text-gray-500 mb-6 md:mb-8 text-xs sm:text-sm uppercase tracking-widest px-4">Powered By Modern Tech</h3>
                             <LogoLoop
                                 logos={techLogos}
                                 speed={100}
@@ -110,10 +110,10 @@ const HomePage = () => {
                         </div>
 
                         {/* Main Footer Content */}
-                        <div className="max-w-7xl mx-auto px-6 md:px-20 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
                             {/* Brand */}
-                            <div className="space-y-4">
-                                <h4 className="text-2xl font-bold text-white">Uni-Link</h4>
+                            <div className="space-y-3 md:space-y-4 sm:col-span-2 md:col-span-1">
+                                <h4 className="text-xl md:text-2xl font-bold text-white">Uni-Link</h4>
                                 <p className="text-gray-400 text-sm leading-relaxed">
                                     Redefining academic collaboration. Connect, share, and grow with students worldwide.
                                 </p>
@@ -121,8 +121,8 @@ const HomePage = () => {
 
                             {/* Quick Links */}
                             <div>
-                                <h5 className="text-white font-bold mb-6">Explore</h5>
-                                <ul className="space-y-4 text-gray-400 text-sm">
+                                <h5 className="text-white font-bold mb-4 md:mb-6">Explore</h5>
+                                <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Home</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">About Us</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Features</a></li>
@@ -132,8 +132,8 @@ const HomePage = () => {
 
                             {/* Resources */}
                             <div>
-                                <h5 className="text-white font-bold mb-6">Resources</h5>
-                                <ul className="space-y-4 text-gray-400 text-sm">
+                                <h5 className="text-white font-bold mb-4 md:mb-6">Resources</h5>
+                                <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Documentation</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Help Center</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Guidelines</a></li>
@@ -143,8 +143,8 @@ const HomePage = () => {
 
                             {/* Connect */}
                             <div>
-                                <h5 className="text-white font-bold mb-6">Connect</h5>
-                                <ul className="space-y-4 text-gray-400 text-sm">
+                                <h5 className="text-white font-bold mb-4 md:mb-6">Connect</h5>
+                                <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Twitter</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">LinkedIn</a></li>
                                     <li><a href="#" className="hover:text-[#008080] transition-colors">Instagram</a></li>
@@ -154,7 +154,7 @@ const HomePage = () => {
                         </div>
 
                         {/* Copyright */}
-                        <div className="max-w-7xl mx-auto px-6 md:px-20 pt-8 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-20 pt-6 md:pt-8 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs">
                             <p>&copy; {new Date().getFullYear()} Uni-Link. All rights reserved.</p>
                             <p className="mt-2 md:mt-0">Designed for the Future.</p>
                         </div>

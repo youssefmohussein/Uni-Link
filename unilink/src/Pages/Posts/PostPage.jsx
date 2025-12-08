@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Posts/Header";
-import LeftSidebar from "../../components/Posts/LeftSidebar";
-import RightSidebar from "../../components/Posts/RightSidebar";
-import PostCard from "../../components/Posts/PostCard";
-import PostForm from "../../components/Posts/PostForm";
+import Header from "../../Components/Posts/Header";
+import LeftSidebar from "../../Components/Posts/LeftSidebar";
+import RightSidebar from "../../Components/Posts/RightSidebar";
+import PostCard from "../../Components/Posts/PostCard";
+import PostForm from "../../Components/Posts/PostForm";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
 import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as postHandler from "../../../api/postHandler";
 import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
-const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
+const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBadge }) => {
   const [post, setPost] = useState(initialPost);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
@@ -10,6 +10,8 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
   const [loadingComments, setLoadingComments] = useState(false);
   const [loadingInteraction, setLoadingInteraction] = useState(false);
   const [loadingCommentSubmit, setLoadingCommentSubmit] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialPost.isSaved || false);
+  const [loadingSave, setLoadingSave] = useState(false);
 
   // 🌈 Border color based on category, using accent-friendly tones
   let borderColor = "border-accent/40";
@@ -127,6 +129,37 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
     }
   };
 
+  const toggleSave = async () => {
+    if (loadingSave || !currentUserId) return;
+
+    // Optimistic UI update
+    const previousState = isSaved;
+    setIsSaved(!isSaved);
+
+    try {
+      setLoadingSave(true);
+
+      if (!isSaved) {
+        // Save post
+        await postHandler.savePost(currentUserId, post.post_id);
+      } else {
+        // Unsave post
+        await postHandler.unsavePost(currentUserId, post.post_id);
+        // If on collections page, trigger removal
+        if (onUnsave) {
+          onUnsave(post.post_id);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle save:", err);
+      // Rollback on error
+      setIsSaved(previousState);
+      alert("Failed to " + (isSaved ? "unsave" : "save") + " post. Please try again.");
+    } finally {
+      setLoadingSave(false);
+    }
+  };
+
   return (
     <GlassSurface
       width="100%"
@@ -157,6 +190,12 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
                 <span>{post.user.major}</span>
                 <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
                 <span>{post.timeAgo}</span>
+                {showSavedBadge && post.savedAt && (
+                  <>
+                    <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
+                    <span className="text-blue-400">Saved {post.savedAt}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -251,8 +290,21 @@ const PostCard = ({ initialPost, onRefresh, currentUserId }) => {
             </button>
           </div>
 
-          <button className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors">
-            <i className="far fa-bookmark"></i>
+          {/* Bookmark/Save Button */}
+          <button
+            onClick={toggleSave}
+            disabled={loadingSave}
+            className={`
+              p-2 rounded-full transition-all duration-200
+              ${isSaved
+                ? "text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+              }
+              ${loadingSave ? "opacity-50 cursor-not-allowed" : "active:scale-95"}
+            `}
+            title={isSaved ? "Unsave post" : "Save post"}
+          >
+            <i className={`${isSaved ? "fas" : "far"} fa-bookmark`}></i>
           </button>
         </div>
 

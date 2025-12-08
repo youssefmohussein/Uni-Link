@@ -4,32 +4,103 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import RealisticPlanet from './RealisticPlanet';
 
-// Realistic Sun Component
+// Ultra-Realistic Sun Component - Space Quality
 const Sun = ({ position }) => {
+    const sunRef = useRef();
+    const coronaRef = useRef();
+
+    // Load high quality sun texture
     const sunTexture = useLoader(THREE.TextureLoader, 'https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/sunmap.jpg');
+
+    // Animate sun rotation and corona pulsing
+    useFrame((state, delta) => {
+        if (sunRef.current) {
+            sunRef.current.rotation.y += delta * 0.05; // Slow rotation
+        }
+        if (coronaRef.current) {
+            // Pulsing corona effect
+            const pulse = Math.sin(state.clock.elapsedTime * 0.5) * 0.02 + 1;
+            coronaRef.current.scale.setScalar(pulse);
+        }
+    });
 
     return (
         <group position={position}>
-            {/* Main Sun Sphere with Texture */}
-            <mesh>
-                <sphereGeometry args={[0.8, 64, 64]} />
+            {/* Core Sun - Bright center */}
+            <mesh ref={sunRef}>
+                <sphereGeometry args={[0.75, 128, 128]} />
                 <meshStandardMaterial
                     map={sunTexture}
-                    emissive="#FDB813"
+                    emissive="#FFD700"
                     emissiveMap={sunTexture}
-                    emissiveIntensity={2.0}
+                    emissiveIntensity={3.5}
                     toneMapped={false}
+                    roughness={1}
                 />
             </mesh>
-            {/* Outer Glow Effect */}
+
+            {/* Chromosphere Layer - Orange glow */}
             <mesh>
-                <sphereGeometry args={[0.88, 32, 32]} />
+                <sphereGeometry args={[0.78, 64, 64]} />
+                <meshBasicMaterial
+                    color="#FF6B35"
+                    transparent
+                    opacity={0.25}
+                    side={THREE.BackSide}
+                />
+            </mesh>
+
+            {/* Inner Corona - Yellow-white intense glow */}
+            <mesh>
+                <sphereGeometry args={[0.85, 64, 64]} />
+                <meshBasicMaterial
+                    color="#FFF4E6"
+                    transparent
+                    opacity={0.3}
+                    blending={THREE.AdditiveBlending}
+                />
+            </mesh>
+
+            {/* Middle Corona - Warm orange */}
+            <mesh ref={coronaRef}>
+                <sphereGeometry args={[0.95, 48, 48]} />
                 <meshBasicMaterial
                     color="#FFA500"
                     transparent
-                    opacity={0.2}
+                    opacity={0.15}
+                    blending={THREE.AdditiveBlending}
                 />
             </mesh>
+
+            {/* Outer Corona - Large diffuse glow */}
+            <mesh>
+                <sphereGeometry args={[1.1, 32, 32]} />
+                <meshBasicMaterial
+                    color="#FFE4B5"
+                    transparent
+                    opacity={0.08}
+                    blending={THREE.AdditiveBlending}
+                />
+            </mesh>
+
+            {/* Extended Atmosphere - Very subtle */}
+            <mesh>
+                <sphereGeometry args={[1.3, 32, 32]} />
+                <meshBasicMaterial
+                    color="#FFF8DC"
+                    transparent
+                    opacity={0.03}
+                    blending={THREE.AdditiveBlending}
+                />
+            </mesh>
+
+            {/* Point light for sun illumination */}
+            <pointLight
+                color="#FFF4E6"
+                intensity={2}
+                distance={8}
+                decay={1.5}
+            />
         </group>
     );
 };
