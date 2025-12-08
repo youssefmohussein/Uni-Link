@@ -1,17 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function CVSection({ userId }) {
   const [cvFile, setCvFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userId) {
+      fetchExistingCV();
+    }
+  }, [userId]);
+
+  const fetchExistingCV = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost/backend/index.php/getCV?user_id=${userId}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.status === 'success' && data.data) {
+        // Extract filename from path
+        const fileName = data.data.file_path.split('/').pop();
+        setCvFile({
+          name: fileName,
+          uploadedOn: new Date(data.data.created_at).toISOString().split("T")[0],
+          url: `http://localhost/backend/${data.data.file_path}`,
+          filePath: data.data.file_path
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch CV:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-
-    const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-    if (!validTypes.includes(file.type)) {
-      alert("Please upload a valid PDF or Word document.");
+    // Only allow PDF files
+    if (file.type !== "application/pdf") {
+      alert("Please upload a valid PDF document.");
       return;
     }
 
@@ -28,25 +60,20 @@ function CVSection({ userId }) {
       formData.append('cv_file', file);
       formData.append('user_id', userId);
 
-      // TODO: Implement actual upload to backend
-      // const response = await fetch('http://localhost/backend/index.php/uploadCV', {
-      //   method: 'POST',
-      //   body: formData,
-      //   credentials: 'include'
-      // });
-      // const data = await response.json();
-
-      // For now, create local preview
-      const fileUrl = URL.createObjectURL(file);
-
-      setCvFile({
-        name: file.name,
-        size: (file.size / (1024 * 1024)).toFixed(2), // MB
-        uploadedOn: new Date().toISOString().split("T")[0],
-        url: fileUrl,
+      const response = await fetch('http://localhost/backend/index.php/uploadCV', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
       });
+      const data = await response.json();
 
-      alert("CV uploaded successfully! (Note: Backend integration pending)");
+      if (data.status === 'success') {
+        // Fetch the updated CV
+        await fetchExistingCV();
+        alert("CV uploaded successfully!");
+      } else {
+        throw new Error(data.message || 'Upload failed');
+      }
     } catch (err) {
       console.error("Failed to upload CV:", err);
       alert("Failed to upload CV. Please try again.");
@@ -62,50 +89,59 @@ function CVSection({ userId }) {
         📄 CV Documents
       </h2>
 
-
-      <label
-        htmlFor="cvFile"
-        className={`block border-2 border-dashed border-white/30 hover:border-accent transition-all p-6 rounded-custom text-center cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-      >
-        <input
-          type="file"
-          id="cvFile"
-          hidden
-          onChange={handleFileUpload}
-          disabled={uploading}
-        />
-        <p className="text-white font-medium">
-          {uploading ? "Uploading..." : cvFile ? "Upload a new CV" : "Upload your CV"}
-        </p>
-        <p className="text-sm text-gray-300">PDF, DOC, DOCX up to 10MB</p>
-      </label>
-
-
-      {cvFile && (
-        <div className="mt-5 transition-all duration-300">
-          <div className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-xl shadow-inner">
-            <div>
-              <a
-                href={cvFile.url}
-                download={cvFile.name}
-                className="font-semibold text-accent hover:underline"
-              >
-                {cvFile.name}
-              </a>
-              <p className="text-sm text-gray-300">
-                {cvFile.size} MB • Uploaded on {cvFile.uploadedOn}
-              </p>
-            </div>
-            <a
-              href={cvFile.url}
-              download={cvFile.name}
-              className="text-accent hover:text-accent/70 text-xl"
-              title="Download CV"
-            >
-              ⬇
-            </a>
-          </div>
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+          <p className="mt-2 text-sm text-muted">Loading CV...</p>
         </div>
+      ) : (
+        <>
+          <label
+            htmlFor="cvFile"
+            className={`block border-2 border-dashed border-white/30 hover:border-accent transition-all p-6 rounded-custom text-center cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <input
+              type="file"
+              id="cvFile"
+              hidden
+              onChange={handleFileUpload}
+              disabled={uploading}
+              accept=".pdf"
+            />
+            <p className="text-white font-medium">
+              {uploading ? "Uploading..." : cvFile ? "Upload a new CV" : "Upload your CV"}
+            </p>
+            <p className="text-sm text-gray-300">PDF up to 10MB</p>
+          </label>
+
+          {cvFile && (
+            <div className="mt-5 transition-all duration-300">
+              <div className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-xl shadow-inner">
+                <div>
+                  <a
+                    href={cvFile.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-accent hover:underline"
+                  >
+                    {cvFile.name}
+                  </a>
+                  <p className="text-sm text-gray-300">
+                    Uploaded on {cvFile.uploadedOn}
+                  </p>
+                </div>
+                <a
+                  href={cvFile.url}
+                  download={cvFile.name}
+                  className="text-accent hover:text-accent/70 text-xl"
+                  title="Download CV"
+                >
+                  ⬇
+                </a>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </section>
   );

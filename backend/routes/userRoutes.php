@@ -25,6 +25,7 @@ function registerUserRoutes($request, $method) {
             break;
 
         case $request === '/getUserProfile' && $method === 'GET':
+            AuthMiddleware::requireAuth();
             UserController::getUserProfile();
             break;
 

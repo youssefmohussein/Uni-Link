@@ -24,14 +24,10 @@ function ProfilePageUser() {
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user?.id;
 
-    if (!user) {
-      alert("Please log in to access your profile");
-      navigate('/login');
-      return;
+    if (userId) {
+      setCurrentUserId(userId);
+      fetchProfileData(userId);
     }
-
-    setCurrentUserId(userId);
-    fetchProfileData(userId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
@@ -112,13 +108,11 @@ function ProfilePageUser() {
     setProjects((prev) => [newProject, ...prev]);
   };
 
-  if (!currentUserId) return null;
-
 
   return (
     <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
       {/* 🌌 Starry Night Sky Background */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-black via-black to-black">
         {/* Galaxy animation provides the starry effect */}
       </div>
 
@@ -127,7 +121,7 @@ function ProfilePageUser() {
         <Galaxy
           transparent={true}
           hueShift={0}
-          density={0.8}
+          density={0.2}
           glowIntensity={0.3}
           saturation={0.0}
           speed={0.05}

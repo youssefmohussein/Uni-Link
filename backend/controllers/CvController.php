@@ -84,4 +84,42 @@ class CVController {
         readfile($filePath);
     }
 
+    public static function getCV() {
+        global $pdo;
+        header('Content-Type: application/json');
+
+        // Get user_id from query string or request body
+        $user_id = null;
+        if (isset($_GET['user_id'])) {
+            $user_id = (int)$_GET['user_id'];
+        } else {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $user_id = isset($input['user_id']) ? (int)$input['user_id'] : null;
+        }
+
+        if (!$user_id) {
+            echo json_encode(['status' => 'error', 'message' => 'User ID is required']);
+            return;
+        }
+
+        try {
+            $stmt = $pdo->prepare("SELECT file_path, created_at FROM CV WHERE user_id = ?");
+            $stmt->execute([$user_id]);
+            $cv = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$cv) {
+                echo json_encode(['status' => 'success', 'data' => null]);
+                return;
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $cv
+            ]);
+
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+        }
+    }
+
 }
