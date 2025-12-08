@@ -68,6 +68,24 @@ function CVSection({ userId }) {
     }
   };
 
+  const handleDownloadCV = async () => {
+    try {
+      // Use the backend download endpoint
+      const downloadUrl = `http://localhost/backend/index.php/downloadCV/${userId}`;
+
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = cvFile.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Failed to download CV:", err);
+      alert("Failed to download CV. Please try again.");
+    }
+  };
+
   return (
     <section className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 relative overflow-hidden border border-white/20"
       style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
@@ -102,28 +120,22 @@ function CVSection({ userId }) {
 
           {cvFile && (
             <div className="mt-5 transition-all duration-300">
-              <div className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-xl shadow-inner">
+              <div className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-xl shadow-inner hover:bg-white/10 transition">
                 <div>
-                  <a
-                    href={cvFile.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-accent hover:underline"
-                  >
+                  <p className="font-semibold text-white">
                     {cvFile.name}
-                  </a>
+                  </p>
                   <p className="text-sm text-gray-300">
                     Uploaded on {cvFile.uploadedOn}
                   </p>
                 </div>
-                <a
-                  href={cvFile.url}
-                  download={cvFile.name}
-                  className="text-accent hover:text-accent/70 text-xl"
+                <button
+                  onClick={handleDownloadCV}
+                  className="text-accent hover:text-accent/80 text-2xl transition"
                   title="Download CV"
                 >
                   ⬇
-                </a>
+                </button>
               </div>
             </div>
           )}
@@ -134,3 +146,4 @@ function CVSection({ userId }) {
 }
 
 export default CVSection;
+
