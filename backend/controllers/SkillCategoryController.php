@@ -14,7 +14,19 @@ class SkillCategoryController {
         }
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO SkillCategory (category_name, user_id) VALUES (?, ?)");
+            // Check if category already exists for this user
+            $stmt = $pdo->prepare("SELECT category_id FROM skillcategory WHERE category_name = ? AND user_id = ?");
+            $stmt->execute([$input['category_name'], $input['user_id']]);
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($existing) {
+                // Return existing category
+                echo json_encode(["status"=>"success","message"=>"Category already exists","category_id"=>$existing['category_id']]);
+                return;
+            }
+            
+            // Create new category
+            $stmt = $pdo->prepare("INSERT INTO skillcategory (category_name, user_id) VALUES (?, ?)");
             $stmt->execute([$input['category_name'], $input['user_id']]);
             echo json_encode(["status"=>"success","message"=>"Category added","category_id"=>$pdo->lastInsertId()]);
         } catch (PDOException $e) {
@@ -25,7 +37,7 @@ class SkillCategoryController {
     // Get all categories
     public static function getCategories() {
         global $pdo;
-        $stmt = $pdo->query("SELECT * FROM SkillCategory");
+        $stmt = $pdo->query("SELECT * FROM skillcategory");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(["status"=>"success","data"=>$categories]);
     }
@@ -38,7 +50,7 @@ class SkillCategoryController {
             echo json_encode(["status"=>"error","message"=>"Missing category_id or category_name"]);
             return;
         }
-        $stmt = $pdo->prepare("UPDATE SkillCategory SET category_name=? WHERE category_id=?");
+        $stmt = $pdo->prepare("UPDATE skillcategory SET category_name=? WHERE category_id=?");
         $stmt->execute([$input['category_name'], $input['category_id']]);
         echo json_encode(["status"=>"success","message"=>"Category updated"]);
     }
@@ -51,7 +63,7 @@ class SkillCategoryController {
             echo json_encode(["status"=>"error","message"=>"Missing category_id"]);
             return;
         }
-        $stmt = $pdo->prepare("DELETE FROM SkillCategory WHERE category_id=?");
+        $stmt = $pdo->prepare("DELETE FROM skillcategory WHERE category_id=?");
         $stmt->execute([$input['category_id']]);
         echo json_encode(["status"=>"success","message"=>"Category deleted"]);
     }

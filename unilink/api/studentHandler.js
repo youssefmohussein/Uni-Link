@@ -119,6 +119,52 @@ export const addStudentSkills = async (userId, skills) => {
 };
 
 /**
+ * Get all skill categories
+ * @returns {Promise<Array>} Array of skill categories
+ */
+export const getSkillCategories = async () => {
+  const data = await apiRequest('index.php/getAllSkillCategories', 'GET');
+  if (data.status !== 'success') {
+    throw new Error(data.message || 'Failed to fetch skill categories');
+  }
+  return data.data ?? [];
+};
+
+/**
+ * Add or get a skill category for a user
+ * @param {number} userId - User ID
+ * @param {string} categoryName - Category name
+ * @returns {Promise<number>} Category ID
+ */
+export const addSkillCategory = async (userId, categoryName) => {
+  const data = await apiRequest('index.php/addSkillCategory', 'POST', {
+    user_id: userId,
+    category_name: categoryName
+  });
+  if (data.status !== 'success') {
+    throw new Error(data.message || 'Failed to add skill category');
+  }
+  return data.category_id;
+};
+
+/**
+ * Add a skill to the skills table
+ * @param {string} skillName - Skill name
+ * @param {number} categoryId - Category ID
+ * @returns {Promise<number>} Skill ID
+ */
+export const addSkill = async (skillName, categoryId) => {
+  const data = await apiRequest('index.php/addSkill', 'POST', {
+    skill_name: skillName,
+    category_id: categoryId
+  });
+  if (data.status !== 'success') {
+    throw new Error(data.message || 'Failed to add skill');
+  }
+  return data.skill_id;
+};
+
+/**
  * Remove a skill from a student
  * @param {number} userId - User ID
  * @param {number} skillId - Skill ID to remove
@@ -147,17 +193,6 @@ export const getAllSkills = async () => {
   return data.data ?? [];
 };
 
-/**
- * Get all skill categories
- * @returns {Promise<Array>} Array of skill categories
- */
-export const getSkillCategories = async () => {
-  const data = await apiRequest('index.php/getAllSkillCategories', 'GET');
-  if (data.status !== 'success') {
-    throw new Error(data.message || 'Failed to fetch skill categories');
-  }
-  return data.data ?? [];
-};
 
 // ============================================================
 // PROJECTS MANAGEMENT

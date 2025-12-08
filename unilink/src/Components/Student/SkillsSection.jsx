@@ -10,28 +10,12 @@ export default function SkillsSection({ userId }) {
   const [newSkill, setNewSkill] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [saving, setSaving] = useState(false);
-  const [allSkills, setAllSkills] = useState([]);
-  const [skillCategories, setSkillCategories] = useState([]);
 
   useEffect(() => {
     if (userId) {
       fetchUserSkills();
-      fetchSkillsData();
     }
   }, [userId]);
-
-  const fetchSkillsData = async () => {
-    try {
-      const [skillsData, categoriesData] = await Promise.all([
-        studentHandler.getAllSkills(),
-        studentHandler.getSkillCategories()
-      ]);
-      setAllSkills(skillsData);
-      setSkillCategories(categoriesData);
-    } catch (err) {
-      console.error("Failed to fetch skills data:", err);
-    }
-  };
 
   const fetchUserSkills = async () => {
     try {
@@ -59,7 +43,6 @@ export default function SkillsSection({ userId }) {
       setCategories(Array.from(categorySet));
     } catch (err) {
       console.error("Failed to fetch skills:", err);
-      // Set default empty state
       setSkills({});
       setCategories([]);
     } finally {
@@ -68,10 +51,15 @@ export default function SkillsSection({ userId }) {
   };
 
   const handleAddCategory = () => {
-    if (!newCategory.trim()) return;
-    if (!categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-      setSkills({ ...skills, [newCategory]: [] });
+    if (!newCategory.trim()) {
+      alert("Please enter a category name");
+      return;
+    }
+    const trimmedCategory = newCategory.trim();
+    if (!categories.includes(trimmedCategory)) {
+      setCategories([...categories, trimmedCategory]);
+      setSkills({ ...skills, [trimmedCategory]: [] });
+      setSelectedCategory(trimmedCategory);
     }
     setNewCategory("");
   };
@@ -85,35 +73,18 @@ export default function SkillsSection({ userId }) {
     try {
       setSaving(true);
 
-      // Find or create the skill in the database
-      let skillToAdd = allSkills.find(
-        s => s.skill_name.toLowerCase() === newSkill.trim().toLowerCase()
-      );
+      // Step 1: Add/Get category using studentHandler
+      const category_id = await studentHandler.addSkillCategory(userId, selectedCategory);
 
-      // If skill doesn't exist, we need to create it first
-      // For now, we'll just add it locally and show a message
-      // You may need to add a createSkill endpoint in the backend
-      if (!skillToAdd) {
-        alert("Skill not found in database. Please contact admin to add this skill.");
-        return;
-      }
+      // Step 2: Add skill to skills table using studentHandler
+      const skill_id = await studentHandler.addSkill(newSkill.trim(), category_id);
 
-      // Add skill to user's skills
-      await studentHandler.addStudentSkills(userId, [{ skill_id: skillToAdd.skill_id }]);
-
-      // Update local state
-      setSkills({
-        ...skills,
-        [selectedCategory]: [...(skills[selectedCategory] || []), {
-          name: newSkill.trim(),
-          id: skillToAdd.skill_id
-        }],
-      });
+      // Step 3: Link skill to user using studentHandler
+      await studentHandler.addStudentSkills(userId, [{ skill_id: skill_id }]);
 
       setNewSkill("");
-      alert("Skill added successfully!");
 
-      // Refresh skills from backend
+      // Refresh skills
       await fetchUserSkills();
     } catch (err) {
       console.error("Failed to add skill:", err);
@@ -123,10 +94,36 @@ export default function SkillsSection({ userId }) {
     }
   };
 
+  const handleRemoveSkill = async (categoryName, skillId, skillName) => {
+    if (!confirm(`Remove "${skillName}" from your skills?`)) {
+      return;
+    }
+
+    try {
+      // Use studentHandler to remove skill
+      await studentHandler.removeStudentSkill(userId, skillId);
+
+      // Update local state
+      const updatedCategorySkills = skills[categoryName].filter(s => s.id !== skillId);
+      const updatedSkills = { ...skills };
+
+      if (updatedCategorySkills.length === 0) {
+        delete updatedSkills[categoryName];
+        setCategories(categories.filter(c => c !== categoryName));
+      } else {
+        updatedSkills[categoryName] = updatedCategorySkills;
+      }
+
+      setSkills(updatedSkills);
+    } catch (err) {
+      console.error("Failed to remove skill:", err);
+      alert(err.message || "Failed to remove skill. Please try again.");
+    }
+  };
+
   return (
     <section className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg"
       style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
-      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-white">💻 Skills</h2>
         <button
@@ -156,6 +153,7 @@ export default function SkillsSection({ userId }) {
               type="text"
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && !saving && handleAddSkill()}
               placeholder="Add new skill"
               className="w-full rounded-lg bg-transparent border border-white/20 text-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-accent focus:outline-none"
             />
@@ -165,6 +163,7 @@ export default function SkillsSection({ userId }) {
             type="text"
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
             placeholder="Or create new category"
             className="w-full rounded-lg bg-transparent border border-white/20 text-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-accent focus:outline-none"
           />
@@ -172,13 +171,14 @@ export default function SkillsSection({ userId }) {
           <div className="flex gap-2 justify-end">
             <button
               onClick={handleAddCategory}
-              className="px-4 py-1.5 text-sm bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition"
+              disabled={!newCategory.trim()}
+              className="px-4 py-1.5 text-sm bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Add Category
             </button>
             <button
               onClick={handleAddSkill}
-              disabled={saving}
+              disabled={saving || !selectedCategory || !newSkill.trim()}
               className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? "Adding..." : "Add Skill"}
@@ -207,9 +207,16 @@ export default function SkillsSection({ userId }) {
                 {skills[category]?.map((skill, index) => (
                   <span
                     key={`${skill.id || skill.name}-${index}`}
-                    className="px-2.5 py-1 text-sm rounded-md bg-white/10 border border-white/10 text-gray-200 hover:bg-white/20 transition"
+                    className="group px-2.5 py-1 text-sm rounded-md bg-white/10 border border-white/10 text-gray-200 hover:bg-white/20 transition flex items-center gap-1"
                   >
                     {typeof skill === 'string' ? skill : skill.name}
+                    <button
+                      onClick={() => handleRemoveSkill(category, skill.id, skill.name)}
+                      className="ml-1 text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remove skill"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
               </div>

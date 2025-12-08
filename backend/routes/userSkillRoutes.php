@@ -6,22 +6,27 @@ function registerUserSkillRoutes($request, $method) {
     switch (true) {
 
         // ADD skill to user
-        case $request === '/addUserSkills' && $method === 'POST': // expect {"user_id": 1, "skill_ids": [1,2]}
+        case $request === '/addUserSkills' && $method === 'POST':
             AuthMiddleware::requireAuth();
             UserSkillController::addUserSkills();
             break;
 
         // GET user's skills
-        case $request === '/getUserSkills' && $method === 'POST': // expect {"user_id": 1}
+        case $request === '/getUserSkills' && $method === 'POST':
             AuthMiddleware::requireAuth();
-            $data = json_decode(file_get_contents('php://input'), true);
-            UserSkillController::getUserSkills($data['user_id']);
+            UserSkillController::getUserSkills();
             break;
 
-        // REMOVE skill from user
-        case $request === '/deleteUserSkill' && $method === 'POST':
+        // REMOVE specific skill from user
+        case $request === '/removeUserSkill' && $method === 'POST':
             AuthMiddleware::requireAuth();
-            UserSkillController::deleteUserSkill();
+            UserSkillController::removeUserSkill();
+            break;
+
+        // DELETE all user skills
+        case $request === '/deleteUserSkills' && $method === 'POST':
+            AuthMiddleware::requireAuth();
+            UserSkillController::deleteUserSkills();
             break;
 
         default:

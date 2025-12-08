@@ -11,7 +11,7 @@ class SkillController {
             echo json_encode(["status"=>"error","message"=>"Missing skill_name or category_id"]);
             return;
         }
-        $stmt = $pdo->prepare("INSERT INTO Skill (skill_name, category_id) VALUES (?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO skills (skill_name, category_id) VALUES (?, ?)");
         $stmt->execute([$input['skill_name'], $input['category_id']]);
         echo json_encode(["status"=>"success","skill_id"=>$pdo->lastInsertId()]);
     }
@@ -19,7 +19,7 @@ class SkillController {
     // Get Skills
     public static function getSkills() {
         global $pdo;
-        $stmt = $pdo->query("SELECT * FROM Skill");
+        $stmt = $pdo->query("SELECT * FROM skills");
         $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(["status"=>"success","data"=>$skills]);
     }
@@ -32,7 +32,7 @@ class SkillController {
             echo json_encode(["status"=>"error","message"=>"Missing parameters"]);
             return;
         }
-        $stmt = $pdo->prepare("UPDATE Skill SET skill_name=?, category_id=? WHERE skill_id=?");
+        $stmt = $pdo->prepare("UPDATE skills SET skill_name=?, category_id=? WHERE skill_id=?");
         $stmt->execute([$input['skill_name'], $input['category_id'], $input['skill_id']]);
         echo json_encode(["status"=>"success","message"=>"Skill updated"]);
     }
@@ -45,7 +45,7 @@ class SkillController {
             echo json_encode(["status"=>"error","message"=>"Missing skill_id"]);
             return;
         }
-        $stmt = $pdo->prepare("DELETE FROM Skill WHERE skill_id=?");
+        $stmt = $pdo->prepare("DELETE FROM skills WHERE skill_id=?");
         $stmt->execute([$input['skill_id']]);
         echo json_encode(["status"=>"success","message"=>"Skill deleted"]);
     }
