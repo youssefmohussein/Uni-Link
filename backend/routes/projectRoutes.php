@@ -4,6 +4,11 @@ require_once __DIR__ . '/../middlewares/AuthMiddleware.php';
 
 function registerProjectRoutes($request, $method) {
     switch (true) {
+        case $request === '/uploadProject' && $method === 'POST':
+            AuthMiddleware::requireAuth();
+            ProjectController::uploadProject();
+            break;
+
         case $request === '/addProject' && $method === 'POST':
             AuthMiddleware::requireAuth();
             ProjectController::addProject();

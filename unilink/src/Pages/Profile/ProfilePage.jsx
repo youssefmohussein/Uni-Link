@@ -191,9 +191,11 @@ function ProfilePageUser() {
                   {projects.length === 0 ? (
                     <p className="text-muted text-center py-8">No projects yet. Upload your first project!</p>
                   ) : (
-                    <div className="grid gap-6 md:grid-cols-2">
+                    <div className="flex flex-col gap-6">
                       {projects.map((proj) => (
-                        <ProjectCard key={proj.project_id} {...proj} />
+                        <div key={proj.project_id} className="w-full">
+                          <ProjectCard {...proj} userId={currentUserId} onDelete={(id) => setProjects(projects.filter(p => p.project_id !== id))} />
+                        </div>
                       ))}
                     </div>
                   )}

@@ -3,6 +3,74 @@ require_once __DIR__ . '/../utils/DbConnection.php';
 
 class ProjectController {
 
+    /**
+     * Upload a new project with optional file
+     */
+    public static function uploadProject() {
+        global $pdo;
+        header('Content-Type: application/json');
+
+        // Get form data
+        $title = $_POST['title'] ?? null;
+        $description = $_POST['description'] ?? null;
+        $user_id = $_POST['user_id'] ?? null;
+        $status = $_POST['status'] ?? 'Pending';
+
+        if (!$title || !$description || !$user_id) {
+            echo json_encode(["status" => "error", "message" => "Missing required fields"]);
+            return;
+        }
+
+        $file_path = null;
+
+        // Handle file upload if provided
+        if (isset($_FILES['project_file']) && $_FILES['project_file']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['project_file'];
+            $uploadDir = __DIR__ . '/../uploads/projects/';
+
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            // Generate unique filename
+            $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $newFileName = 'project_' . $user_id . '_' . time() . '.' . $fileExtension;
+            $filePath = $uploadDir . $newFileName;
+            $file_path = 'uploads/projects/' . $newFileName;
+
+            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                echo json_encode(["status" => "error", "message" => "File upload failed"]);
+                return;
+            }
+        }
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO projects (title, description, file_path, owner_id, status, created_at)
+                VALUES (?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->execute([$title, $description, $file_path, $user_id, $status]);
+
+            $project_id = $pdo->lastInsertId();
+
+            echo json_encode([
+                "status" => "success",
+                "message" => "Project uploaded successfully",
+                "data" => [
+                    "project_id" => $project_id,
+                    "title" => $title,
+                    "description" => $description,
+                    "file_path" => $file_path,
+                    "status" => $status
+                ]
+            ]);
+
+        } catch (PDOException $e) {
+            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+        }
+    }
+
     public static function addProject() {
         global $pdo;
 
@@ -282,6 +350,7 @@ class ProjectController {
         }
 
         try {
+            // Get projects with skills
             $stmt = $pdo->prepare("
                 SELECT 
                     p.project_id,
@@ -293,13 +362,26 @@ class ProjectController {
                     p.created_at,
                     p.updated_at,
                     u.username as supervisor_name
-                FROM Project p
-                LEFT JOIN Users u ON p.supervisor_id = u.user_id
+                FROM projects p
+                LEFT JOIN users u ON p.supervisor_id = u.user_id
                 WHERE p.owner_id = ?
                 ORDER BY p.created_at DESC
             ");
             $stmt->execute([$user_id]);
             $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Get skills for each project
+            foreach ($projects as &$project) {
+                $skillStmt = $pdo->prepare("
+                    SELECT s.skill_id, s.skill_name, sc.category_name
+                    FROM projectskill ps
+                    JOIN skills s ON ps.skill_id = s.skill_id
+                    LEFT JOIN skillcategory sc ON s.category_id = sc.category_id
+                    WHERE ps.project_id = ?
+                ");
+                $skillStmt->execute([$project['project_id']]);
+                $project['skills'] = $skillStmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             echo json_encode([
                 "status" => "success",
