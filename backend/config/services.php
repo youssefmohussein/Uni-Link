@@ -38,4 +38,9 @@ $container->set('AuthController', function($c) {
     return new AuthController($c->get('AuthService'));
 });
 
+$container->set('ProjectController', function($c) {
+    return new \App\Controllers\ProjectController();
+});
+
+
 return $container;

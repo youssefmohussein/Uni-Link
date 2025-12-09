@@ -75,6 +75,13 @@ return [
     'DELETE /api/projects' => ['ProjectController', 'delete'],
     'POST /api/projects/grade' => ['ProjectController', 'addGrade'],
     
+    // Project Routes (New OOP endpoints)
+    'POST /uploadProject' => ['ProjectController', 'uploadProject'],
+    'GET /getUserProjects' => ['ProjectController', 'getUserProjects'],
+    'POST /deleteProject' => ['ProjectController', 'deleteProject'],
+    'POST /updateProject' => ['ProjectController', 'updateProject'],
+
+    
     // ============================================
     // Project Room Routes (Legacy compatibility)
     // ============================================

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProjectCard from "../../Components/Student/ProjectCard.jsx";
 import ProjectModal from "../../Components/Student/ProjectModal.jsx";
+import EditProjectModal from "../../Components/Student/EditProjectModal.jsx";
 import SkillsSection from "../../Components/Student/SkillsSection.jsx";
 import ProfileHeader from "../../Components/Student/ProfileHeader.jsx";
 import CVSection from "../../Components/Student/CvSection.jsx";
@@ -13,6 +14,8 @@ import * as studentHandler from "../../../api/studentHandler";
 function ProfilePageUser() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [posts, setPosts] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
@@ -105,8 +108,9 @@ function ProfilePageUser() {
     }
   };
 
-  const addProject = (newProject) => {
-    setProjects((prev) => [newProject, ...prev]);
+  const handleEditProject = (project) => {
+    setEditingProject(project);
+    setIsEditModalOpen(true);
   };
 
 
@@ -191,10 +195,15 @@ function ProfilePageUser() {
                   {projects.length === 0 ? (
                     <p className="text-muted text-center py-8">No projects yet. Upload your first project!</p>
                   ) : (
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 w-full max-w-6xl">
                       {projects.map((proj) => (
                         <div key={proj.project_id} className="w-full">
-                          <ProjectCard {...proj} userId={currentUserId} onDelete={(id) => setProjects(projects.filter(p => p.project_id !== id))} />
+                          <ProjectCard
+                            {...proj}
+                            userId={currentUserId}
+                            onDelete={(id) => setProjects(projects.filter(p => p.project_id !== id))}
+                            onEdit={handleEditProject}
+                          />
                         </div>
                       ))}
                     </div>
@@ -210,7 +219,18 @@ function ProfilePageUser() {
             <ProjectModal
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
-              addProject={addProject}
+              userId={currentUserId}
+              onSuccess={fetchProfileData}
+            />
+
+            {/* Modal for Editing Project */}
+            <EditProjectModal
+              isOpen={isEditModalOpen}
+              onClose={() => {
+                setIsEditModalOpen(false);
+                setEditingProject(null);
+              }}
+              project={editingProject}
               userId={currentUserId}
               onSuccess={fetchProfileData}
             />

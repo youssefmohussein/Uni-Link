@@ -48,9 +48,7 @@ function ProjectModal({ isOpen, onClose, addProject, userId, onSuccess }) {
       }
 
       // Upload project to backend
-      const uploadedProject = await studentHandler.uploadProject(projectData);
-
-      alert("Project uploaded successfully!");
+      await studentHandler.uploadProject(projectData);
 
       // Reset form
       setForm({
@@ -63,12 +61,17 @@ function ProjectModal({ isOpen, onClose, addProject, userId, onSuccess }) {
         file: null,
       });
 
-      // Call onSuccess to refresh the project list
+      // Call onSuccess to refresh the project list from backend
       if (onSuccess) {
-        await onSuccess();
+        await onSuccess(userId);
       }
 
+      // Close modal
       onClose();
+
+      // Show success message
+      alert("Project uploaded successfully!");
+
     } catch (err) {
       console.error("Failed to upload project:", err);
       alert(err.message || "Failed to upload project. Please try again.");
@@ -76,6 +79,7 @@ function ProjectModal({ isOpen, onClose, addProject, userId, onSuccess }) {
       setUploading(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
