@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import authHandler from '../handlers/authHandler';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
     const [authState, setAuthState] = useState({
@@ -9,40 +10,37 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     });
 
     useEffect(() => {
-        checkAuth();
-    }, []);
+        let isMounted = true;
 
-    const checkAuth = async () => {
-        try {
-            const response = await fetch('http://localhost/backend/index.php/check-session', {
-                method: 'GET',
-                credentials: 'include'
-            });
+        const checkAuth = async () => {
+            try {
+                // Reuse shared auth handler so we hit the same base URL/port as login
+                const session = await authHandler.checkSession();
 
-            const data = await response.json();
+                if (!isMounted) return;
 
-            if (data.authenticated) {
                 setAuthState({
                     loading: false,
-                    authenticated: true,
-                    user: data.user
+                    authenticated: session.authenticated,
+                    user: session.user
                 });
-            } else {
+            } catch (err) {
+                console.error('Auth check error:', err);
+                if (!isMounted) return;
                 setAuthState({
                     loading: false,
                     authenticated: false,
                     user: null
                 });
             }
-        } catch (err) {
-            console.error('Auth check error:', err);
-            setAuthState({
-                loading: false,
-                authenticated: false,
-                user: null
-            });
-        }
-    };
+        };
+
+        checkAuth();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     if (authState.loading) {
         return (
