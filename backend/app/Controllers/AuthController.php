@@ -37,10 +37,22 @@ class AuthController {
             
             $user = $this->authService->login($input['identifier'], $input['password']);
             
-            ResponseHandler::success(
-                $user->toPublicArray(),
-                'Login successful'
-            );
+            // Determine redirect based on role
+            $redirectMap = [
+                'Student' => '/posts',
+                'Professor' => '/professor',
+                'Admin' => '/admin'
+            ];
+            
+            $redirect = $redirectMap[$user->getRole()] ?? '/posts';
+            
+            ResponseHandler::success([
+                'id' => $user->getUserId(),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'role' => $user->getRole(),
+                'redirect' => $redirect
+            ], 'Login successful');
             
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 500;

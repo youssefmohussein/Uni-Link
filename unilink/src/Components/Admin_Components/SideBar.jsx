@@ -31,7 +31,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost/backend/index.php/logout', {
+      await fetch('http://localhost:8000/logout', {
         method: 'POST',
         credentials: 'include'
       });

@@ -274,7 +274,7 @@ const HolographicEarth = ({ isOpen }) => {
                 const timeoutId = setTimeout(() => controller.abort(), 1000);
 
                 // Use existing working endpoint that requires database access
-                const response = await fetch('http://localhost/backend/index.php/getUsers', {
+                const response = await fetch('http://localhost:8000/getUsers', {
                     credentials: 'include',
                     signal: controller.signal
                 });

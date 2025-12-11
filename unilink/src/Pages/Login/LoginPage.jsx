@@ -106,21 +106,21 @@ const LiquidLoginForm = () => {
         // Show success message
         setSuccess('Login successful! Redirecting...');
 
-        // Redirect based on user role
+        // Redirect based on backend response or user role
         setTimeout(() => {
-            const { role } = result.user;
-
-            // Role-based redirection
-            if (role === 'Admin') {
-                window.location.href = '/admin/users';
-            } else if (role === 'Professor') {
-                window.location.href = '/professor';
-            } else if (role === 'Student') {
-                window.location.href = '/student/home';
-            } else if (result.redirect) {
+            if (result.redirect) {
+                // Use redirect URL from backend
                 window.location.href = result.redirect;
             } else {
-                window.location.href = '/';
+                // Fallback to role-based redirect
+                const { role } = result.user;
+                if (role === 'Admin') {
+                    window.location.href = '/admin';
+                } else if (role === 'Professor') {
+                    window.location.href = '/professor';
+                } else {
+                    window.location.href = '/posts';
+                }
             }
         }, 1000);
     };

@@ -13,6 +13,12 @@ return [
     'POST /api/auth/logout' => ['AuthController', 'logout'],
     'GET /api/auth/me' => ['AuthController', 'getCurrentUser'],
     
+    // Legacy authentication routes (for backward compatibility)
+    'POST /login' => ['AuthController', 'login'],
+    'POST /logout' => ['AuthController', 'logout'],
+    'GET /check-session' => ['AuthController', 'getCurrentUser'],
+    'GET /getUsers' => ['UserController', 'getAll'],
+    
     // ============================================
     // User Routes (Legacy compatibility)
     // ============================================
@@ -110,6 +116,17 @@ return [
     // ============================================
     'GET /api/faculties' => ['FacultyController', 'getAll'],
     'GET /api/majors' => ['MajorController', 'getAll'],
+    'GET /api/faculties/majors' => ['FacultyController', 'getMajors'],
+    
+    // Legacy faculty/major routes
+    'GET /getAllFaculties' => ['FacultyController', 'getAll'],
+    'GET /getAllMajors' => ['MajorController', 'getAll'],
+    'POST /addFaculty' => ['FacultyController', 'create'],
+    'POST /updateFaculty' => ['FacultyController', 'update'],
+    'POST /deleteFaculty' => ['FacultyController', 'delete'],
+    'POST /addMajor' => ['MajorController', 'create'],
+    'POST /updateMajor' => ['MajorController', 'update'],
+    'POST /deleteMajor' => ['MajorController', 'delete'],
     
     // ============================================
     // Announcement Routes (Legacy compatibility)

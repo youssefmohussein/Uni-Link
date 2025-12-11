@@ -54,7 +54,7 @@ function EditProjectModal({ isOpen, onClose, project, userId, onSuccess }) {
             }
 
             // Update project via API
-            const response = await fetch('http://localhost/backend/index.php/updateProject', {
+            const response = await fetch('http://localhost:8000/updateProject', {
                 method: 'POST',
                 credentials: 'include',
                 body: formData

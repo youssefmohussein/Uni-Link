@@ -11,7 +11,7 @@ import { apiRequest } from "./apiClient";
  * @returns {Promise<Object>} User profile data
  */
 export const getUserProfile = async (userId) => {
-    const data = await apiRequest(`index.php/getUserProfile?user_id=${userId}`, "GET");
+    const data = await apiRequest(`getUserProfile?user_id=${userId}`, "GET");
     if (data.status !== "success") {
         throw new Error(data.message || "Failed to fetch user profile");
     }
@@ -24,7 +24,7 @@ export const getUserProfile = async (userId) => {
  * @returns {Promise<Array>} Array of user projects
  */
 export const getUserProjects = async (userId) => {
-    const data = await apiRequest(`index.php/getUserProjects?user_id=${userId}`, "GET");
+    const data = await apiRequest(`getUserProjects?user_id=${userId}`, "GET");
     if (data.status !== "success") {
         throw new Error(data.message || "Failed to fetch user projects");
     }
@@ -37,7 +37,7 @@ export const getUserProjects = async (userId) => {
  * @returns {Promise<Array>} Array of user posts
  */
 export const getUserPosts = async (userId) => {
-    const data = await apiRequest(`index.php/getUserPosts?user_id=${userId}`, "GET");
+    const data = await apiRequest(`getUserPosts?user_id=${userId}`, "GET");
     if (data.status !== "success") {
         throw new Error(data.message || "Failed to fetch user posts");
     }
@@ -50,7 +50,7 @@ export const getUserPosts = async (userId) => {
  * @returns {Promise<Array>} Array of user skills
  */
 export const getUserSkills = async (userId) => {
-    const data = await apiRequest("index.php/getUserSkills", "POST", { user_id: userId });
+    const data = await apiRequest("getUserSkills", "POST", { user_id: userId });
     if (data.status !== "success") {
         throw new Error(data.message || "Failed to fetch user skills");
     }
@@ -64,7 +64,7 @@ export const getUserSkills = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const addUserSkills = async (userId, skills) => {
-    const data = await apiRequest("index.php/addUserSkills", "POST", {
+    const data = await apiRequest("addUserSkills", "POST", {
         user_id: userId,
         skills: skills,
     });
@@ -80,7 +80,7 @@ export const addUserSkills = async (userId, skills) => {
  * @returns {Promise<boolean>} Success status
  */
 export const updateUserProfile = async (userData) => {
-    const data = await apiRequest("index.php/updateUser", "POST", userData);
+    const data = await apiRequest("updateUser", "POST", userData);
     if (data.status !== "success") {
         throw new Error(data.message || "Failed to update profile");
     }
