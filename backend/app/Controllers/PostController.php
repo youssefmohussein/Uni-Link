@@ -23,13 +23,18 @@ class PostController extends BaseController {
             $this->requireAuth();
             
             $data = $this->getJsonInput();
-            $data['user_id'] = $this->getCurrentUserId();
+            
+            // Use author_id if provided, otherwise use current user
+            if (!isset($data['author_id'])) {
+                $data['author_id'] = $this->getCurrentUserId();
+            }
             
             $post = $this->postService->createPost($data);
             $this->success($post, 'Post created successfully', 201);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -47,7 +52,8 @@ class PostController extends BaseController {
             $this->success($post, 'Post updated successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -65,7 +71,8 @@ class PostController extends BaseController {
             $this->success(null, 'Post deleted successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -77,13 +84,16 @@ class PostController extends BaseController {
             $pagination = $this->getPagination();
             $posts = $this->postService->getAllPosts($pagination['limit'], $pagination['offset']);
             
-            $this->success([
+            // Return in format expected by frontend
+            echo json_encode([
+                'status' => 'success',
                 'count' => count($posts),
                 'data' => $posts
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -105,7 +115,8 @@ class PostController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -127,7 +138,92 @@ class PostController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
+        }
+    }
+    
+    /**
+     * Upload media for a post
+     */
+    public function uploadMedia(): void {
+        try {
+            $this->requireAuth();
+            
+            // Get post_id from POST data and cast to int
+            $postId = isset($_POST['post_id']) ? (int)$_POST['post_id'] : null;
+            
+            if (!$postId) {
+                throw new \Exception('Post ID is required', 400);
+            }
+            
+            // Verify post exists
+            $post = $this->postService->getPostRepo()->find($postId);
+            if (!$post) {
+                throw new \Exception('Post not found', 404);
+            }
+            
+            // Check if files were uploaded
+            if (!isset($_FILES['media']) || empty($_FILES['media']['name'][0])) {
+                throw new \Exception('No media files provided', 400);
+            }
+            
+            $uploadedFiles = [];
+            $uploadDir = __DIR__ . '/../../uploads/media';
+            
+            // Create upload directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            // Process each uploaded file
+            $fileCount = count($_FILES['media']['name']);
+            for ($i = 0; $i < $fileCount; $i++) {
+                if ($_FILES['media']['error'][$i] !== UPLOAD_ERR_OK) {
+                    continue;
+                }
+                
+                $fileName = $_FILES['media']['name'][$i];
+                $fileTmpName = $_FILES['media']['tmp_name'][$i];
+                $fileType = $_FILES['media']['type'][$i];
+                
+                // Determine media type
+                $mediaType = strpos($fileType, 'image') !== false ? 'Image' : 'Video';
+                
+                // Generate unique filename
+                $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+                $uniqueFileName = 'media_' . uniqid() . '.' . $extension;
+                $targetPath = $uploadDir . '/' . $uniqueFileName;
+                
+                // Move uploaded file
+                if (move_uploaded_file($fileTmpName, $targetPath)) {
+                    // Save to database using repository
+                    $relativePath = 'uploads/media/' . $uniqueFileName;
+                    
+                    $db = $this->postService->getPostRepo()->getDb();
+                    $stmt = $db->prepare("
+                        INSERT INTO media (post_id, media_type, media_path, uploaded_at) 
+                        VALUES (?, ?, ?, NOW())
+                    ");
+                    $stmt->execute([$postId, $mediaType, $relativePath]);
+                    
+                    $uploadedFiles[] = [
+                        'media_id' => $db->lastInsertId(),
+                        'media_type' => $mediaType,
+                        'media_path' => $relativePath
+                    ];
+                }
+            }
+            
+            $this->success([
+                'uploaded' => count($uploadedFiles),
+                'data' => $uploadedFiles
+            ], 'Media uploaded successfully');
+            
+        } catch (\Exception $e) {
+            error_log("Media upload error: " . $e->getMessage());
+            $code = is_int($e->getCode()) ? $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
 }

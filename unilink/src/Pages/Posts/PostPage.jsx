@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Posts/Header";
 import LeftSidebar from "../../Components/Posts/LeftSidebar";
@@ -32,18 +32,20 @@ const PostPage = () => {
   const currentUserId = user?.id || 1;
   const currentFacultyId = user?.faculty_id || 1; // Fallback if missing
 
+  // Ref to prevent multiple simultaneous fetches
+  const isFetchingRef = useRef(false);
+  const hasInitializedRef = useRef(false);
+
   // Check auth and fetch posts
-  useEffect(() => {
-    if (!user) {
-      alert("Please log in to access Posts");
-      navigate('/login');
+  const fetchPosts = useCallback(async () => {
+    // Prevent multiple simultaneous fetches
+    if (isFetchingRef.current) {
+      console.log('⏳ Already fetching, skipping...');
       return;
     }
-    fetchPosts();
-  }, [user, navigate]);
 
-  const fetchPosts = async () => {
     try {
+      isFetchingRef.current = true;
       setLoading(true);
       setError(null);
       const data = await postHandler.getAllPosts();
@@ -79,8 +81,26 @@ const PostPage = () => {
       setError("Failed to load posts. Please try again later.");
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Only run once on initial mount
+    if (hasInitializedRef.current) {
+      return;
+    }
+
+    if (!user) {
+      alert("Please log in to access Posts");
+      navigate('/login');
+      return;
+    }
+
+    hasInitializedRef.current = true;
+    fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Helper function to format timestamps
   const formatTimeAgo = (timestamp) => {
@@ -235,14 +255,11 @@ const PostPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
       {/* 🌌 Starry Night Sky Background */}
-      {/* Static Image Layer - For the exact "Starry Night" look */}
+      {/* Black background for galaxy */}
       <div
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: `url(${starryNightBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          background: '#000000',
         }}
       />
 

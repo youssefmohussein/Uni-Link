@@ -19,6 +19,17 @@ class PostService extends BaseService {
     }
     
     /**
+     * Get all posts with author and media information
+     * 
+     * @param int|null $limit Limit number of posts
+     * @param int $offset Offset for pagination
+     * @return array
+     */
+    public function getAllPosts(?int $limit = null, int $offset = 0): array {
+        return $this->postRepo->getAllWithDetails($limit, $offset);
+    }
+    
+    /**
      * Create post
      * 
      * @param array $data Post data
@@ -27,7 +38,7 @@ class PostService extends BaseService {
     public function createPost(array $data): array {
         // Validate
         $errors = $this->validate($data, [
-            'user_id' => ['required'],
+            'author_id' => ['required'],
             'content' => ['required', 'min:1'],
             'category' => ['required']
         ]);
@@ -43,7 +54,11 @@ class PostService extends BaseService {
         // Create
         $postId = $this->postRepo->create($data);
         
-        return $this->postRepo->getWithMedia($postId);
+        // Return the created post with post_id
+        $post = $this->postRepo->find($postId);
+        $post['post_id'] = $postId; // Ensure post_id is set
+        
+        return $post;
     }
     
     /**
@@ -61,7 +76,7 @@ class PostService extends BaseService {
             throw new \Exception('Post not found', 404);
         }
         
-        if ($post['user_id'] != $userId) {
+        if ($post['author_id'] != $userId) {
             throw new \Exception('Unauthorized', 403);
         }
         
@@ -86,10 +101,39 @@ class PostService extends BaseService {
             throw new \Exception('Post not found', 404);
         }
         
-        if ($post['user_id'] != $userId) {
+        if ($post['author_id'] != $userId) {
             throw new \Exception('Unauthorized', 403);
         }
         
         return $this->postRepo->delete($postId);
+    }
+    
+    /**
+     * Get posts by user
+     * 
+     * @param int $userId User ID
+     * @return array
+     */
+    public function getUserPosts(int $userId): array {
+        return $this->postRepo->findByUser($userId);
+    }
+    
+    /**
+     * Search posts
+     * 
+     * @param string $query Search query
+     * @return array
+     */
+    public function searchPosts(string $query): array {
+        return $this->postRepo->search($query);
+    }
+    
+    /**
+     * Get post repository
+     * 
+     * @return PostRepository
+     */
+    public function getPostRepo(): PostRepository {
+        return $this->postRepo;
     }
 }

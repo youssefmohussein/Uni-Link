@@ -30,7 +30,7 @@ export const getPostById = async (post_id) => {
 export const addPost = async (postData) => {
     const res = await apiRequest("addPost", "POST", postData);
     if (res.status !== "success") throw new Error(res.message || "Failed to add post");
-    return res.post_id;
+    return res.data.post_id;
 };
 
 /**

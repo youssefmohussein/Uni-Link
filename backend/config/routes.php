@@ -55,6 +55,17 @@ return [
     'PUT /api/posts' => ['PostController', 'update'],
     'DELETE /api/posts' => ['PostController', 'delete'],
     
+    // Legacy post routes (without /api prefix)
+    'GET /getAllPosts' => ['PostController', 'getAll'],
+    'POST /addPost' => ['PostController', 'create'],
+    'POST /createPost' => ['PostController', 'create'],
+    'POST /updatePost' => ['PostController', 'update'],
+    'POST /deletePost' => ['PostController', 'delete'],
+    'POST /searchPosts' => ['PostController', 'search'],
+    'GET /getUserPosts' => ['PostController', 'getUserPosts'],
+    'POST /uploadMedia' => ['PostController', 'uploadMedia'],
+    'POST /uploadPostMedia' => ['PostController', 'uploadMedia'],
+    
     // ============================================
     // Post Interaction Routes (Legacy compatibility)
     // ============================================

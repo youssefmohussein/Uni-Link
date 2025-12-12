@@ -9,40 +9,50 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     });
 
     useEffect(() => {
-        checkAuth();
-    }, []);
+        let isMounted = true;
 
-    const checkAuth = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/check-session', {
-                method: 'GET',
-                credentials: 'include'
-            });
-
-            const data = await response.json();
-
-            if (data.authenticated) {
-                setAuthState({
-                    loading: false,
-                    authenticated: true,
-                    user: data.user
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('http://localhost/backend/check-session', {
+                    method: 'GET',
+                    credentials: 'include'
                 });
-            } else {
-                setAuthState({
-                    loading: false,
-                    authenticated: false,
-                    user: null
-                });
+
+                if (!isMounted) return;
+
+                const data = await response.json();
+
+                if (data.authenticated) {
+                    setAuthState({
+                        loading: false,
+                        authenticated: true,
+                        user: data.user
+                    });
+                } else {
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
+            } catch (err) {
+                console.error('Auth check error:', err);
+                if (isMounted) {
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
             }
-        } catch (err) {
-            console.error('Auth check error:', err);
-            setAuthState({
-                loading: false,
-                authenticated: false,
-                user: null
-            });
-        }
-    };
+        };
+
+        checkAuth();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []); // Only run once on mount
 
     if (authState.loading) {
         return (
