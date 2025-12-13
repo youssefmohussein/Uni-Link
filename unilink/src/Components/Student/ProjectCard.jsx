@@ -27,7 +27,7 @@ function ProjectCard({ project_id, title, description, status, grade, skills, su
     try {
       setDeleting(true);
 
-      const response = await fetch('http://localhost:8000/deleteProject', {
+      const response = await fetch('http://localhost/backend/deleteProject', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -46,5 +46,26 @@ class SkillController extends BaseController {
         } catch (\Exception $e) {
             $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
+    /**
+     * Create a new skill
+     */
+    public function create(): void {
+        try {
+            $data = $this->getJsonInput();
+            
+            if (!isset($data['skill_name']) || !isset($data['category_id'])) {
+                $this->error('Skill name and category ID are required', 400);
+            }
+            
+            $skillId = $this->skillService->createSkill($data['skill_name'], (int)$data['category_id']);
+            
+            $this->success([
+                'skill_id' => $skillId,
+                'message' => 'Skill created successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
+        }
     }
 }

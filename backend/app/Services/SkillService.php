@@ -63,7 +63,7 @@ class SkillService extends BaseService {
      * @return array Array of user skills
      */
     public function getUserSkills(int $userId): array {
-        return $this->skillRepo->getUserSkills($userId);
+        return $this->skillRepo->findUserSkills($userId);
     }
     
     /**
@@ -83,5 +83,26 @@ class SkillService extends BaseService {
      */
     public function getSkillsByCategory(int $categoryId): array {
         return $this->skillRepo->findBy('category_id', $categoryId);
+    }
+    
+    /**
+     * Create a new skill
+     */
+    public function createSkill(string $skillName, int $categoryId): int {
+        return $this->skillRepo->createSkill($skillName, $categoryId);
+    }
+    
+    /**
+     * Create a new category
+     */
+    public function createCategory(string $categoryName): int {
+        return $this->skillRepo->createCategory($categoryName);
+    }
+
+    /**
+     * Get all categories
+     */
+    public function getAllCategories(): array {
+        return $this->skillRepo->getAllCategories();
     }
 }

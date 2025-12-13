@@ -77,4 +77,35 @@ class SkillRepository extends BaseRepository {
     public function getAllCategories(): array {
         return $this->query("SELECT * FROM skillcategory ORDER BY category_name");
     }
+
+    /**
+     * Create a new skill
+     * 
+     * @param string $skillName Skill name
+     * @param int $categoryId Category ID
+     * @return int New skill ID
+     */
+    public function createSkill(string $skillName, int $categoryId): int {
+        $sql = "INSERT INTO Skill (skill_name, category_id) VALUES (?, ?)";
+        $this->execute($sql, [$skillName, $categoryId]);
+        return (int)$this->lastInsertId();
+    }
+    
+    /**
+     * Create a new skill category
+     * 
+     * @param string $categoryName Category name
+     * @return int New category ID
+     */
+    public function createCategory(string $categoryName): int {
+        // Check if exists first
+        $existing = $this->queryOne("SELECT category_id FROM SkillCategory WHERE category_name = ?", [$categoryName]);
+        if ($existing) {
+            return $existing['category_id'];
+        }
+        
+        $sql = "INSERT INTO SkillCategory (category_name) VALUES (?)";
+        $this->execute($sql, [$categoryName]);
+        return (int)$this->lastInsertId();
+    }
 }
