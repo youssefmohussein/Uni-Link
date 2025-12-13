@@ -265,20 +265,8 @@ class UserService extends BaseService {
      * @return array User profile
      */
     public function getUserProfile(int $userId): array {
-        $sql = "
-            SELECT 
-                u.user_id, u.username, u.email, u.phone, u.profile_image,
-                u.bio, u.job_title, u.role, u.faculty_id, u.major_id,
-                f.faculty_name, m.major_name,
-                s.year, s.gpa, s.points
-            FROM Users u
-            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN Major m ON u.major_id = m.major_id
-            LEFT JOIN Student s ON u.user_id = s.student_id
-            WHERE u.user_id = ?
-        ";
-        
-        $user = $this->userRepo->queryOne($sql, [$userId]);
+        // Use repository method instead of calling queryOne directly
+        $user = $this->userRepo->getUserProfileData($userId);
         
         if (!$user) {
             throw new \Exception('User not found', 404);

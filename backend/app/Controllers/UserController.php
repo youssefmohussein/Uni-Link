@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Services\UserService;
-`
 /**
  * User Controller
  * 

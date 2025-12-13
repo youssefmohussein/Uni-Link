@@ -11,25 +11,43 @@ use PDO;
  * Handles all database operations for users
  * Implements Repository Pattern for data access layer
  */
-class UserRepository implements UserRepositoryInterface {
-    protected PDO $db;
+class UserRepository extends BaseRepository implements UserRepositoryInterface {
     protected string $table = 'Users';
+    protected string $primaryKey = 'user_id';
     
-    public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+    // Constructor inherited from BaseRepository
+    
+    /**
+     * Get user profile data with joins
+     * 
+     * @param int $userId User ID
+     * @return array|null User profile data
+     */
+    public function getUserProfileData(int $userId): ?array {
+        $sql = "
+            SELECT 
+                u.user_id, u.username, u.email, u.phone, u.profile_image,
+                u.bio, u.job_title, u.role, u.faculty_id, u.major_id,
+                f.faculty_name, m.major_name,
+                s.year, s.gpa, s.points
+            FROM Users u
+            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
+            LEFT JOIN Major m ON u.major_id = m.major_id
+            LEFT JOIN Student s ON u.user_id = s.student_id
+            WHERE u.user_id = ?
+        ";
+        
+        return $this->queryOne($sql, [$userId]);
     }
-    
+
     /**
      * Find user by ID
      * 
      * @param int $id User ID
      * @return array|null User data
      */
-    public function find(int $id): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE user_id = ?");
-        $stmt->execute([$id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
+    public function find(int $id, bool $includeSoftDeleted = false): ?array {
+        return parent::find($id, $includeSoftDeleted);
     }
     
     /**
@@ -37,9 +55,8 @@ class UserRepository implements UserRepositoryInterface {
      * 
      * @return array Array of users
      */
-    public function findAll(): array {
-        $stmt = $this->db->query("SELECT * FROM {$this->table} ORDER BY user_id ASC");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function findAll(?int $limit = null, int $offset = 0, string $orderBy = ''): array {
+        return parent::findAll($limit, $offset, $orderBy ?: 'user_id ASC');
     }
     
     /**
@@ -49,6 +66,7 @@ class UserRepository implements UserRepositoryInterface {
      * @return int User ID
      */
     public function create(array $data): int {
+        // ... (Existing create implementation but using $this->db from parent)
         $stmt = $this->db->prepare("
             INSERT INTO {$this->table} 
             (user_id, username, email, password, phone, profile_image, bio, job_title, role, faculty_id, major_id)
@@ -80,6 +98,9 @@ class UserRepository implements UserRepositoryInterface {
      * @return bool Success
      */
     public function update(int $id, array $data): bool {
+        // Note: Using custom update because BaseRepository::update builds dynamic query
+        // but here we have specific fields potentially.
+        // Actually, let's keep the existing custom SQL for safety with the specific fields
         $stmt = $this->db->prepare("
             UPDATE {$this->table} 
             SET username = ?, email = ?, password = ?, phone = ?, 
@@ -110,8 +131,7 @@ class UserRepository implements UserRepositoryInterface {
      * @return bool Success
      */
     public function delete(int $id): bool {
-        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE user_id = ?");
-        return $stmt->execute([$id]);
+        return parent::delete($id);
     }
     
     /**
@@ -121,10 +141,7 @@ class UserRepository implements UserRepositoryInterface {
      * @return array|null User data
      */
     public function findByEmail(string $email): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE email = ?");
-        $stmt->execute([$email]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
+        return $this->findOneBy('email', $email);
     }
     
     /**
@@ -134,10 +151,7 @@ class UserRepository implements UserRepositoryInterface {
      * @return array|null User data
      */
     public function findByUsername(string $username): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE username = ?");
-        $stmt->execute([$username]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
+        return $this->findOneBy('username', $username);
     }
     
     /**
@@ -206,25 +220,6 @@ class UserRepository implements UserRepositoryInterface {
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
-    
-    /**
-     * Begin transaction
-     */
-    public function beginTransaction(): bool {
-        return $this->db->beginTransaction();
-    }
-    
-    /**
-     * Commit transaction
-     */
-    public function commit(): bool {
-        return $this->db->commit();
-    }
-    
-    /**
-     * Rollback transaction
-     */
-    public function rollback(): bool {
-        return $this->db->rollBack();
-    }
+
+    // Transaction methods inherited from BaseRepository
 }

@@ -65,7 +65,7 @@ class ProjectController extends BaseController {
             $this->success(['data' => $projects]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     

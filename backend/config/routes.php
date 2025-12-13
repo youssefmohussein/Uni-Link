@@ -18,6 +18,7 @@ return [
     'POST /logout' => ['AuthController', 'logout'],
     'GET /check-session' => ['AuthController', 'getCurrentUser'],
     'GET /getUsers' => ['UserController', 'getAll'],
+    'GET /getUserProfile' => ['UserController', 'getProfile'],
     
     // ============================================
     // User Routes (Legacy compatibility)

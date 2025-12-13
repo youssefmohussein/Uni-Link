@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Data access layer for Project entity
  */
 class ProjectRepository extends BaseRepository {
-    protected string $table = 'Project';
+    protected string $table = 'projects';
     protected string $primaryKey = 'project_id';
     
     /**

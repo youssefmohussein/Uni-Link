@@ -24,14 +24,43 @@ function ProfilePageUser() {
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
-    // Get current user from localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
-    const userId = user?.id;
+    // Fetch current user from backend session
+    const loadUserFromSession = async () => {
+      try {
+        const response = await fetch('http://localhost/backend/check-session', {
+          method: 'GET',
+          credentials: 'include', // Important: send cookies
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-    if (userId) {
-      setCurrentUserId(userId);
-      fetchProfileData(userId);
-    }
+        const response_data = await response.json();
+
+        console.log("Session response:", response_data); // Debug log
+
+        // Backend returns {status, message, data: {authenticated, user}}
+        const sessionData = response_data.data || response_data;
+
+        if (sessionData.authenticated && sessionData.user && sessionData.user.id) {
+          const userId = Number(sessionData.user.id); // Ensure it's a number
+          console.log("Extracted userId:", userId, typeof userId); // Debug log
+          setCurrentUserId(userId);
+          await fetchProfileData(userId);
+        } else {
+          // Not authenticated
+          console.log("Not authenticated, session data:", sessionData); // Debug log
+          setLoading(false);
+          setError("Please login to view your profile.");
+        }
+      } catch (error) {
+        console.error("Failed to check session:", error);
+        setLoading(false);
+        setError("Please login to view your profile.");
+      }
+    };
+
+    loadUserFromSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
@@ -83,7 +112,9 @@ function ProfilePageUser() {
       // Handle posts data (optional)
       let userPosts = [];
       if (postsResult.status === 'fulfilled') {
-        userPosts = postsResult.value;
+        // Check if the response has a data property (standard API format) or is the array directly
+        const postsData = postsResult.value;
+        userPosts = Array.isArray(postsData) ? postsData : (postsData.data || []);
       } else {
         console.error("Failed to fetch posts:", postsResult.reason);
         // Don't stop, just show empty posts
@@ -151,7 +182,7 @@ function ProfilePageUser() {
           <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20">
             <p className="text-red-500 mb-4">{error}</p>
             <button
-              onClick={fetchProfileData}
+              onClick={() => fetchProfileData(currentUserId)}
               className="px-4 py-2 bg-accent text-white rounded-custom hover:bg-accent/80 transition-colors"
             >
               Retry
