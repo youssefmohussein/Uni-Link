@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import authHandler from '../handlers/authHandler';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
     const [authState, setAuthState] = useState({
@@ -44,6 +45,24 @@ const ProtectedRoute = ({ children, requiredRole }) => {
                         user: null
                     });
                 }
+                // Reuse shared auth handler so we hit the same base URL/port as login
+                const session = await authHandler.checkSession();
+
+                if (!isMounted) return;
+
+                setAuthState({
+                    loading: false,
+                    authenticated: session.authenticated,
+                    user: session.user
+                });
+            } catch (err) {
+                console.error('Auth check error:', err);
+                if (!isMounted) return;
+                setAuthState({
+                    loading: false,
+                    authenticated: false,
+                    user: null
+                });
             }
         };
 
