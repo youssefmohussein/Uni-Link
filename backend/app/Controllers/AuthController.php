@@ -76,17 +76,17 @@ class AuthController {
     /**
      * Get current user endpoint
      * GET /api/auth/me
+     * GET /check-session (legacy)
      */
     public function getCurrentUser(): void {
         try {
             $user = $this->authService->getCurrentUser();
             
-            if (!$user) {
-                ResponseHandler::error('Not authenticated', 401);
-                return;
-            }
-            
-            ResponseHandler::success($user);
+            // Return format expected by frontend ProtectedRoute
+            ResponseHandler::success([
+                'authenticated' => $user !== null,
+                'user' => $user
+            ]);
             
         } catch (\Exception $e) {
             ResponseHandler::error($e->getMessage(), 500);

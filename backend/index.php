@@ -22,7 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Start session for authentication
+// Using default PHP session configuration for localhost
 if (session_status() === PHP_SESSION_NONE) {
+    // Only set httponly for security, let PHP handle the rest
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
     session_start();
 }
 

@@ -55,6 +55,10 @@ class AuthService {
         // Start session
         $this->createSession($user);
         
+        // Debug: Log session creation
+        error_log("Session created for user: " . $user->getUserId() . ", Session ID: " . session_id());
+        error_log("Session data: " . json_encode($_SESSION));
+        
         return $user;
     }
     
@@ -62,9 +66,6 @@ class AuthService {
      * Logout user
      */
     public function logout(): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
         session_unset();
         session_destroy();
     }
@@ -75,9 +76,10 @@ class AuthService {
      * @return array|null Session user data
      */
     public function getCurrentUser(): ?array {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        // Debug: Log session check
+        error_log("Checking session, Session ID: " . session_id());
+        error_log("Session data: " . json_encode($_SESSION));
+        
         return $_SESSION['user'] ?? null;
     }
     
@@ -122,10 +124,6 @@ class AuthService {
      * @param User $user User model
      */
     private function createSession(User $user): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
         $_SESSION['user'] = [
             'id' => $user->getUserId(),
             'username' => $user->getUsername(),
