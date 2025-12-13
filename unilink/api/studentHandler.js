@@ -21,7 +21,7 @@ export const uploadCV = async (userId, cvFile) => {
   formData.append('cv_file', cvFile);
   formData.append('user_id', userId);
 
-  const data = await apiRequest('index.php/uploadCV', 'POST', formData);
+  const data = await apiRequest('uploadCV', 'POST', formData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to upload CV');
   }
@@ -34,7 +34,7 @@ export const uploadCV = async (userId, cvFile) => {
  * @returns {Promise<Object>} CV data
  */
 export const getCV = async (userId) => {
-  const data = await apiRequest(`index.php/getCV?user_id=${userId}`, 'GET');
+  const data = await apiRequest(`getCV?user_id=${userId}`, 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch CV');
   }
@@ -47,7 +47,7 @@ export const getCV = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deleteCV = async (userId) => {
-  const data = await apiRequest('index.php/deleteCV', 'POST', { user_id: userId });
+  const data = await apiRequest('deleteCV', 'POST', { user_id: userId });
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to delete CV');
   }
@@ -64,7 +64,7 @@ export const deleteCV = async (userId) => {
  * @returns {Promise<Object>} Student profile data
  */
 export const getStudentProfile = async (userId) => {
-  const data = await apiRequest(`index.php/getUserProfile?user_id=${userId}`, 'GET');
+  const data = await apiRequest(`getUserProfile?user_id=${userId}`, 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch student profile');
   }
@@ -77,7 +77,7 @@ export const getStudentProfile = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const updateStudentProfile = async (profileData) => {
-  const data = await apiRequest('index.php/updateUser', 'POST', profileData);
+  const data = await apiRequest('updateUser', 'POST', profileData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to update profile');
   }
@@ -94,7 +94,7 @@ export const updateStudentProfile = async (profileData) => {
  * @returns {Promise<Array>} Array of user skills with categories
  */
 export const getStudentSkills = async (userId) => {
-  const data = await apiRequest('index.php/getUserSkills', 'POST', { user_id: userId });
+  const data = await apiRequest('getUserSkills', 'POST', { user_id: userId });
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch skills');
   }
@@ -108,7 +108,7 @@ export const getStudentSkills = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const addStudentSkills = async (userId, skills) => {
-  const data = await apiRequest('index.php/addUserSkills', 'POST', {
+  const data = await apiRequest('addUserSkills', 'POST', {
     user_id: userId,
     skills: skills
   });
@@ -123,7 +123,7 @@ export const addStudentSkills = async (userId, skills) => {
  * @returns {Promise<Array>} Array of skill categories
  */
 export const getSkillCategories = async () => {
-  const data = await apiRequest('index.php/getAllSkillCategories', 'GET');
+  const data = await apiRequest('getAllSkillCategories', 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch skill categories');
   }
@@ -137,7 +137,7 @@ export const getSkillCategories = async () => {
  * @returns {Promise<number>} Category ID
  */
 export const addSkillCategory = async (userId, categoryName) => {
-  const data = await apiRequest('index.php/addSkillCategory', 'POST', {
+  const data = await apiRequest('addSkillCategory', 'POST', {
     user_id: userId,
     category_name: categoryName
   });
@@ -154,7 +154,7 @@ export const addSkillCategory = async (userId, categoryName) => {
  * @returns {Promise<number>} Skill ID
  */
 export const addSkill = async (skillName, categoryId) => {
-  const data = await apiRequest('index.php/addSkill', 'POST', {
+  const data = await apiRequest('addSkill', 'POST', {
     skill_name: skillName,
     category_id: categoryId
   });
@@ -171,7 +171,7 @@ export const addSkill = async (skillName, categoryId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const removeStudentSkill = async (userId, skillId) => {
-  const data = await apiRequest('index.php/removeUserSkill', 'POST', {
+  const data = await apiRequest('removeUserSkill', 'POST', {
     user_id: userId,
     skill_id: skillId
   });
@@ -186,7 +186,7 @@ export const removeStudentSkill = async (userId, skillId) => {
  * @returns {Promise<Array>} Array of all skills
  */
 export const getAllSkills = async () => {
-  const data = await apiRequest('index.php/getAllSkills', 'GET');
+  const data = await apiRequest('getAllSkills', 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch all skills');
   }
@@ -204,7 +204,7 @@ export const getAllSkills = async () => {
  * @returns {Promise<Array>} Array of student projects
  */
 export const getStudentProjects = async (userId) => {
-  const data = await apiRequest(`index.php/getUserProjects?user_id=${userId}`, 'GET');
+  const data = await apiRequest(`getUserProjects?user_id=${userId}`, 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch projects');
   }
@@ -226,7 +226,7 @@ export const uploadProject = async (projectData) => {
     }
   });
 
-  const data = await apiRequest('index.php/uploadProject', 'POST', formData);
+  const data = await apiRequest('uploadProject', 'POST', formData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to upload project');
   }
@@ -239,7 +239,7 @@ export const uploadProject = async (projectData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const updateProject = async (projectData) => {
-  const data = await apiRequest('index.php/updateProject', 'POST', projectData);
+  const data = await apiRequest('updateProject', 'POST', projectData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to update project');
   }
@@ -252,7 +252,7 @@ export const updateProject = async (projectData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deleteProject = async (projectId) => {
-  const data = await apiRequest('index.php/deleteProject', 'POST', { project_id: projectId });
+  const data = await apiRequest('deleteProject', 'POST', { project_id: projectId });
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to delete project');
   }
@@ -269,7 +269,7 @@ export const deleteProject = async (projectId) => {
  * @returns {Promise<Array>} Array of student posts
  */
 export const getStudentPosts = async (userId) => {
-  const data = await apiRequest(`index.php/getUserPosts?user_id=${userId}`, 'GET');
+  const data = await apiRequest(`getUserPosts?user_id=${userId}`, 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch posts');
   }
@@ -282,7 +282,7 @@ export const getStudentPosts = async (userId) => {
  * @returns {Promise<Object>} Created post data
  */
 export const createPost = async (postData) => {
-  const data = await apiRequest('index.php/createPost', 'POST', postData);
+  const data = await apiRequest('createPost', 'POST', postData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to create post');
   }
@@ -295,7 +295,7 @@ export const createPost = async (postData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const updatePost = async (postData) => {
-  const data = await apiRequest('index.php/updatePost', 'POST', postData);
+  const data = await apiRequest('updatePost', 'POST', postData);
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to update post');
   }
@@ -308,7 +308,7 @@ export const updatePost = async (postData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deletePost = async (postId) => {
-  const data = await apiRequest('index.php/deletePost', 'POST', { post_id: postId });
+  const data = await apiRequest('deletePost', 'POST', { post_id: postId });
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to delete post');
   }
@@ -324,7 +324,7 @@ export const deletePost = async (postId) => {
  * @returns {Promise<Array>} Array of all students
  */
 export const getAllStudents = async () => {
-  const data = await apiRequest('index.php/getAllStudents', 'GET');
+  const data = await apiRequest('getAllStudents', 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch students');
   }
@@ -336,7 +336,7 @@ export const getAllStudents = async () => {
  * @returns {Promise<Array>} Array of all users
  */
 export const getUsers = async () => {
-  const data = await apiRequest('index.php/getUsers', 'GET');
+  const data = await apiRequest('getUsers', 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch users');
   }
@@ -349,7 +349,7 @@ export const getUsers = async () => {
  * @returns {Promise<number>} Created user ID
  */
 export const addStudent = async (userData) => {
-  const res = await apiRequest('index.php/addUser', 'POST', userData);
+  const res = await apiRequest('addUser', 'POST', userData);
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to add user');
   }
@@ -365,7 +365,7 @@ export const updateStudent = async (userData) => {
   if (!userData.user_id) {
     throw new Error('Missing user_id for update');
   }
-  const res = await apiRequest('index.php/updateUser', 'POST', userData);
+  const res = await apiRequest('updateUser', 'POST', userData);
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to update user');
   }
@@ -378,7 +378,7 @@ export const updateStudent = async (userData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deleteStudent = async (userId) => {
-  const res = await apiRequest('index.php/deleteUser', 'POST', { user_id: userId });
+  const res = await apiRequest('deleteUser', 'POST', { user_id: userId });
   if (res.status !== 'success') {
     throw new Error(res.message || 'Delete failed');
   }
@@ -394,7 +394,7 @@ export const deleteStudent = async (userId) => {
  * @returns {Promise<Array>} Array of faculties
  */
 export const getAllFaculties = async () => {
-  const res = await apiRequest('index.php/getAllFaculties', 'GET');
+  const res = await apiRequest('getAllFaculties', 'GET');
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to fetch faculties');
   }
@@ -406,7 +406,7 @@ export const getAllFaculties = async () => {
  * @returns {Promise<Array>} Array of majors
  */
 export const getAllMajors = async () => {
-  const res = await apiRequest('index.php/getAllMajors', 'GET');
+  const res = await apiRequest('getAllMajors', 'GET');
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to fetch majors');
   }

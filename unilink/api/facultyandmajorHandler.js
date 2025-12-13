@@ -8,7 +8,7 @@ import { apiRequest } from "./apiClient";
  * Fetch all faculties
  */
 export const getAllFaculties = async () => {
-  const res = await apiRequest("index.php/getAllFaculties", "GET");
+  const res = await apiRequest("getAllFaculties", "GET");
   if (res.status !== "success")
     throw new Error(res.message || "Failed to fetch faculties");
 
@@ -20,7 +20,7 @@ export const getAllFaculties = async () => {
  * @param {Object} facultyData
  */
 export const addFaculty = async (facultyData) => {
-  const res = await apiRequest("index.php/addFaculty", "POST", facultyData);
+  const res = await apiRequest("addFaculty", "POST", facultyData);
   if (res.status !== "success")
     throw new Error(res.message || "Failed to add faculty");
 
@@ -35,7 +35,7 @@ export const updateFaculty = async (facultyData) => {
   if (!facultyData.faculty_id)
     throw new Error("Missing faculty_id for update");
 
-  const res = await apiRequest("index.php/updateFaculty", "POST", facultyData);
+  const res = await apiRequest("updateFaculty", "POST", facultyData);
   if (res.status !== "success")
     throw new Error(res.message || "Failed to update faculty");
 
@@ -46,7 +46,7 @@ export const updateFaculty = async (facultyData) => {
  * Delete faculty by id
  */
 export const deleteFaculty = async (faculty_id) => {
-  const res = await apiRequest("index.php/deleteFaculty", "POST", { faculty_id });
+  const res = await apiRequest("deleteFaculty", "POST", { faculty_id });
   if (res.status !== "success")
     throw new Error(res.message || "Failed to delete faculty");
 
@@ -62,7 +62,7 @@ export const deleteFaculty = async (faculty_id) => {
  * Fetch all majors
  */
 export const getAllMajors = async () => {
-  const res = await apiRequest("index.php/getAllMajors", "GET");
+  const res = await apiRequest("getAllMajors", "GET");
   if (res.status !== "success")
     throw new Error(res.message || "Failed to fetch majors");
 
@@ -74,7 +74,7 @@ export const getAllMajors = async () => {
  * @param {Object} majorData
  */
 export const addMajor = async (majorData) => {
-  const res = await apiRequest("index.php/addMajor", "POST", majorData);
+  const res = await apiRequest("addMajor", "POST", majorData);
   if (res.status !== "success")
     throw new Error(res.message || "Failed to add major");
 
@@ -89,7 +89,7 @@ export const updateMajor = async (majorData) => {
   if (!majorData.major_id)
     throw new Error("Missing major_id for update");
 
-  const res = await apiRequest("index.php/updateMajor", "POST", majorData);
+  const res = await apiRequest("updateMajor", "POST", majorData);
   if (res.status !== "success")
     throw new Error(res.message || "Failed to update major");
 
@@ -100,7 +100,7 @@ export const updateMajor = async (majorData) => {
  * Delete a major by id
  */
 export const deleteMajor = async (major_id) => {
-  const res = await apiRequest("index.php/deleteMajor", "POST", { major_id });
+  const res = await apiRequest("deleteMajor", "POST", { major_id });
   if (res.status !== "success")
     throw new Error(res.message || "Failed to delete major");
 

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost/backend/index.php';
+const API_BASE_URL = 'http://localhost/backend';
 
 /**
  * Centralized authentication handler

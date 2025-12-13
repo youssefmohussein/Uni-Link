@@ -14,6 +14,37 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
         const checkAuth = async () => {
             try {
+                const response = await fetch('http://localhost/backend/check-session', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!isMounted) return;
+
+                const data = await response.json();
+
+                if (data.authenticated) {
+                    setAuthState({
+                        loading: false,
+                        authenticated: true,
+                        user: data.user
+                    });
+                } else {
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
+            } catch (err) {
+                console.error('Auth check error:', err);
+                if (isMounted) {
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
                 // Reuse shared auth handler so we hit the same base URL/port as login
                 const session = await authHandler.checkSession();
 
@@ -40,7 +71,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, []); // Only run once on mount
 
     if (authState.loading) {
         return (

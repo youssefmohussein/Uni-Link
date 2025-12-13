@@ -4,7 +4,7 @@ import { apiRequest } from "./apiClient";
  * Fetch all users
  */
 export const getUsers = async () => {
-  const data = await apiRequest("index.php/getUsers", "GET");
+  const data = await apiRequest("getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
   return data.data ?? [];
 };
@@ -14,7 +14,7 @@ export const getUsers = async () => {
  * @param {Object} userData
  */
 export const addUser = async (userData) => {
-  const res = await apiRequest("index.php/addUser", "POST", userData);
+  const res = await apiRequest("addUser", "POST", userData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add user");
   return res.user_id;
 };
@@ -25,7 +25,7 @@ export const addUser = async (userData) => {
  */
 export const updateUser = async (userData) => {
   if (!userData.user_id) throw new Error("Missing user_id for update");
-  const res = await apiRequest("index.php/updateUser", "POST", userData);
+  const res = await apiRequest("updateUser", "POST", userData);
   if (res.status !== "success") throw new Error(res.message || "Failed to update user");
   return true;
 };
@@ -35,7 +35,7 @@ export const updateUser = async (userData) => {
  * @param {number} user_id
  */
 export const deleteUser = async (user_id) => {
-  const res = await apiRequest("index.php/deleteUser", "POST", { user_id });
+  const res = await apiRequest("deleteUser", "POST", { user_id });
   if (res.status !== "success") throw new Error(res.message || "Delete failed");
   return true;
 };
@@ -44,7 +44,7 @@ export const deleteUser = async (user_id) => {
  * Fetch all faculties
  */
 export const getAllFaculties = async () => {
-  const res = await apiRequest("index.php/getAllFaculties", "GET");
+  const res = await apiRequest("getAllFaculties", "GET");
   return res.data ?? [];
 };
 
@@ -52,7 +52,7 @@ export const getAllFaculties = async () => {
  * Fetch all majors
  */
 export const getAllMajors = async () => {
-  const res = await apiRequest("index.php/getAllMajors", "GET");
+  const res = await apiRequest("getAllMajors", "GET");
   return res.data ?? [];
 };
 

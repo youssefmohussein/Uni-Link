@@ -1,0 +1,16 @@
+# Uni-Link Backend .htaccess
+# Routes all requests to index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Route all requests to index.php (except actual files)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Ensure PHP files are processed
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>

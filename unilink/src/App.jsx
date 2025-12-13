@@ -88,14 +88,7 @@ export default function App() {
             }
           />
           <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/posts" element={<PostPage />} />
           <Route path="/collections" element={<CollectionsPage />} />

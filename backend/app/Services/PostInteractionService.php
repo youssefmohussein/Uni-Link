@@ -1,0 +1,131 @@
+<?php
+namespace App\Services;
+
+use App\Strategies\PostInteraction\InteractionContext;
+use App\Strategies\PostInteraction\LikeStrategy;
+use App\Strategies\PostInteraction\LoveStrategy;
+use App\Strategies\PostInteraction\CelebrationStrategy;
+use App\Strategies\PostInteraction\SaveStrategy;
+use App\Strategies\PostInteraction\ShareStrategy;
+
+/**
+ * Post Interaction Service
+ * 
+ * Business logic for post interactions using Strategy pattern
+ */
+class PostInteractionService extends BaseService {
+    private InteractionContext $context;
+    
+    public function __construct() {
+        $this->context = new InteractionContext();
+    }
+    
+    /**
+     * Add interaction to post
+     * 
+     * @param int $postId Post ID
+     * @param int $userId User ID
+     * @param string $type Interaction type
+     * @return bool Success status
+     */
+    public function addInteraction(int $postId, int $userId, string $type): bool {
+        // Set strategy based on type
+        switch ($type) {
+            case 'like':
+                $this->context->setStrategy(new LikeStrategy());
+                break;
+            case 'love':
+                $this->context->setStrategy(new LoveStrategy());
+                break;
+            case 'celebration':
+                $this->context->setStrategy(new CelebrationStrategy());
+                break;
+            case 'save':
+                $this->context->setStrategy(new SaveStrategy());
+                break;
+            case 'share':
+                $this->context->setStrategy(new ShareStrategy());
+                break;
+            default:
+                throw new \Exception('Invalid interaction type', 400);
+        }
+        
+        return $this->context->executeInteraction($postId, $userId);
+    }
+    
+    /**
+     * Remove interaction from post
+     * 
+     * @param int $postId Post ID
+     * @param int $userId User ID
+     * @param string $type Interaction type
+     * @return bool Success status
+     */
+    public function removeInteraction(int $postId, int $userId, string $type): bool {
+        // Set strategy based on type
+        switch ($type) {
+            case 'like':
+                $this->context->setStrategy(new LikeStrategy());
+                break;
+            case 'love':
+                $this->context->setStrategy(new LoveStrategy());
+                break;
+            case 'celebration':
+                $this->context->setStrategy(new CelebrationStrategy());
+                break;
+            case 'save':
+                $this->context->setStrategy(new SaveStrategy());
+                break;
+            case 'share':
+                $this->context->setStrategy(new ShareStrategy());
+                break;
+            default:
+                throw new \Exception('Invalid interaction type', 400);
+        }
+        
+        return $this->context->removeInteraction($postId, $userId);
+    }
+    
+    /**
+     * Get interactions by post
+     * 
+     * @param int $postId Post ID
+     * @return array Array of interactions
+     */
+    public function getByPost(int $postId): array {
+        // This would use a repository method
+        // For now, returning empty array as placeholder
+        return [];
+    }
+    
+    /**
+     * Get user reaction to post
+     * 
+     * @param int $postId Post ID
+     * @param int $userId User ID
+     * @return array|null User's reaction
+     */
+    public function getUserReaction(int $postId, int $userId): ?array {
+        // This would use a repository method
+        // For now, returning null as placeholder
+        return null;
+    }
+    
+    /**
+     * Get reaction counts for post
+     * 
+     * @param int $postId Post ID
+     * @return array Reaction counts
+     */
+    public function getReactionCounts(int $postId): array {
+        // This would use a repository method
+        // For now, returning empty counts
+        return [
+            'like' => 0,
+            'love' => 0,
+            'celebration' => 0,
+            'save' => 0,
+            'share' => 0
+        ];
+    }
+}

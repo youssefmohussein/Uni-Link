@@ -9,7 +9,7 @@ import { apiRequest } from "./apiClient";
  * Fetch ALL users (just like getUsers, optional)
  */
 export const getUsers = async () => {
-  const data = await apiRequest("index.php/getUsers", "GET");
+  const data = await apiRequest("getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
   return data.data ?? [];
 };
@@ -20,7 +20,7 @@ export const getUsers = async () => {
  * Returns professor + user + faculty + major info
  */
 export const getProfessors = async () => {
-  const data = await apiRequest("index.php/getAllProfessors", "GET");
+  const data = await apiRequest("getAllProfessors", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
   return data.data ?? [];
 };
@@ -35,7 +35,7 @@ export const getProfessors = async () => {
  * @param {Object} professorData - must include professor_id, academic_rank, office_location
  */
 export const addProfessor = async (professorData) => {
-  const res = await apiRequest("index.php/addProfessor", "POST", professorData);
+  const res = await apiRequest("addProfessor", "POST", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add professor");
   return true;
 };
@@ -46,7 +46,7 @@ export const addProfessor = async (professorData) => {
  */
 export const updateProfessor = async (professorData) => {
   if (!professorData.professor_id) throw new Error("Missing professor_id for update");
-  const res = await apiRequest("index.php/updateProfessor", "POST", professorData);
+  const res = await apiRequest("updateProfessor", "POST", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to update professor");
   return true;
 };
@@ -56,7 +56,7 @@ export const updateProfessor = async (professorData) => {
  * @param {number} user_id
  */
 export const deleteProfessor = async (user_id) => {
-  const res = await apiRequest("index.php/deleteUser", "POST", { user_id });
+  const res = await apiRequest("deleteUser", "POST", { user_id });
   if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };
@@ -69,7 +69,7 @@ export const deleteProfessor = async (user_id) => {
  * Get all faculties
  */
 export const getAllFaculties = async () => {
-  const res = await apiRequest("index.php/getAllFaculties", "GET");
+  const res = await apiRequest("getAllFaculties", "GET");
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch faculties");
   return res.data ?? [];
 };
@@ -78,7 +78,7 @@ export const getAllFaculties = async () => {
  * Get all majors
  */
 export const getAllMajors = async () => {
-  const res = await apiRequest("index.php/getAllMajors", "GET");
+  const res = await apiRequest("getAllMajors", "GET");
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
   return res.data ?? [];
 };
@@ -92,7 +92,7 @@ export const getAllMajors = async () => {
  * @param {number} professor_id
  */
 export const getProfessorById = async (professor_id) => {
-  const data = await apiRequest(`index.php/getProfessorById/${professor_id}`, "GET");
+  const data = await apiRequest(`getProfessorById/${professor_id}`, "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch professor details");
   return data.data;
 };
@@ -101,7 +101,7 @@ export const getProfessorById = async (professor_id) => {
  * Get aggregated dashboard statistics (for analytics)
  */
 export const getDashboardStats = async () => {
-  const data = await apiRequest("index.php/getDashboardStats", "GET");
+  const data = await apiRequest("getDashboardStats", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch dashboard stats");
   return data.data;
 };
@@ -115,7 +115,7 @@ export const getDashboardStats = async () => {
  * @param {Object} reviewData - { project_id, professor_id, comment, mark }
  */
 export const addReview = async (reviewData) => {
-  const res = await apiRequest("index.php/addReview", "POST", reviewData);
+  const res = await apiRequest("addReview", "POST", reviewData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add review");
   return true;
 };
@@ -125,7 +125,7 @@ export const addReview = async (reviewData) => {
  * @param {number} project_id
  */
 export const getReviewsByProject = async (project_id) => {
-  const res = await apiRequest("index.php/getReviewsByProject", "POST", { project_id });
+  const res = await apiRequest("getReviewsByProject", "POST", { project_id });
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch reviews");
   return res.reviews ?? [];
 };
@@ -135,7 +135,7 @@ export const getReviewsByProject = async (project_id) => {
  * @param {number} review_id
  */
 export const deleteReview = async (review_id) => {
-  const res = await apiRequest("index.php/deleteReview", "POST", { review_id });
+  const res = await apiRequest("deleteReview", "POST", { review_id });
   if (res.status !== "success") throw new Error(res.message || "Failed to delete review");
   return true;
 };
