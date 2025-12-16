@@ -25,25 +25,28 @@ class AuthHandler {
                 })
             });
 
-            const data = await response.json();
+            const responseData = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || 'Login failed');
+                throw new Error(responseData.error || responseData.message || 'Login failed');
             }
 
+            // ResponseHandler wraps data in 'data' key: { status: 'success', data: { id, username, email, role, redirect } }
+            const loginData = responseData.data || responseData;
+            
             // Save user data to localStorage for frontend authentication checks
             const userData = {
-                id: data.id,
-                username: data.username,
-                email: data.email,
-                role: data.role
+                id: loginData.id,
+                username: loginData.username,
+                email: loginData.email,
+                role: loginData.role
             };
             localStorage.setItem('user', JSON.stringify(userData));
 
             return {
                 success: true,
                 user: userData,
-                redirect: data.redirect
+                redirect: loginData.redirect
             };
         } catch (error) {
             return {
@@ -96,22 +99,25 @@ class AuthHandler {
                 credentials: 'include'
             });
 
-            const data = await response.json();
+            const responseData = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Session check failed');
+                throw new Error(responseData.message || 'Session check failed');
             }
 
+            // ResponseHandler wraps data in 'data' key: { status: 'success', data: { authenticated, user } }
+            const sessionData = responseData.data || responseData;
+            
             // Sync session data with localStorage
-            if (data.authenticated && data.user) {
-                localStorage.setItem('user', JSON.stringify(data.user));
+            if (sessionData.authenticated && sessionData.user) {
+                localStorage.setItem('user', JSON.stringify(sessionData.user));
             } else {
                 localStorage.removeItem('user');
             }
 
             return {
-                authenticated: data.authenticated,
-                user: data.user || null
+                authenticated: sessionData.authenticated || false,
+                user: sessionData.user || null
             };
         } catch (error) {
             console.error('Session check error:', error);

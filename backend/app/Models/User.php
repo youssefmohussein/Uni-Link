@@ -32,7 +32,7 @@ abstract class User implements ModelInterface {
         $this->userId = $data['user_id'] ?? 0;
         $this->username = $data['username'] ?? '';
         $this->email = $data['email'] ?? '';
-        $this->password = $data['password'] ?? '';
+        $this->password = $data['password_hash'] ?? '';
         $this->phone = $data['phone'] ?? null;
         $this->profileImage = $data['profile_image'] ?? null;
         $this->bio = $data['bio'] ?? null;
@@ -115,7 +115,7 @@ abstract class User implements ModelInterface {
      */
     public function toPublicArray(): array {
         $data = $this->toArray();
-        unset($data['password']);
+        unset($data['password_hash']);
         return $data;
     }
 }

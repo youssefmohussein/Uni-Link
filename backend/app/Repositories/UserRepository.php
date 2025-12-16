@@ -24,20 +24,26 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @return array|null User profile data
      */
     public function getUserProfileData(int $userId): ?array {
+        // All user data is in Users table, no need to join with separate role tables
         $sql = "
             SELECT 
                 u.user_id, u.username, u.email, u.phone, u.profile_image,
                 u.bio, u.job_title, u.role, u.faculty_id, u.major_id,
-                f.faculty_name, m.major_name,
-                s.year, s.gpa, s.points
+                f.faculty_name, m.major_name
             FROM Users u
             LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
             LEFT JOIN Major m ON u.major_id = m.major_id
-            LEFT JOIN Student s ON u.user_id = s.student_id
             WHERE u.user_id = ?
         ";
         
-        return $this->queryOne($sql, [$userId]);
+        $result = $this->queryOne($sql, [$userId]);
+        
+        // Normalize role if user found
+        if ($result && isset($result['role'])) {
+            $result['role'] = $this->normalizeRole($result['role']);
+        }
+        
+        return $result;
     }
 
     /**
@@ -173,6 +179,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
     
     /**
      * Get user with role-specific data
+     * All role information is stored in the Users table, no separate role tables needed
      * 
      * @param int $id User ID
      * @return array|null Complete user data
@@ -183,42 +190,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             return null;
         }
         
-        // Get role-specific data based on user role
-        $roleData = match($user['role']) {
-            'Admin' => $this->getAdminData($id),
-            'Student' => $this->getStudentData($id),
-            'Professor' => $this->getProfessorData($id),
-            default => []
-        };
+        // Normalize role from database (uppercase: ADMIN/PROFESSOR/STUDENT) to mixed case (Admin/Professor/Student)
+        $dbRole = $user['role'] ?? '';
+        $normalizedRole = $this->normalizeRole($dbRole);
+        $user['role'] = $normalizedRole;
         
-        return array_merge($user, $roleData ?? []);
+        // All role information is in the Users table, no need to query separate tables
+        // Return user data with normalized role
+        return $user;
     }
     
     /**
-     * Get admin-specific data
+     * Normalize role from database format (uppercase) to code format (mixed case)
+     * 
+     * @param string $role Role from database
+     * @return string Normalized role
      */
-    private function getAdminData(int $id): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM Admin WHERE admin_id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }
-    
-    /**
-     * Get student-specific data
-     */
-    private function getStudentData(int $id): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM Student WHERE student_id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }
-    
-    /**
-     * Get professor-specific data
-     */
-    private function getProfessorData(int $id): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM Professor WHERE professor_id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    private function normalizeRole(string $role): string {
+        return match(strtoupper($role)) {
+            'ADMIN' => 'Admin',
+            'PROFESSOR' => 'Professor',
+            'STUDENT' => 'Student',
+            default => $role // Return as-is if not recognized
+        };
     }
 
     // Transaction methods inherited from BaseRepository

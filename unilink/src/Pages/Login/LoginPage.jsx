@@ -109,16 +109,19 @@ const LiquidLoginForm = () => {
         // Redirect based on backend response or user role
         setTimeout(() => {
             if (result.redirect) {
-                // Use redirect URL from backend
+                // Use redirect URL from backend (preferred)
                 window.location.href = result.redirect;
             } else {
-                // Fallback to role-based redirect
+                // Fallback to role-based redirect (handle both uppercase and mixed case)
                 const { role } = result.user;
-                if (role === 'Admin') {
-                    window.location.href = '/admin';
-                } else if (role === 'Professor') {
+                const roleUpper = role?.toUpperCase();
+                
+                if (roleUpper === 'ADMIN') {
+                    window.location.href = '/admin/dashboard';
+                } else if (roleUpper === 'PROFESSOR') {
                     window.location.href = '/professor';
                 } else {
+                    // Default to posts for STUDENT or any other role
                     window.location.href = '/posts';
                 }
             }

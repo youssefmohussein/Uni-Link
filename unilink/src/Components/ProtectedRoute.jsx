@@ -14,41 +14,17 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
         const checkAuth = async () => {
             try {
-                const response = await fetch('http://localhost/backend/check-session', {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-
-                if (!isMounted) return;
-
-                const data = await response.json();
-
-                if (data.authenticated) {
-                    setAuthState({
-                        loading: false,
-                        authenticated: true,
-                        user: data.user
-                    });
-                } else {
-                    setAuthState({
-                        loading: false,
-                        authenticated: false,
-                        user: null
-                    });
-                }
-            } catch (err) {
-                console.error('Auth check error:', err);
-                if (isMounted) {
-                    setAuthState({
-                        loading: false,
-                        authenticated: false,
-                        user: null
-                    });
-                }
-                // Reuse shared auth handler so we hit the same base URL/port as login
+                // Use shared auth handler for consistent authentication checking
                 const session = await authHandler.checkSession();
 
                 if (!isMounted) return;
+
+                // Debug logging
+                console.log('ProtectedRoute - Session check result:', {
+                    authenticated: session.authenticated,
+                    user: session.user,
+                    requiredRole: requiredRole
+                });
 
                 setAuthState({
                     loading: false,
@@ -85,8 +61,23 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (requiredRole && authState.user.role !== requiredRole) {
-        return <Navigate to="/login" replace />;
+    // Check role (case-insensitive comparison)
+    if (requiredRole) {
+        const userRole = authState.user?.role?.toUpperCase() || '';
+        const requiredRoleUpper = requiredRole.toUpperCase();
+        
+        console.log('ProtectedRoute - Role check:', {
+            userRole: authState.user?.role,
+            userRoleUpper: userRole,
+            requiredRole: requiredRole,
+            requiredRoleUpper: requiredRoleUpper,
+            match: userRole === requiredRoleUpper
+        });
+        
+        if (userRole !== requiredRoleUpper) {
+            console.warn(`Access denied: User role '${authState.user?.role}' (${userRole}) does not match required role '${requiredRole}' (${requiredRoleUpper})`);
+            return <Navigate to="/login" replace />;
+        }
     }
 
     return children;

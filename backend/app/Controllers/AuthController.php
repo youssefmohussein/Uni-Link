@@ -38,24 +38,48 @@ class AuthController {
             $user = $this->authService->login($input['identifier'], $input['password']);
             
             // Determine redirect based on role
-            $redirectMap = [
-                'Student' => '/posts',
-                'Professor' => '/professor',
-                'Admin' => '/admin'
-            ];
+            // Get role from user model (should be normalized to mixed case: Admin, Professor, Student)
+            $userRole = $user->getRole();
             
-            $redirect = $redirectMap[$user->getRole()] ?? '/posts';
+            // Normalize to uppercase for comparison (handle any case variations)
+            $roleUpper = strtoupper(trim($userRole ?? ''));
+            
+            // Redirect map based on role - ADMIN goes to /admin/dashboard, PROFESSOR to /professor, STUDENT to /posts
+            // Get redirect URL - explicitly check each role
+            if ($roleUpper === 'ADMIN') {
+                $redirect = '/admin/dashboard';
+            } elseif ($roleUpper === 'PROFESSOR') {
+                $redirect = '/professor';
+            } elseif ($roleUpper === 'STUDENT') {
+                $redirect = '/posts';
+            } else {
+                // Default fallback
+                $redirect = '/posts';
+                error_log("WARNING: Unknown role '{$userRole}' (uppercase: '{$roleUpper}'), defaulting to /posts");
+            }
+            
+            // Debug logging
+            error_log("Login redirect - User ID: {$user->getUserId()}, Role: '{$userRole}', Uppercase: '{$roleUpper}', Redirect: '{$redirect}'");
+            
+            // Get final role value for response
+            $finalRole = $user->getRole();
             
             ResponseHandler::success([
                 'id' => $user->getUserId(),
                 'username' => $user->getUsername(),
                 'email' => $user->getEmail(),
-                'role' => $user->getRole(),
+                'role' => $finalRole,
                 'redirect' => $redirect
             ], 'Login successful');
             
         } catch (\Exception $e) {
-            $code = $e->getCode() ?: 500;
+            // Ensure code is always an integer (getCode() can return string, int, or 0)
+            $exceptionCode = $e->getCode();
+            if (is_numeric($exceptionCode) && $exceptionCode > 0) {
+                $code = (int)$exceptionCode;
+            } else {
+                $code = 500; // Default to 500 if code is invalid, 0, or non-numeric
+            }
             ResponseHandler::error($e->getMessage(), $code);
         }
     }
@@ -82,11 +106,19 @@ class AuthController {
         try {
             $user = $this->authService->getCurrentUser();
             
+            // Debug logging
+            error_log("getCurrentUser - User data: " . json_encode($user));
+            
             // Return format expected by frontend ProtectedRoute
-            ResponseHandler::success([
+            // ResponseHandler::success wraps data in 'data' key, so we need to check the structure
+            $responseData = [
                 'authenticated' => $user !== null,
                 'user' => $user
-            ]);
+            ];
+            
+            error_log("getCurrentUser - Response data: " . json_encode($responseData));
+            
+            ResponseHandler::success($responseData);
             
         } catch (\Exception $e) {
             ResponseHandler::error($e->getMessage(), 500);
