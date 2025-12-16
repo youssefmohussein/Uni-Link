@@ -55,6 +55,9 @@ use App\Controllers\AnnouncementController;
 use App\Controllers\ProjectRoomController;
 use App\Controllers\SavedPostController;
 use App\Controllers\DashboardController;
+use App\Controllers\CvController;
+use App\Controllers\SkillCategoryController;
+
 
 // Mediators
 use App\Mediators\NotificationMediator;
@@ -281,6 +284,14 @@ $container->set('SavedPostController', function($c) {
 
 $container->set('DashboardController', function($c) {
     return new DashboardController($c->get('DashboardService'));
+});
+
+$container->set('CvController', function($c) {
+    return new CvController();
+});
+
+$container->set('SkillCategoryController', function($c) {
+    return new SkillCategoryController($c->get('SkillService'));
 });
 
 return $container;

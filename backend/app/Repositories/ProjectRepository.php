@@ -19,8 +19,8 @@ class ProjectRepository extends BaseRepository {
     public function findByUser(int $userId): array {
         $sql = "
             SELECT p.*, u.username as supervisor_name
-            FROM Project p
-            LEFT JOIN Users u ON p.supervisor_id = u.user_id
+            FROM projects p
+            LEFT JOIN users u ON p.supervisor_id = u.user_id
             WHERE p.student_id = ?
             ORDER BY p.created_at DESC
         ";
@@ -62,9 +62,9 @@ class ProjectRepository extends BaseRepository {
         
         $sql = "
             SELECT s.skill_id, s.skill_name, sc.category_name
-            FROM ProjectSkill ps
-            JOIN Skill s ON ps.skill_id = s.skill_id
-            LEFT JOIN SkillCategory sc ON s.category_id = sc.category_id
+            FROM projectskill ps
+            JOIN skills s ON ps.skill_id = s.skill_id
+            LEFT JOIN skillcategory sc ON s.category_id = sc.category_id
             WHERE ps.project_id = ?
         ";
         $project['skills'] = $this->query($sql, [$projectId]);
@@ -88,7 +88,7 @@ class ProjectRepository extends BaseRepository {
         
         try {
             foreach ($skillIds as $skillId) {
-                $sql = "INSERT INTO ProjectSkill (project_id, skill_id) VALUES (?, ?)";
+                $sql = "INSERT INTO projectskill (project_id, skill_id) VALUES (?, ?)";
                 $this->execute($sql, [$projectId, $skillId]);
             }
             $this->commit();
@@ -108,12 +108,12 @@ class ProjectRepository extends BaseRepository {
      */
     public function removeSkills(int $projectId, array $skillIds = []): bool {
         if (empty($skillIds)) {
-            $sql = "DELETE FROM ProjectSkill WHERE project_id = ?";
+            $sql = "DELETE FROM projectskill WHERE project_id = ?";
             return $this->execute($sql, [$projectId]) >= 0;
         }
         
         $placeholders = implode(',', array_fill(0, count($skillIds), '?'));
-        $sql = "DELETE FROM ProjectSkill WHERE project_id = ? AND skill_id IN ({$placeholders})";
+        $sql = "DELETE FROM projectskill WHERE project_id = ? AND skill_id IN ({$placeholders})";
         $params = array_merge([$projectId], $skillIds);
         
         return $this->execute($sql, $params) >= 0;
@@ -134,11 +134,11 @@ class ProjectRepository extends BaseRepository {
                 s.username as supervisor_name,
                 f.faculty_name,
                 m.major_name
-            FROM Project p
-            LEFT JOIN Users u ON p.student_id = u.user_id
-            LEFT JOIN Users s ON p.supervisor_id = s.user_id
-            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN Major m ON u.major_id = m.major_id
+            FROM projects p
+            LEFT JOIN users u ON p.student_id = u.user_id
+            LEFT JOIN users s ON p.supervisor_id = s.user_id
+            LEFT JOIN faculty f ON u.faculty_id = f.faculty_id
+            LEFT JOIN major m ON u.major_id = m.major_id
             ORDER BY p.created_at DESC
         ";
         

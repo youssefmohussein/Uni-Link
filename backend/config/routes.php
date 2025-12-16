@@ -111,17 +111,30 @@ return [
     // ============================================
     // CV Routes (Legacy compatibility)
     // ============================================
+    // ============================================
+    // CV Routes
+    // ============================================
     'POST /api/cv/upload' => ['CvController', 'upload'],
     'GET /api/cv/download' => ['CvController', 'download'],
-    
+    'GET /getCV' => ['CvController', 'getCV'], // New endpoint for metadata
+    'POST /deleteCV' => ['CvController', 'delete'],
+
     // ============================================
-    // Skill Routes (Legacy compatibility)
+    // Skill Routes
     // ============================================
     'GET /api/skills' => ['SkillController', 'getAll'],
     'GET /api/skill-categories' => ['SkillCategoryController', 'getAll'],
+    'POST /addSkillCategory' => ['SkillCategoryController', 'create'], // Added
+    'POST /addSkill' => ['SkillController', 'create'], // Added
+    
+    // User Skills
     'GET /api/user-skills' => ['UserSkillController', 'getUserSkills'],
     'POST /api/user-skills' => ['UserSkillController', 'add'],
     'DELETE /api/user-skills' => ['UserSkillController', 'delete'],
+    
+    // Legacy support for skills
+    'POST /addUserSkills' => ['UserSkillController', 'add'],
+    'POST /removeUserSkill' => ['UserSkillController', 'delete'],
     
     // ============================================
     // Faculty & Major Routes (Legacy compatibility)

@@ -38,31 +38,28 @@ const ProtectedRoute = ({ children, requiredRole }) => {
                 }
             } catch (err) {
                 console.error('Auth check error:', err);
-                if (isMounted) {
+                if (!isMounted) return;
+
+                // Fallback: try using shared auth handler
+                try {
+                    const session = await authHandler.checkSession();
+                    if (!isMounted) return;
+
+                    setAuthState({
+                        loading: false,
+                        authenticated: session.authenticated,
+                        user: session.user
+                    });
+                } catch (fallbackErr) {
+                    console.error('Fallback auth check error:', fallbackErr);
+                    if (!isMounted) return;
+
                     setAuthState({
                         loading: false,
                         authenticated: false,
                         user: null
                     });
                 }
-                // Reuse shared auth handler so we hit the same base URL/port as login
-                const session = await authHandler.checkSession();
-
-                if (!isMounted) return;
-
-                setAuthState({
-                    loading: false,
-                    authenticated: session.authenticated,
-                    user: session.user
-                });
-            } catch (err) {
-                console.error('Auth check error:', err);
-                if (!isMounted) return;
-                setAuthState({
-                    loading: false,
-                    authenticated: false,
-                    user: null
-                });
             }
         };
 
