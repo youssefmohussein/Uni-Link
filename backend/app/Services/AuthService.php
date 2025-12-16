@@ -42,15 +42,21 @@ class AuthService {
         }
         
         // Verify password
-        if (!password_verify($password, $userData['password'])) {
+        if (!password_verify($password, $userData['password_hash'])) {
             throw new \Exception('Incorrect password', 401);
         }
         
         // Get complete user data with role info
         $completeUserData = $this->userRepo->findWithRoleData($userData['user_id']);
         
+        // Debug: Log role from database
+        error_log("AuthService - User ID: {$userData['user_id']}, DB Role: '{$userData['role']}', Normalized Role: '{$completeUserData['role']}'");
+        
         // Create appropriate user model
         $user = $this->createUserModel($completeUserData);
+        
+        // Debug: Log role from model
+        error_log("AuthService - Model Role: '{$user->getRole()}'");
         
         // Start session
         $this->createSession($user);
@@ -110,11 +116,31 @@ class AuthService {
      * @return User User model instance
      */
     private function createUserModel(array $userData): User {
-        return match($userData['role']) {
+        // Normalize role from database (uppercase: ADMIN/PROFESSOR/STUDENT) to mixed case (Admin/Professor/Student)
+        $dbRole = $userData['role'] ?? '';
+        $normalizedRole = $this->normalizeRole($dbRole);
+        $userData['role'] = $normalizedRole;
+        
+        return match($normalizedRole) {
             'Admin' => new Admin($userData),
             'Student' => new Student($userData),
             'Professor' => new Professor($userData),
-            default => throw new \Exception('Invalid user role')
+            default => throw new \Exception('Invalid user role: ' . $dbRole . ' (expected ADMIN, PROFESSOR, or STUDENT)')
+        };
+    }
+    
+    /**
+     * Normalize role from database format (uppercase) to code format (mixed case)
+     * 
+     * @param string $role Role from database
+     * @return string Normalized role
+     */
+    private function normalizeRole(string $role): string {
+        return match(strtoupper($role)) {
+            'ADMIN' => 'Admin',
+            'PROFESSOR' => 'Professor',
+            'STUDENT' => 'Student',
+            default => $role // Return as-is if not recognized
         };
     }
     

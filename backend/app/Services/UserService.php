@@ -37,13 +37,18 @@ class UserService extends BaseService {
      * @throws \Exception If validation fails
      */
     public function createUser(array $data): array {
+        // Normalize role to uppercase for database storage (schema uses ENUM('ADMIN', 'PROFESSOR', 'STUDENT'))
+        if (isset($data['role'])) {
+            $data['role'] = $this->normalizeRoleForDatabase($data['role']);
+        }
+        
         // Validate
         $errors = $this->validate($data, [
             'user_id' => ['required', 'numeric'],
             'username' => ['required', 'min:3'],
             'email' => ['required', 'email'],
             'password' => ['required', 'min:6'],
-            'role' => ['required', 'in:Student,Professor,Admin']
+            'role' => ['required', 'in:STUDENT,PROFESSOR,ADMIN']
         ]);
         
         if (!empty($errors)) {
@@ -61,8 +66,8 @@ class UserService extends BaseService {
         // Hash password
         $sanitized['password'] = $this->hashPassword($data['password']);
         
-        // Role-specific validation
-        if ($sanitized['role'] === 'Student') {
+        // Role-specific validation (use uppercase for comparison)
+        if ($sanitized['role'] === 'STUDENT') {
             if (!isset($data['year'])) {
                 throw new \Exception('Academic year is required for students', 400);
             }
@@ -76,7 +81,7 @@ class UserService extends BaseService {
         
         // Create user within transaction
         return $this->transaction(function() use ($sanitized, $data) {
-            // Insert into Users table
+            // Insert into Users table - all role information is stored here
             $userId = $this->userRepo->create([
                 'user_id' => (int)$sanitized['user_id'],
                 'username' => $sanitized['username'],
@@ -86,34 +91,12 @@ class UserService extends BaseService {
                 'profile_image' => $data['profile_image'] ?? null,
                 'bio' => $sanitized['bio'] ?? null,
                 'job_title' => $sanitized['job_title'] ?? null,
-                'role' => $sanitized['role'],
+                'role' => $sanitized['role'], // Role stored in Users table (ADMIN, PROFESSOR, STUDENT)
                 'faculty_id' => $data['faculty_id'] ?? null,
                 'major_id' => $data['major_id'] ?? null
             ]);
             
-            // Insert into role-specific table
-            if ($sanitized['role'] === 'Student') {
-                $year = (int)$data['year'];
-                $gpa = $year == 1 ? 0.0 : (float)$data['gpa'];
-                
-                $this->studentRepo->create([
-                    'student_id' => $userId,
-                    'year' => $year,
-                    'gpa' => $gpa,
-                    'points' => 0
-                ]);
-            } elseif ($sanitized['role'] === 'Professor') {
-                $this->professorRepo->create([
-                    'professor_id' => $userId
-                ]);
-            } elseif ($sanitized['role'] === 'Admin') {
-                $this->adminRepo->create([
-                    'admin_id' => $userId,
-                    'status' => 'Active',
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
-            }
-            
+            // No separate role tables - all role information is in Users table
             return $this->userRepo->find($userId);
         }, $this->userRepo);
     }
@@ -134,12 +117,13 @@ class UserService extends BaseService {
             throw new \Exception('User not found', 404);
         }
         
-        $oldRole = $existingUser['role'];
-        $newRole = $data['role'] ?? $oldRole;
+        // Normalize roles: database stores uppercase, but we accept mixed case input
+        $oldRole = strtoupper($existingUser['role'] ?? '');
+        $newRole = isset($data['role']) ? $this->normalizeRoleForDatabase($data['role']) : $oldRole;
         
-        // Validate role
-        if (!in_array($newRole, ['Student', 'Professor', 'Admin'])) {
-            throw new \Exception('Invalid role', 400);
+        // Validate role (must be uppercase for database)
+        if (!in_array($newRole, ['STUDENT', 'PROFESSOR', 'ADMIN'])) {
+            throw new \Exception('Invalid role. Must be one of: STUDENT, PROFESSOR, ADMIN', 400);
         }
         
         // Sanitize data
@@ -170,19 +154,8 @@ class UserService extends BaseService {
             // Update Users table
             $this->userRepo->update($userId, $updateData);
             
-            // Handle role change
-            if ($oldRole !== $newRole) {
-                $this->changeRole($userId, $oldRole, $newRole, $data);
-            } elseif ($newRole === 'Student' && isset($data['year'])) {
-                // Update student info if role stayed the same
-                $year = (int)$data['year'];
-                $gpa = $year == 1 ? 0.0 : (float)($data['gpa'] ?? 0);
-                
-                $this->studentRepo->update($userId, [
-                    'year' => $year,
-                    'gpa' => $gpa
-                ]);
-            }
+            // Role change is handled by updating the role field in Users table
+            // No separate role tables to update
             
             return $this->userRepo->find($userId);
         }, $this->userRepo);
@@ -190,6 +163,7 @@ class UserService extends BaseService {
     
     /**
      * Change user role
+     * Role is stored in Users table, no separate role tables to update
      * 
      * @param int $userId User ID
      * @param string $oldRole Old role
@@ -197,37 +171,25 @@ class UserService extends BaseService {
      * @param array $data Additional data
      */
     private function changeRole(int $userId, string $oldRole, string $newRole, array $data): void {
-        // Delete old role entry
-        if ($oldRole === 'Student') {
-            $this->studentRepo->delete($userId);
-        } elseif ($oldRole === 'Professor') {
-            $this->professorRepo->delete($userId);
-        } elseif ($oldRole === 'Admin') {
-            $this->adminRepo->delete($userId);
-        }
-        
-        // Create new role entry
-        if ($newRole === 'Student') {
-            $year = (int)($data['year'] ?? 1);
-            $gpa = $year == 1 ? 0.0 : (float)($data['gpa'] ?? 0);
-            
-            $this->studentRepo->create([
-                'student_id' => $userId,
-                'year' => $year,
-                'gpa' => $gpa,
-                'points' => 0
-            ]);
-        } elseif ($newRole === 'Professor') {
-            $this->professorRepo->create([
-                'professor_id' => $userId
-            ]);
-        } elseif ($newRole === 'Admin') {
-            $this->adminRepo->create([
-                'admin_id' => $userId,
-                'status' => 'Active',
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
-        }
+        // Role change is handled by updating the role field in Users table
+        // No separate role tables exist - all role information is in Users table
+        // This method is kept for compatibility but does nothing
+    }
+    
+    /**
+     * Normalize role to uppercase for database storage
+     * Accepts mixed case input (Admin/Professor/Student) and converts to uppercase (ADMIN/PROFESSOR/STUDENT)
+     * 
+     * @param string $role Role in any case
+     * @return string Role in uppercase
+     */
+    private function normalizeRoleForDatabase(string $role): string {
+        return match(strtoupper($role)) {
+            'ADMIN', 'Admin', 'admin' => 'ADMIN',
+            'PROFESSOR', 'Professor', 'professor' => 'PROFESSOR',
+            'STUDENT', 'Student', 'student' => 'STUDENT',
+            default => strtoupper($role) // Fallback: uppercase whatever was provided
+        };
     }
     
     /**
@@ -243,17 +205,8 @@ class UserService extends BaseService {
             throw new \Exception('User not found', 404);
         }
         
-        return $this->transaction(function() use ($userId, $user) {
-            // Delete from role-specific table
-            if ($user['role'] === 'Student') {
-                $this->studentRepo->delete($userId);
-            } elseif ($user['role'] === 'Professor') {
-                $this->professorRepo->delete($userId);
-            } elseif ($user['role'] === 'Admin') {
-                $this->adminRepo->delete($userId);
-            }
-            
-            // Delete from Users table
+        return $this->transaction(function() use ($userId) {
+            // No separate role tables - just delete from Users table
             return $this->userRepo->delete($userId);
         }, $this->userRepo);
     }

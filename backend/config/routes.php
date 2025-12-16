@@ -170,4 +170,23 @@ return [
     'POST /api/saved-posts' => ['SavedPostController', 'save'],
     'GET /api/saved-posts' => ['SavedPostController', 'getUserSaved'],
     'DELETE /api/saved-posts' => ['SavedPostController', 'unsave'],
+    
+    // ============================================
+    // Notification Routes (NEW)
+    // ============================================
+    'GET /api/notifications' => ['NotificationController', 'getNotifications'],
+    'GET /api/notifications/unread' => ['NotificationController', 'getUnread'],
+    'GET /api/notifications/unread-count' => ['NotificationController', 'getUnreadCount'],
+    'PUT /api/notifications/mark-as-read' => ['NotificationController', 'markAsRead'],
+    'PUT /api/notifications/mark-all-read' => ['NotificationController', 'markAllAsRead'],
+    'DELETE /api/notifications/delete' => ['NotificationController', 'deleteNotification'],
+    'GET /api/notifications/by-type' => ['NotificationController', 'getByType'],
+    
+    // ============================================
+    // Chat Routes (NEW - Chain of Responsibility)
+    // ============================================
+    'POST /api/chat/send' => ['ChatController', 'sendMessage'],
+    'GET /api/chat/messages' => ['ChatController', 'getRoomMessages'],
+    'GET /api/chat/message-count' => ['ChatController', 'getMessageCount'],
+    'DELETE /api/chat/messages/delete' => ['ChatController', 'deleteMessage'],
 ];

@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Data access layer for Major entity
  */
 class MajorRepository extends BaseRepository {
-    protected string $table = 'Major';
+    protected string $table = 'majors';
     protected string $primaryKey = 'major_id';
     
     /**
@@ -17,7 +17,7 @@ class MajorRepository extends BaseRepository {
      * @return array|null Major data or null
      */
     public function findByName(string $name): ?array {
-        return $this->findOneBy('major_name', $name);
+        return $this->findOneBy('name', $name);
     }
     
     /**
@@ -38,9 +38,9 @@ class MajorRepository extends BaseRepository {
      */
     public function getWithFaculty(int $majorId): ?array {
         $sql = "
-            SELECT m.*, f.faculty_name
-            FROM Major m
-            LEFT JOIN Faculty f ON m.faculty_id = f.faculty_id
+            SELECT m.*, f.name as faculty_name
+            FROM majors m
+            LEFT JOIN faculties f ON m.faculty_id = f.faculty_id
             WHERE m.major_id = ?
         ";
         return $this->queryOne($sql, [$majorId]);
@@ -53,10 +53,10 @@ class MajorRepository extends BaseRepository {
      */
     public function getAllWithFaculty(): array {
         $sql = "
-            SELECT m.*, f.faculty_name
-            FROM Major m
-            LEFT JOIN Faculty f ON m.faculty_id = f.faculty_id
-            ORDER BY f.faculty_name ASC, m.major_name ASC
+            SELECT m.*, f.name as faculty_name
+            FROM majors m
+            LEFT JOIN faculties f ON m.faculty_id = f.faculty_id
+            ORDER BY f.name ASC, m.name ASC
         ";
         return $this->query($sql);
     }

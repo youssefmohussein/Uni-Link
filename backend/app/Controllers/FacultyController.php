@@ -29,7 +29,8 @@ class FacultyController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -51,7 +52,8 @@ class FacultyController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -71,7 +73,8 @@ class FacultyController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -91,7 +94,8 @@ class FacultyController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
     
@@ -113,7 +117,8 @@ class FacultyController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
         }
     }
 }
