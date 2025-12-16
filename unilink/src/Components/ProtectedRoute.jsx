@@ -14,31 +14,52 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
         const checkAuth = async () => {
             try {
-                // Use shared auth handler for consistent authentication checking
-                const session = await authHandler.checkSession();
+                const response = await fetch('http://localhost/backend/check-session', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
 
                 if (!isMounted) return;
 
-                // Debug logging
-                console.log('ProtectedRoute - Session check result:', {
-                    authenticated: session.authenticated,
-                    user: session.user,
-                    requiredRole: requiredRole
-                });
+                const data = await response.json();
 
-                setAuthState({
-                    loading: false,
-                    authenticated: session.authenticated,
-                    user: session.user
-                });
+                if (data.authenticated) {
+                    setAuthState({
+                        loading: false,
+                        authenticated: true,
+                        user: data.user
+                    });
+                } else {
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
             } catch (err) {
                 console.error('Auth check error:', err);
                 if (!isMounted) return;
-                setAuthState({
-                    loading: false,
-                    authenticated: false,
-                    user: null
-                });
+
+                // Fallback: try using shared auth handler
+                try {
+                    const session = await authHandler.checkSession();
+                    if (!isMounted) return;
+
+                    setAuthState({
+                        loading: false,
+                        authenticated: session.authenticated,
+                        user: session.user
+                    });
+                } catch (fallbackErr) {
+                    console.error('Fallback auth check error:', fallbackErr);
+                    if (!isMounted) return;
+
+                    setAuthState({
+                        loading: false,
+                        authenticated: false,
+                        user: null
+                    });
+                }
             }
         };
 
