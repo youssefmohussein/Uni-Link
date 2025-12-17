@@ -149,18 +149,49 @@ class ProjectController extends BaseController {
     }
     
     /**
-     * Add grade to project
+     * Approve project
      */
-    public function addGrade(): void {
+    public function approveProject(): void {
         try {
             $this->requireRole('Professor');
-            
+            $professorId = $this->getCurrentUserId();
+
             $data = $this->getJsonInput();
-            $this->validateRequired($data, ['project_id', 'grade']);
+            $this->validateRequired($data, ['project_id', 'score']);
+
+            $project = $this->projectService->approveProject(
+                (int)$data['project_id'], 
+                $professorId, 
+                (float)$data['score'], 
+                $data['comment'] ?? null
+            );
             
-            $project = $this->projectService->addGrade((int)$data['project_id'], $data['grade']);
-            $this->success($project, 'Grade added successfully');
+            $this->success($project, 'Project approved successfully');
+
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
+    /**
+     * Reject project
+     */
+    public function rejectProject(): void {
+        try {
+            $this->requireRole('Professor');
+            $professorId = $this->getCurrentUserId();
+
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['project_id']);
+
+            $project = $this->projectService->rejectProject(
+                (int)$data['project_id'], 
+                $professorId, 
+                $data['comment'] ?? null
+            );
             
+            $this->success($project, 'Project rejected successfully');
+
         } catch (\Exception $e) {
             $this->error($e->getMessage(), $e->getCode() ?: 400);
         }

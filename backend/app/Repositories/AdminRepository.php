@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Data access layer for Admin entity
  */
 class AdminRepository extends BaseRepository {
-    protected string $table = 'Admin';
+    protected string $table = 'admins';
     protected string $primaryKey = 'admin_id';
     
     /**
@@ -29,8 +29,8 @@ class AdminRepository extends BaseRepository {
     public function getWithUserInfo(int $adminId): ?array {
         $sql = "
             SELECT a.*, u.username, u.email, u.phone, u.profile_image, u.bio
-            FROM Admin a
-            JOIN Users u ON a.admin_id = u.user_id
+            FROM admins a
+            JOIN users u ON a.user_id = u.user_id
             WHERE a.admin_id = ?
         ";
         return $this->queryOne($sql, [$adminId]);
@@ -44,8 +44,8 @@ class AdminRepository extends BaseRepository {
     public function getAllWithUserInfo(): array {
         $sql = "
             SELECT a.*, u.username, u.email, u.phone, u.profile_image
-            FROM Admin a
-            JOIN Users u ON a.admin_id = u.user_id
+            FROM admins a
+            JOIN users u ON a.user_id = u.user_id
             ORDER BY a.created_at DESC
         ";
         return $this->query($sql);

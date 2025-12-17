@@ -126,6 +126,31 @@ class ProjectRepository extends BaseRepository {
      * @param int $offset Offset
      * @return array Array of projects
      */
+    /**
+     * Add project review
+     * 
+     * @param array $data Review data
+     * @return int Review ID
+     */
+    public function addReview(array $data): int {
+        $sql = "INSERT INTO project_reviews (project_id, professor_id, comment, score, status) VALUES (?, ?, ?, ?, ?)";
+        $this->execute($sql, [
+            $data['project_id'],
+            $data['professor_id'],
+            $data['comment'] ?? null,
+            $data['score'] ?? null,
+            $data['status']
+        ]);
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Get all projects with complete information
+     * 
+     * @param int|null $limit Limit
+     * @param int $offset Offset
+     * @return array Array of projects
+     */
     public function getAllWithDetails(?int $limit = null, int $offset = 0): array {
         $sql = "
             SELECT 

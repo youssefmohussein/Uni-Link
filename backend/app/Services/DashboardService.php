@@ -35,24 +35,70 @@ class DashboardService extends BaseService {
      * @return array Dashboard stats
      */
     public function getStats(): array {
+        $totalUsers = $this->userRepo->count();
+        // Role values in DB are uppercase: ADMIN, PROFESSOR, STUDENT
+        $students = $this->userRepo->count(['role' => 'STUDENT']);
+        $professors = $this->userRepo->count(['role' => 'PROFESSOR']);
+        $admins = $this->userRepo->count(['role' => 'ADMIN']);
+        
         return [
-            'users' => [
-                'total' => $this->userRepo->count(),
-                'students' => $this->userRepo->count(['role' => 'Student']),
-                'professors' => $this->userRepo->count(['role' => 'Professor']),
-                'admins' => $this->userRepo->count(['role' => 'Admin'])
+            'stats' => [
+                'totalUsers' => $totalUsers,
+                'students' => $students,
+                'professors' => $professors,
+                'admins' => $admins
             ],
-            'posts' => [
-                'total' => $this->postRepo->count(),
-                'recent' => $this->getRecentPostsCount()
-            ],
-            'projects' => [
-                'total' => $this->projectRepo->count(),
-                'pending' => $this->projectRepo->count(['status' => 'Pending']),
-                'graded' => $this->projectRepo->count(['status' => 'Graded'])
-            ],
-            'topStudents' => $this->studentRepo->getTopByPoints(5)
+            'weeklyActivity' => $this->getWeeklyActivity(),
+            'facultyDistribution' => $this->getFacultyDistribution(),
+            'userStatus' => [
+                'active' => $totalUsers - 5, // Placeholder - would need actual status tracking
+                'idle' => 3,
+                'suspended' => 2
+            ]
         ];
+    }
+    
+    /**
+     * Get weekly activity data
+     * 
+     * @return array Weekly activity
+     */
+    private function getWeeklyActivity(): array {
+        $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        $activity = [];
+        
+        // Get user registrations per day for last 7 days
+        $results = $this->userRepo->getWeeklyActivity();
+        $activityMap = [];
+        foreach ($results as $row) {
+            $dayName = date('D', strtotime($row['date']));
+            $activityMap[$dayName] = (int)$row['count'];
+        }
+        
+        // Fill in missing days with 0
+        foreach ($days as $day) {
+            $activity[] = [
+                'day' => $day,
+                'count' => $activityMap[$day] ?? 0
+            ];
+        }
+        
+        return $activity;
+    }
+    
+    /**
+     * Get faculty distribution
+     * 
+     * @return array Faculty distribution
+     */
+    private function getFacultyDistribution(): array {
+        $results = $this->userRepo->getFacultyDistribution();
+        return array_map(function($row) {
+            return [
+                'faculty_name' => $row['faculty_name'] ?? 'Unknown',
+                'student_count' => (int)($row['student_count'] ?? 0)
+            ];
+        }, $results);
     }
     
     /**
@@ -61,9 +107,7 @@ class DashboardService extends BaseService {
      * @return int Recent posts count
      */
     private function getRecentPostsCount(): int {
-        $sql = "SELECT COUNT(*) as count FROM Post WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-        $result = $this->postRepo->queryOne($sql);
-        return (int)($result['count'] ?? 0);
+        return $this->postRepo->getRecentCount();
     }
     
     /**

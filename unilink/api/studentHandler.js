@@ -353,7 +353,7 @@ export const deletePost = async (postId) => {
  * @returns {Promise<Array>} Array of all students
  */
 export const getAllStudents = async () => {
-  const data = await apiRequest('getAllStudents', 'GET');
+  const data = await apiRequest('/api/students', 'GET'); // Updated to /api/students
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch students');
   }
@@ -361,11 +361,20 @@ export const getAllStudents = async () => {
 };
 
 /**
+ * Get all students (alias for getAllStudents for compatibility)
+ * @returns {Promise<Array>} Array of all students
+ */
+export const getStudents = async () => {
+  return getAllStudents();
+};
+
+/**
  * Get all users (admin function)
  * @returns {Promise<Array>} Array of all users
  */
 export const getUsers = async () => {
-  const data = await apiRequest('getUsers', 'GET');
+  const data = await apiRequest('/api/user', 'GET'); // Updated to /api/user (or /getUsers legacy works too, but consistency is good)
+  // routes.php has GET /api/user => UserController::getAll.
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch users');
   }
@@ -378,11 +387,11 @@ export const getUsers = async () => {
  * @returns {Promise<number>} Created user ID
  */
 export const addStudent = async (userData) => {
-  const res = await apiRequest('addUser', 'POST', userData);
+  const res = await apiRequest('/api/user', 'POST', userData); // Updated to POST /api/user
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to add user');
   }
-  return res.user_id;
+  return res.data ? res.data.user_id : true;
 };
 
 /**
@@ -394,7 +403,7 @@ export const updateStudent = async (userData) => {
   if (!userData.user_id) {
     throw new Error('Missing user_id for update');
   }
-  const res = await apiRequest('updateUser', 'POST', userData);
+  const res = await apiRequest('/api/user', 'PUT', userData);
   if (res.status !== 'success') {
     throw new Error(res.message || 'Failed to update user');
   }
@@ -407,7 +416,7 @@ export const updateStudent = async (userData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deleteStudent = async (userId) => {
-  const res = await apiRequest('deleteUser', 'POST', { user_id: userId });
+  const res = await apiRequest('/api/user', 'DELETE', { user_id: userId }); // Updated to DELETE /api/user
   if (res.status !== 'success') {
     throw new Error(res.message || 'Delete failed');
   }

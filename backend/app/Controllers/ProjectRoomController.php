@@ -23,7 +23,12 @@ class ProjectRoomController extends BaseController {
             $this->requireAuth();
             
             $data = $this->getJsonInput();
-            $data['owner_id'] = $this->getCurrentUserId();
+            // Use created_by if provided, otherwise use current user
+            if (!isset($data['owner_id']) && !isset($data['created_by'])) {
+                $data['owner_id'] = $this->getCurrentUserId();
+            } elseif (isset($data['created_by'])) {
+                $data['owner_id'] = $data['created_by'];
+            }
             
             $room = $this->roomService->createRoom($data);
             $this->success($room, 'Room created successfully', 201);
@@ -40,10 +45,10 @@ class ProjectRoomController extends BaseController {
         try {
             $this->requireAuth();
             
-            // This would need implementation in service
+            $rooms = $this->roomService->getAllRooms();
             $this->success([
-                'count' => 0,
-                'data' => []
+                'count' => count($rooms),
+                'data' => $rooms
             ]);
             
         } catch (\Exception $e) {
@@ -84,8 +89,44 @@ class ProjectRoomController extends BaseController {
                 throw new \Exception('Room ID is required', 400);
             }
             
-            // This would need implementation in service
-            $this->success(null);
+            $room = $this->roomService->getRoom($roomId);
+            $this->success($room);
+            
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+    
+    /**
+     * Update room
+     */
+    public function update(): void {
+        try {
+            $this->requireAuth();
+            
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['room_id']);
+            
+            $room = $this->roomService->updateRoom((int)$data['room_id'], $data);
+            $this->success($room, 'Room updated successfully');
+            
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+    
+    /**
+     * Delete room
+     */
+    public function delete(): void {
+        try {
+            $this->requireAuth();
+            
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['room_id']);
+            
+            $this->roomService->deleteRoom((int)$data['room_id']);
+            $this->success(null, 'Room deleted successfully');
             
         } catch (\Exception $e) {
             $this->error($e->getMessage(), $e->getCode() ?: 400);

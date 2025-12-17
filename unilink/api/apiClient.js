@@ -1,7 +1,9 @@
 import { API_BASE_URL } from "../config/api";
 
 export async function apiRequest(endpoint, method = "GET", data = null) {
-  const url = `${API_BASE_URL}/${endpoint}`;
+  // Remove leading slash from endpoint if present, then add it back
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+  const url = `${API_BASE_URL}/${cleanEndpoint}`;
   console.log("Fetching from:", url);
 
   const options = {

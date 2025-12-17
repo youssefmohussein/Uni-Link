@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
     const fetchDashboardStats = async () => {
       try {
         setLoading(true);
-        const result = await apiRequest("index.php/getDashboardStats", "GET");
+        const result = await apiRequest("/api/dashboard/stats", "GET");
 
         if (result.status === 'success') {
           setDashboardData(result.data);

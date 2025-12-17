@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Handles database operations for posts
  */
 class PostRepository extends BaseRepository {
-    protected string $table = 'post';
+    protected string $table = 'posts';
     protected string $primaryKey = 'post_id';
     
     /**
@@ -16,8 +16,15 @@ class PostRepository extends BaseRepository {
      * @param int $userId User ID
      * @return array Array of posts
      */
-    public function findByUser(int $userId): array {
-        return $this->query("
+    /**
+     * Find posts by user
+     * 
+     * @param int $userId User ID
+     * @param int|null $limit Limit
+     * @return array Array of posts
+     */
+    public function findByUser(int $userId, ?int $limit = null): array {
+        $sql = "
             SELECT p.*, u.username, u.profile_image,
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
@@ -26,7 +33,23 @@ class PostRepository extends BaseRepository {
             WHERE p.author_id = ?
             GROUP BY p.post_id
             ORDER BY p.created_at DESC
-        ", [$userId]);
+        ";
+
+        if ($limit !== null) {
+            $sql .= " LIMIT {$limit}";
+        }
+
+        return $this->query($sql, [$userId]);
+    }
+
+    /**
+     * Count posts by user
+     * 
+     * @param int $userId User ID
+     * @return int Count
+     */
+    public function countByUser(int $userId): int {
+        return $this->count(['author_id' => $userId]);
     }
     
     /**
@@ -153,6 +176,20 @@ class PostRepository extends BaseRepository {
         }
         
         return $posts;
+    }
+    
+    /**
+     * Get count of recent posts (last 7 days)
+     * 
+     * @return int Count of recent posts
+     */
+    public function getRecentCount(): int {
+        $result = $this->queryOne("
+            SELECT COUNT(*) as count 
+            FROM {$this->table} 
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        ");
+        return (int)($result['count'] ?? 0);
     }
     
     /**
