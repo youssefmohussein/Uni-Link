@@ -9,6 +9,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     { label: "Home Feed", icon: "fas fa-home", category: "all", count: null },
     { label: "Saved Posts", icon: "fas fa-bookmark", category: "saved", count: null, isRoute: true, route: "/collections" },
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
+    { label: "Project Rooms", icon: "fas fa-project-diagram", category: "project-rooms", count: null, isRoute: true, route: "/project-rooms" },
     { label: "Project Groups", icon: "fas fa-user-friends", category: "Projects", count: 3 },
     { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: 5, countColor: "bg-red-500" },
     { label: "Study Group", icon: "fas fa-book-reader", category: "Study Group", count: null },
