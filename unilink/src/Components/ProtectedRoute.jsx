@@ -21,7 +21,18 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
                 if (!isMounted) return;
 
-                const data = await response.json();
+                const responseData = await response.json();
+
+                // Backend wraps response in ResponseHandler which adds 'data' key
+                // Response format: { status: 'success', data: { authenticated: true, user: {...} } }
+                const data = responseData.data || responseData;
+
+                console.log('ProtectedRoute - Session check response:', {
+                    rawResponse: responseData,
+                    extractedData: data,
+                    authenticated: data.authenticated,
+                    user: data.user
+                });
 
                 if (data.authenticated) {
                     setAuthState({
@@ -86,7 +97,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     if (requiredRole) {
         const userRole = authState.user?.role?.toUpperCase() || '';
         const requiredRoleUpper = requiredRole.toUpperCase();
-        
+
         console.log('ProtectedRoute - Role check:', {
             userRole: authState.user?.role,
             userRoleUpper: userRole,
@@ -94,7 +105,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
             requiredRoleUpper: requiredRoleUpper,
             match: userRole === requiredRoleUpper
         });
-        
+
         if (userRole !== requiredRoleUpper) {
             console.warn(`Access denied: User role '${authState.user?.role}' (${userRole}) does not match required role '${requiredRole}' (${requiredRoleUpper})`);
             return <Navigate to="/login" replace />;
