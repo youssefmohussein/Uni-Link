@@ -21,7 +21,6 @@ export default function AdminUsersPage() {
     try {
       setLoading(true);
       const data = await userHandler.getUsers();
-      console.log("Fetched users:", data);
       setUsers(data);
       setError(null);
     } catch (err) {

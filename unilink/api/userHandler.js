@@ -6,7 +6,11 @@ import { apiRequest } from "./apiClient";
 export const getUsers = async () => {
   const data = await apiRequest("getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
-  return data.data ?? [];
+
+  const payload = data.data;
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.data)) return payload.data;
+  return [];
 };
 
 /**
