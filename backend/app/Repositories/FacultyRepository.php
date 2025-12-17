@@ -38,7 +38,7 @@ class FacultyRepository extends BaseRepository {
      */
     public function getAllWithMajorCount(): array {
         $sql = "
-            SELECT f.*, f.name as faculty_name, COUNT(m.major_id) as major_count
+            SELECT f.*, COUNT(m.major_id) as major_count
             FROM faculties f
             LEFT JOIN majors m ON f.faculty_id = m.faculty_id
             GROUP BY f.faculty_id

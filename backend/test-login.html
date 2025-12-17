@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button.check {
+            background: #2196F3;
+        }
+        button.check:hover {
+            background: #0b7dda;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Login Test Tool</h1>
+        
+        <div class="form-group">
+            <label for="identifier">Email or Username:</label>
+            <input type="text" id="identifier" placeholder="admin@example.com or admin">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="password">
+        </div>
+        
+        <button onclick="testLogin()">Test Login</button>
+        <button class="check" onclick="checkUsers()">Check Users in DB</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const identifier = document.getElementById('identifier').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!identifier || !password) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Please enter both email/username and password';
+                return;
+            }
+            
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Testing login...';
+            
+            try {
+                const response = await fetch('http://localhost/backend/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        identifier: identifier,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✓ Login Successful!\n\n' + JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '✗ Login Failed\n\n' + 
+                        'Status: ' + response.status + '\n' +
+                        'Error: ' + (data.message || data.error || 'Unknown error') + '\n\n' +
+                        'Full Response:\n' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ Network Error\n\n' + error.message;
+            }
+        }
+        
+        async function checkUsers() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Checking database for users...';
+            
+            try {
+                const response = await fetch('http://localhost/backend/check-users.php');
+                const text = await response.text();
+                
+                resultDiv.className = 'result info';
+                resultDiv.textContent = text;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ Error checking users\n\n' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

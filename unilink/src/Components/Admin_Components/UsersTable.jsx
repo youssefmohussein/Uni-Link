@@ -16,6 +16,8 @@ export default function UsersTable({
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
 
+  console.log("UsersTable received users:", users);
+
   const filtered = useMemo(() => {
     if (!query.trim()) return users;
     const q = query.toLowerCase();
