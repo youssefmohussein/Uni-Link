@@ -26,7 +26,8 @@ class DashboardController extends BaseController {
             $this->success($stats);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
 }

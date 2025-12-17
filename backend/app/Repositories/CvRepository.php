@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Handles database operations for CVs
  */
 class CvRepository extends BaseRepository {
-    protected string $table = 'cv';
+    protected string $table = 'cvs';
     protected string $primaryKey = 'cv_id';
     
     /**

@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Data access layer for Announcement entity
  */
 class AnnouncementRepository extends BaseRepository {
-    protected string $table = 'Announcement';
+    protected string $table = 'announcements';
     protected string $primaryKey = 'announcement_id';
     
     /**
@@ -19,8 +19,8 @@ class AnnouncementRepository extends BaseRepository {
     public function findRecent(int $limit = 10): array {
         $sql = "
             SELECT a.*, u.username as author_name, u.role as author_role
-            FROM Announcement a
-            LEFT JOIN Users u ON a.author_id = u.user_id
+            FROM announcements a
+            LEFT JOIN users u ON a.author_id = u.user_id
             ORDER BY a.created_at DESC
             LIMIT ?
         ";
@@ -36,8 +36,8 @@ class AnnouncementRepository extends BaseRepository {
     public function findByRole(string $role): array {
         $sql = "
             SELECT a.*, u.username as author_name, u.role as author_role
-            FROM Announcement a
-            LEFT JOIN Users u ON a.author_id = u.user_id
+            FROM announcements a
+            LEFT JOIN users u ON a.author_id = u.user_id
             WHERE a.target_role = ? OR a.target_role = 'All'
             ORDER BY a.created_at DESC
         ";
@@ -63,8 +63,8 @@ class AnnouncementRepository extends BaseRepository {
     public function getWithAuthor(int $announcementId): ?array {
         $sql = "
             SELECT a.*, u.username as author_name, u.role as author_role, u.profile_image
-            FROM Announcement a
-            LEFT JOIN Users u ON a.author_id = u.user_id
+            FROM announcements a
+            LEFT JOIN users u ON a.author_id = u.user_id
             WHERE a.announcement_id = ?
         ";
         return $this->queryOne($sql, [$announcementId]);

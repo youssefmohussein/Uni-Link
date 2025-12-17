@@ -12,7 +12,7 @@ use PDO;
  * Implements Repository Pattern for data access layer
  */
 class UserRepository extends BaseRepository implements UserRepositoryInterface {
-    protected string $table = 'Users';
+    protected string $table = 'users';
     protected string $primaryKey = 'user_id';
     
     // Constructor inherited from BaseRepository
@@ -24,15 +24,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @return array|null User profile data
      */
     public function getUserProfileData(int $userId): ?array {
-        // All user data is in Users table, no need to join with separate role tables
+        // All user data is in users table, no need to join with separate role tables
         $sql = "
             SELECT 
-                u.user_id, u.username, u.email, u.phone, u.profile_image,
-                u.bio, u.job_title, u.role, u.faculty_id, u.major_id,
-                f.faculty_name, m.major_name
-            FROM Users u
-            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN Major m ON u.major_id = m.major_id
+                u.user_id, u.username, u.email, u.phone, u.profile_picture as profile_image,
+                u.bio, u.role, u.faculty_id, u.major_id,
+                f.name as faculty_name, m.name as major_name
+            FROM users u
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+            LEFT JOIN majors m ON u.major_id = m.major_id
             WHERE u.user_id = ?
         ";
         
@@ -72,28 +72,23 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @return int User ID
      */
     public function create(array $data): int {
-        // ... (Existing create implementation but using $this->db from parent)
-        $stmt = $this->db->prepare("
-            INSERT INTO {$this->table} 
-            (user_id, username, email, password, phone, profile_image, bio, job_title, role, faculty_id, major_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
+        // Use parent create method which handles the table correctly
+        // Map password to password_hash if needed
+        if (isset($data['password']) && !isset($data['password_hash'])) {
+            $data['password_hash'] = $data['password'];
+            unset($data['password']);
+        }
         
-        $stmt->execute([
-            $data['user_id'],
-            $data['username'],
-            $data['email'],
-            $data['password'],
-            $data['phone'] ?? null,
-            $data['profile_image'] ?? null,
-            $data['bio'] ?? null,
-            $data['job_title'] ?? null,
-            $data['role'],
-            $data['faculty_id'] ?? null,
-            $data['major_id'] ?? null
-        ]);
+        // Map profile_image to profile_picture if needed
+        if (isset($data['profile_image']) && !isset($data['profile_picture'])) {
+            $data['profile_picture'] = $data['profile_image'];
+            unset($data['profile_image']);
+        }
         
-        return (int)$data['user_id'];
+        // Remove job_title as it doesn't exist in schema
+        unset($data['job_title']);
+        
+        return parent::create($data);
     }
     
     /**
@@ -104,30 +99,23 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @return bool Success
      */
     public function update(int $id, array $data): bool {
-        // Note: Using custom update because BaseRepository::update builds dynamic query
-        // but here we have specific fields potentially.
-        // Actually, let's keep the existing custom SQL for safety with the specific fields
-        $stmt = $this->db->prepare("
-            UPDATE {$this->table} 
-            SET username = ?, email = ?, password = ?, phone = ?, 
-                profile_image = ?, bio = ?, job_title = ?, role = ?, 
-                faculty_id = ?, major_id = ?
-            WHERE user_id = ?
-        ");
+        // Map password to password_hash if needed
+        if (isset($data['password']) && !isset($data['password_hash'])) {
+            $data['password_hash'] = $data['password'];
+            unset($data['password']);
+        }
         
-        return $stmt->execute([
-            $data['username'],
-            $data['email'],
-            $data['password'],
-            $data['phone'] ?? null,
-            $data['profile_image'] ?? null,
-            $data['bio'] ?? null,
-            $data['job_title'] ?? null,
-            $data['role'],
-            $data['faculty_id'] ?? null,
-            $data['major_id'] ?? null,
-            $id
-        ]);
+        // Map profile_image to profile_picture if needed
+        if (isset($data['profile_image']) && !isset($data['profile_picture'])) {
+            $data['profile_picture'] = $data['profile_image'];
+            unset($data['profile_image']);
+        }
+        
+        // Remove job_title as it doesn't exist in schema
+        unset($data['job_title']);
+        
+        // Use parent update method
+        return parent::update($id, $data);
     }
     
     /**
@@ -213,6 +201,37 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             'STUDENT' => 'Student',
             default => $role // Return as-is if not recognized
         };
+    }
+    
+    /**
+     * Get weekly user activity (registrations per day)
+     * 
+     * @return array Weekly activity data
+     */
+    public function getWeeklyActivity(): array {
+        return $this->query("
+            SELECT DATE(created_at) as date, COUNT(*) as count
+            FROM {$this->table}
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+        ");
+    }
+    
+    /**
+     * Get faculty distribution of students
+     * 
+     * @return array Faculty distribution
+     */
+    public function getFacultyDistribution(): array {
+        return $this->query("
+            SELECT f.name as faculty_name, COUNT(DISTINCT u.user_id) as student_count
+            FROM faculties f
+            LEFT JOIN users u ON f.faculty_id = u.faculty_id AND u.role = 'STUDENT'
+            GROUP BY f.faculty_id, f.name
+            ORDER BY student_count DESC
+            LIMIT 5
+        ");
     }
 
     // Transaction methods inherited from BaseRepository
