@@ -54,7 +54,7 @@ const LoadingPage = ({ onComplete }) => {
                         textShadow: '0 0 15px rgba(0, 255, 255, 0.8)',
                         whiteSpace: 'nowrap'
                     }}>
-                        INITIALIZING SYSTEM...
+                        Loading Unilink...
                     </div>
                 </Html>
             </Canvas>

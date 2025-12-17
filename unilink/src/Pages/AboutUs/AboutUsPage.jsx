@@ -77,7 +77,7 @@ const AboutUsPage = () => {
                     </div>
 
                     {/* Right Column: CardSwap */}
-                    <div className="w-full lg:flex-1 h-[400px] lg:h-[600px] relative z-0 flex items-center justify-center mt-24 mb-24 lg:mt-0 lg:mb-0 lg:-mt-64">
+                    <div className="w-full lg:flex-1 h-[400px] lg:h-[600px] relative z-0 flex items-center justify-center -mt-20 mb-24 lg:self-start lg:mt-0 lg:mb-0 lg:-mt-96 lg:-translate-y-[148px]">
                         <CardSwap
                             width={550}
                             height={400}

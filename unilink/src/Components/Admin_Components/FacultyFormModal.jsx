@@ -81,7 +81,7 @@ export default function FacultyFormModal({
                   name="faculty_name"
                   type="text"
                   placeholder="Faculty Name"
-                  value={formData.faculty_name || ""}
+                  value={formData.faculty_name || formData.name || ""}
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"

@@ -22,7 +22,20 @@ import ProjectChatPage from "./Pages/ProjectRooms/ProjectChatPage";
 import "./index.css"; // Must be at the top
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    // Check if it's the home page
+    const isHomePage = window.location.pathname === '/';
+    // Check if it's the first visit in this session
+    const isFirstVisit = !sessionStorage.getItem('hasVisited');
+
+    // Show loading if it's the home page OR if it's the first visit ever
+    return isHomePage || isFirstVisit;
+  });
+
+  React.useEffect(() => {
+    // Mark as visited so subsequent refreshes on non-home pages don't trigger loading
+    sessionStorage.setItem('hasVisited', 'true');
+  }, []);
 
   return (
     <>

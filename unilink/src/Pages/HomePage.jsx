@@ -12,10 +12,13 @@ import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/s
 const Galaxy = lazy(() => import('../Animations/Galaxy/Galaxy'));
 
 const techLogos = [
-    { node: <SiReact />, title: "React", href: "https://react.dev" },
-    { node: <SiNextdotjs />, title: "Next.js", href: "https://nextjs.org" },
-    { node: <SiTypescript />, title: "TypeScript", href: "https://www.typescriptlang.org" },
-    { node: <SiTailwindcss />, title: "Tailwind CSS", href: "https://tailwindcss.com" },
+    { src: "/assets/footer-logos/logo1.png", title: "Partner 1", href: "#", alt: "Partner Logo 1" },
+    { src: "/assets/footer-logos/logo2.png", title: "Partner 2", href: "#", alt: "Partner Logo 2" },
+    { src: "/assets/footer-logos/logo3.png", title: "Partner 3", href: "#", alt: "Partner Logo 3" },
+    { src: "/assets/footer-logos/logo4.png", title: "Partner 4", href: "#", alt: "Partner Logo 4" },
+    { src: "/assets/footer-logos/logo5.png", title: "Partner 5", href: "#", alt: "Partner Logo 5" },
+    { src: "/assets/footer-logos/logo6.png", title: "Partner 6", href: "#", alt: "Partner Logo 6" },
+    { src: "/assets/footer-logos/logo7.png", title: "Partner 7", href: "#", alt: "Partner Logo 7" },
 ];
 
 const HomePage = () => {
@@ -53,7 +56,7 @@ const HomePage = () => {
             <Navbar />
 
             {/* 3D Scene - Not lazy loaded for better LCP */}
-            <Scene3D pages={5} onCreated={() => setIsLoaded(true)}>
+            <Scene3D pages={5.5} onCreated={() => setIsLoaded(true)}>
                 <main className="w-full relative z-30">
                     {/* Section 1: Hero (Scrollable version) */}
                     <HeroSection />
@@ -81,8 +84,8 @@ const HomePage = () => {
                             <p className="text-lg sm:text-xl text-gray-300 mb-8 md:mb-10">
                                 Join thousands of students and professors using Uni-Link today.
                             </p>
-                            <button className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
-                                Join Now
+                            <button className="cursor-pointer bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
+                                <a href="/login">Join Now</a>
                             </button>
                         </GlassCard>
                     </section>
