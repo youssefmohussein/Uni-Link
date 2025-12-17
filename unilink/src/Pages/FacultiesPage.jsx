@@ -88,7 +88,7 @@ const FacultiesPage = () => {
                                 <div className={`w-full flex items-center ${isEven ? 'justify-end' : 'justify-start'}`}>
                                     <GlassCard className={`p-10 max-w-2xl ${isEven ? 'text-left' : 'text-left'}`}>
                                         <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50">
-                                            {faculty.faculty_name || `Faculty ${index + 1}`}
+                                            {faculty.name || faculty.faculty_name || `Faculty ${index + 1}`}
                                         </h2>
 
                                         <p className="text-xl text-gray-300 mb-8 leading-relaxed">

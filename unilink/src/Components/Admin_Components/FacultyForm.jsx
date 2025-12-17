@@ -18,7 +18,7 @@ export default function FacultiesTable({
   const filtered = useMemo(() => {
     if (!query.trim()) return faculties;
     const q = query.toLowerCase();
-    return faculties.filter((f) => f.faculty_name?.toLowerCase().includes(q));
+    return faculties.filter((f) => (f.faculty_name || f.name)?.toLowerCase().includes(q));
   }, [faculties, query]);
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
@@ -78,7 +78,7 @@ export default function FacultiesTable({
           className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-white/10 items-center"
         >
           <div className="col-span-2">{f.faculty_id}</div>
-          <div className="col-span-7">{f.faculty_name}</div>
+          <div className="col-span-7">{f.faculty_name || f.name}</div>
           <div className="col-span-3 text-right flex justify-end gap-2">
             <button
               onClick={() => onViewMajors(f)}

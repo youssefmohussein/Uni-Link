@@ -4,6 +4,45 @@ import { Environment, ScrollControls, Float, Scroll } from '@react-three/drei';
 import Book3D from './Book3D';
 
 const Scene3D = ({ children, pages = 5, onCreated }) => {
+    // Dynamic height calculation
+    const [dynamicPages, setDynamicPages] = React.useState(pages);
+    const contentRef = React.useRef(null);
+
+    React.useEffect(() => {
+        const calculatePages = () => {
+            if (contentRef.current) {
+                const height = contentRef.current.scrollHeight;
+                const viewportHeight = window.innerHeight;
+                // Calculate pages needed (height / viewport)
+                // Use minimal buffer to avoid rounding errors cutting off pixels
+                // Do NOT use 'pages' prop as minimum, as it might be larger than content
+                const needed = Math.max(1, (height / viewportHeight) + 0.01);
+                setDynamicPages(needed);
+            }
+        };
+
+        // Initial calculation
+        calculatePages();
+
+        // Recalculate on resize
+        window.addEventListener('resize', calculatePages);
+
+        // Setup MutationObserver to watch for content changes
+        const observer = new MutationObserver(calculatePages);
+        if (contentRef.current) {
+            observer.observe(contentRef.current, {
+                childList: true,
+                subtree: true,
+                attributes: true
+            });
+        }
+
+        return () => {
+            window.removeEventListener('resize', calculatePages);
+            observer.disconnect();
+        };
+    }, [pages]);
+
     return (
         <div className="fixed inset-0 z-0 md:z-10">
             <Canvas
@@ -52,7 +91,7 @@ const Scene3D = ({ children, pages = 5, onCreated }) => {
                     <Environment preset="studio" blur={0.8} background={false} />
 
                     {/* Scroll Controlled Content */}
-                    <ScrollControls pages={pages} damping={0.2}>
+                    <ScrollControls pages={dynamicPages} damping={0.2}>
                         <Float
                             speed={1.5}
                             rotationIntensity={0.15}
@@ -64,7 +103,9 @@ const Scene3D = ({ children, pages = 5, onCreated }) => {
                         {/* HTML Content */}
                         {children && (
                             <Scroll html style={{ width: '100%' }}>
-                                {children}
+                                <div ref={contentRef} style={{ width: '100%' }}>
+                                    {children}
+                                </div>
                             </Scroll>
                         )}
                     </ScrollControls>
