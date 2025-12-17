@@ -146,6 +146,71 @@ class ProjectService extends BaseService {
     }
     
     /**
+     * Approve project
+     * 
+     * @param int $projectId Project ID
+     * @param int $professorId Professor ID
+     * @param float $score Project score
+     * @param string|null $comment Review comment
+     * @return array Updated project
+     */
+    public function approveProject(int $projectId, int $professorId, float $score, ?string $comment = null): array {
+        if (!$this->projectRepo->exists($projectId)) {
+            throw new \Exception('Project not found', 404);
+        }
+
+        return $this->transaction(function() use ($projectId, $professorId, $score, $comment) {
+            // Add review
+            $this->projectRepo->addReview([
+                'project_id' => $projectId,
+                'professor_id' => $professorId,
+                'score' => $score,
+                'comment' => $comment,
+                'status' => 'APPROVED'
+            ]);
+
+            // Update project status
+            $this->projectRepo->update($projectId, [
+                'status' => 'APPROVED',
+                'grade' => $score
+            ]);
+
+            return $this->projectRepo->getWithSkills($projectId);
+        });
+    }
+
+    /**
+     * Reject project
+     * 
+     * @param int $projectId Project ID
+     * @param int $professorId Professor ID
+     * @param string|null $comment Review comment
+     * @return array Updated project
+     */
+    public function rejectProject(int $projectId, int $professorId, ?string $comment = null): array {
+        if (!$this->projectRepo->exists($projectId)) {
+            throw new \Exception('Project not found', 404);
+        }
+
+        return $this->transaction(function() use ($projectId, $professorId, $comment) {
+            // Add review
+            $this->projectRepo->addReview([
+                'project_id' => $projectId,
+                'professor_id' => $professorId,
+                'comment' => $comment,
+                'status' => 'REJECTED'
+            ]);
+
+            // Update project status
+            $this->projectRepo->update($projectId, [
+                'status' => 'REJECTED'
+            ]);
+
+            return $this->projectRepo->getWithSkills($projectId);
+        });
+    }
+
+    /**
      * Get all projects with details
      * 
      * @param int|null $limit Limit

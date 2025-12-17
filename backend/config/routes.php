@@ -35,16 +35,24 @@ return [
     'GET /api/students' => ['StudentController', 'getAll'],
     'PUT /api/student' => ['StudentController', 'update'],
     
+    // Legacy student routes (for frontend compatibility)
+    'GET /getStudents' => ['StudentController', 'getAll'],
+    
     // ============================================
     // Professor Routes (Legacy compatibility)
     // ============================================
     'GET /api/professors' => ['ProfessorController', 'getAll'],
+    'PUT /api/professors' => ['ProfessorController', 'update'],
     
     // ============================================
     // Admin Routes (Legacy compatibility)
     // ============================================
     'GET /api/admins' => ['AdminController', 'getAll'],
     'PUT /api/admin' => ['AdminController', 'update'],
+    
+    // Legacy admin routes (for frontend compatibility)
+    'GET /getAllAdmins' => ['AdminController', 'getAll'],
+    'POST /updateAdmin' => ['AdminController', 'update'],
     
     // ============================================
     // Post Routes (Legacy compatibility)
@@ -98,6 +106,8 @@ return [
     'GET /getUserProjects' => ['ProjectController', 'getUserProjects'],
     'POST /deleteProject' => ['ProjectController', 'deleteProject'],
     'POST /updateProject' => ['ProjectController', 'updateProject'],
+    'POST /api/projects/approve' => ['ProjectController', 'approveProject'],
+    'POST /api/projects/reject' => ['ProjectController', 'rejectProject'],
 
     
     // ============================================
@@ -107,6 +117,15 @@ return [
     'POST /api/project-rooms' => ['ProjectRoomController', 'create'],
     'GET /api/project-rooms/user' => ['ProjectRoomController', 'getUserRooms'],
     'GET /api/project-rooms/room' => ['ProjectRoomController', 'getRoom'],
+    'PUT /api/project-rooms' => ['ProjectRoomController', 'update'],
+    'DELETE /api/project-rooms' => ['ProjectRoomController', 'delete'],
+    
+    // Legacy project room routes (for frontend compatibility)
+    'GET /getAllRooms' => ['ProjectRoomController', 'getAll'],
+    'POST /createRoom' => ['ProjectRoomController', 'create'],
+    'GET /getRoom' => ['ProjectRoomController', 'getRoom'],
+    'POST /updateRoom' => ['ProjectRoomController', 'update'],
+    'POST /deleteRoom' => ['ProjectRoomController', 'delete'],
     
     // ============================================
     // CV Routes (Legacy compatibility)
@@ -171,6 +190,12 @@ return [
     'GET /api/saved-posts' => ['SavedPostController', 'getUserSaved'],
     'DELETE /api/saved-posts' => ['SavedPostController', 'unsave'],
     
+    // ============================================
+    // Profile Routes (Aggregated Data)
+    // ============================================
+    'GET /api/profile/full' => ['ProfileController', 'getFullProfile'],
+    'GET /api/profile/public' => ['ProfileController', 'getPublicProfile'],
+
     // ============================================
     // Notification Routes (NEW)
     // ============================================

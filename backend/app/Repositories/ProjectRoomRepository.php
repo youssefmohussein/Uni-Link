@@ -90,4 +90,16 @@ class ProjectRoomRepository extends BaseRepository {
         
         return password_verify($password, $room['password_hash']);
     }
+    
+    /**
+     * Delete all memberships for a room
+     * 
+     * @param int $roomId Room ID
+     * @return int Number of deleted memberships
+     */
+    public function deleteMemberships(int $roomId): int {
+        $stmt = $this->db->prepare("DELETE FROM room_memberships WHERE room_id = ?");
+        $stmt->execute([$roomId]);
+        return $stmt->rowCount();
+    }
 }

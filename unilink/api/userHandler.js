@@ -14,9 +14,9 @@ export const getUsers = async () => {
  * @param {Object} userData
  */
 export const addUser = async (userData) => {
-  const res = await apiRequest("addUser", "POST", userData);
+  const res = await apiRequest("/api/user", "POST", userData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add user");
-  return res.user_id;
+  return res.data ? res.data.user_id : true;
 };
 
 /**
@@ -25,7 +25,7 @@ export const addUser = async (userData) => {
  */
 export const updateUser = async (userData) => {
   if (!userData.user_id) throw new Error("Missing user_id for update");
-  const res = await apiRequest("updateUser", "POST", userData);
+  const res = await apiRequest("/api/user", "PUT", userData);
   if (res.status !== "success") throw new Error(res.message || "Failed to update user");
   return true;
 };
@@ -35,7 +35,7 @@ export const updateUser = async (userData) => {
  * @param {number} user_id
  */
 export const deleteUser = async (user_id) => {
-  const res = await apiRequest("deleteUser", "POST", { user_id });
+  const res = await apiRequest("/api/user", "DELETE", { user_id });
   if (res.status !== "success") throw new Error(res.message || "Delete failed");
   return true;
 };
