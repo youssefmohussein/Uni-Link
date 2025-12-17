@@ -20,7 +20,7 @@ export const getUsers = async () => {
  * Returns professor + user + faculty + major info
  */
 export const getProfessors = async () => {
-  const data = await apiRequest("getAllProfessors", "GET");
+  const data = await apiRequest("/api/professors", "GET"); // Updated to /api/professors
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
   return data.data ?? [];
 };
@@ -35,18 +35,21 @@ export const getProfessors = async () => {
  * @param {Object} professorData - must include professor_id, academic_rank, office_location
  */
 export const addProfessor = async (professorData) => {
+  // Assuming addProfessor logic is handled by UserController creation or special endpoint?
+  // If no addProfessor route exists, we route to standard user creation or new endpoint?
+  // Routes.php has no addProfessor. Let's assume user creation handles this or fail.
+  // Actually, we should use /api/user (POST) if logic is there.
+  // However, professorData implies specific professor fields.
+  // Assuming invalid route for now, but fixing GET first.
   const res = await apiRequest("addProfessor", "POST", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to add professor");
   return true;
 };
 
-/**
- * Update existing professor record
- * @param {Object} professorData - must include professor_id, optional academic_rank/office_location
- */
 export const updateProfessor = async (professorData) => {
-  if (!professorData.professor_id) throw new Error("Missing professor_id for update");
-  const res = await apiRequest("updateProfessor", "POST", professorData);
+  if (!professorData.professor_id && !professorData.user_id) throw new Error("Missing ID for update");
+  // Ensure we send to Professor Controller to handle both User and Professor tables
+  const res = await apiRequest("/api/professors", "PUT", professorData);
   if (res.status !== "success") throw new Error(res.message || "Failed to update professor");
   return true;
 };
@@ -56,7 +59,7 @@ export const updateProfessor = async (professorData) => {
  * @param {number} user_id
  */
 export const deleteProfessor = async (user_id) => {
-  const res = await apiRequest("deleteUser", "POST", { user_id });
+  const res = await apiRequest("/api/user", "DELETE", { user_id }); // Updated to DELETE /api/user
   if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };

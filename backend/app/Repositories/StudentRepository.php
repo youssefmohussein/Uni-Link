@@ -7,7 +7,7 @@ namespace App\Repositories;
  * Data access layer for Student entity
  */
 class StudentRepository extends BaseRepository {
-    protected string $table = 'Student';
+    protected string $table = 'students';
     protected string $primaryKey = 'student_id';
     
     /**
@@ -52,12 +52,12 @@ class StudentRepository extends BaseRepository {
      */
     public function getWithUserInfo(int $studentId): ?array {
         $sql = "
-            SELECT s.*, u.username, u.email, u.phone, u.profile_image, u.bio, 
-                   f.faculty_name, m.major_name
-            FROM Student s
-            JOIN Users u ON s.student_id = u.user_id
-            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN Major m ON u.major_id = m.major_id
+            SELECT s.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.bio, 
+                   f.name as faculty_name, m.name as major_name
+            FROM students s
+            JOIN users u ON s.user_id = u.user_id
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+            LEFT JOIN majors m ON u.major_id = m.major_id
             WHERE s.student_id = ?
         ";
         return $this->queryOne($sql, [$studentId]);
@@ -71,11 +71,11 @@ class StudentRepository extends BaseRepository {
      */
     public function getTopByPoints(int $limit = 10): array {
         $sql = "
-            SELECT s.*, u.username, u.profile_image, f.faculty_name, m.major_name
-            FROM Student s
-            JOIN Users u ON s.student_id = u.user_id
-            LEFT JOIN Faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN Major m ON u.major_id = m.major_id
+            SELECT s.*, u.username, u.profile_picture as profile_image, f.name as faculty_name, m.name as major_name
+            FROM students s
+            JOIN users u ON s.user_id = u.user_id
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+            LEFT JOIN majors m ON u.major_id = m.major_id
             ORDER BY s.points DESC
             LIMIT ?
         ";

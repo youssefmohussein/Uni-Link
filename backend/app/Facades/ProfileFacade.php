@@ -43,7 +43,7 @@ class ProfileFacade {
      */
     public function getFullProfile(int $userId): array {
         // Get basic user info
-        $user = $this->userRepo->findById($userId);
+        $user = $this->userRepo->find($userId);
         if (!$user) {
             return [];
         }
@@ -52,10 +52,10 @@ class ProfileFacade {
         unset($user['password'], $user['password_hash']);
         
         // Get user skills
-        $skills = $this->skillRepo->getUserSkills($userId);
+        $skills = $this->skillRepo->findUserSkills($userId);
         
         // Get user projects
-        $projects = $this->projectRepo->findByStudent($userId);
+        $projects = $this->projectRepo->findByUser($userId);
         
         // Get recent posts (limit to 10)
         $posts = $this->postRepo->findByUser($userId, 10);
