@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "./Card";
 
@@ -8,17 +8,21 @@ export default function FacultyFormModal({
   onSubmit,
   initialData,
 }) {
-  const defaultData = {
+  const defaultData = useMemo(() => ({
     faculty_id: "",
-    faculty_name: "",
-  };
+    name: "",
+  }), []);
 
   const [formData, setFormData] = useState(defaultData);
   const isEditing = !!initialData?.faculty_id;
 
   useEffect(() => {
-    setFormData(initialData || defaultData);
-  }, [initialData]);
+    if (initialData) {
+      setFormData({ ...defaultData, ...initialData });
+    } else {
+      setFormData(defaultData);
+    }
+  }, [initialData, defaultData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +34,7 @@ export default function FacultyFormModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.faculty_name || !formData.faculty_name.trim()) {
+    if (!formData.name || !formData.name.trim()) {
       alert("Please fill out faculty name");
       return;
     }
@@ -78,10 +82,10 @@ export default function FacultyFormModal({
                 )}
 
                 <input
-                  name="faculty_name"
+                  name="name"
                   type="text"
                   placeholder="Faculty Name"
-                  value={formData.faculty_name || formData.name || ""}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"

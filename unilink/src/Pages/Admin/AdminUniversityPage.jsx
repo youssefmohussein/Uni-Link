@@ -71,7 +71,9 @@ export default function AdminUniversityPage() {
   // Major actions
   const loadMajors = async (faculty_id) => {
     try {
-      const data = await handler.getAllMajors();
+      const response = await handler.getAllMajors();
+      // Handle nested data structure: response.data or response.data.data
+      const data = Array.isArray(response) ? response : (response.data?.data || response.data || []);
       setMajors(data.filter((m) => m.faculty_id === faculty_id));
     } catch (err) {
       console.error(err);
@@ -160,7 +162,7 @@ export default function AdminUniversityPage() {
 
             <MajorsTable
               majors={majors}
-              facultyName={selectedFaculty?.faculty_name}
+              facultyName={selectedFaculty?.name}
               onAddMajor={handleAddMajor}
               onEditMajor={handleEditMajor}
               onDeleteMajor={handleDeleteMajor}
