@@ -18,7 +18,7 @@ export default function MajorsTable({
   const filtered = useMemo(() => {
     if (!query.trim()) return majors;
     const q = query.toLowerCase();
-    return majors.filter((m) => m.major_name?.toLowerCase().includes(q));
+    return majors.filter((m) => m.name?.toLowerCase().includes(q));
   }, [majors, query]);
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
@@ -69,7 +69,7 @@ export default function MajorsTable({
           className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-white/10 items-center"
         >
           <div className="col-span-2">{m.major_id}</div>
-          <div className="col-span-7">{m.major_name}</div>
+          <div className="col-span-7">{m.name}</div>
           <div className="col-span-3 text-right flex justify-end gap-2">
             <button
               onClick={() => onEditMajor(m)}

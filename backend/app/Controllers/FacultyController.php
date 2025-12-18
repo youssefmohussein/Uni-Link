@@ -42,13 +42,15 @@ class FacultyController extends BaseController {
             $this->requireRole('Admin');
             
             $data = $this->getJsonInput();
-            $this->validateRequired($data, ['faculty_name']);
+            $this->validateRequired($data, ['name']);
             
-            // For now, just return success - implement actual creation in FacultyService
+            // Create faculty using service
+            $facultyId = $this->facultyService->createFaculty($data);
+            
             $this->success([
                 'status' => 'success',
                 'message' => 'Faculty created successfully',
-                'faculty_id' => 1 // Placeholder
+                'faculty_id' => $facultyId
             ]);
             
         } catch (\Exception $e) {
@@ -66,6 +68,8 @@ class FacultyController extends BaseController {
             
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['faculty_id']);
+            
+            $this->facultyService->updateFaculty($data);
             
             $this->success([
                 'status' => 'success',
@@ -87,6 +91,8 @@ class FacultyController extends BaseController {
             
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['faculty_id']);
+            
+            $this->facultyService->deleteFaculty($data['faculty_id']);
             
             $this->success([
                 'status' => 'success',

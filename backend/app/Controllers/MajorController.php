@@ -52,4 +52,75 @@ class MajorController extends BaseController {
             $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
+    
+    /**
+     * Create major
+     */
+    public function create(): void {
+        try {
+            $this->requireRole('Admin');
+            
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['name', 'faculty_id']);
+            
+            // Create major using service
+            $majorId = $this->facultyService->createMajor($data);
+            
+            $this->success([
+                'status' => 'success',
+                'message' => 'Major created successfully',
+                'major_id' => $majorId
+            ]);
+            
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
+        }
+    }
+    
+    /**
+     * Update major
+     */
+    public function update(): void {
+        try {
+            $this->requireRole('Admin');
+            
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['major_id']);
+            
+            $this->facultyService->updateMajor($data);
+            
+            $this->success([
+                'status' => 'success',
+                'message' => 'Major updated successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
+        }
+    }
+    
+    /**
+     * Delete major
+     */
+    public function delete(): void {
+        try {
+            $this->requireRole('Admin');
+            
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['major_id']);
+            
+            $this->facultyService->deleteMajor($data['major_id']);
+            
+            $this->success([
+                'status' => 'success',
+                'message' => 'Major deleted successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
+        }
+    }
 }

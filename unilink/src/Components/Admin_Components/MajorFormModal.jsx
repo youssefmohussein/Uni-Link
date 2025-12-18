@@ -12,7 +12,7 @@ export default function MajorFormModal({
 }) {
   const [formData, setFormData] = useState({
     major_id: "",
-    major_name: "",
+    name: "",
     faculty_id: selectedFaculty?.faculty_id || "",
   });
   const isEditing = !!initialData?.major_id;
@@ -21,14 +21,14 @@ export default function MajorFormModal({
     if (initialData) {
       setFormData({
         major_id: initialData.major_id || "",
-        major_name: initialData.major_name || "",
+        name: initialData.name || "",
         faculty_id: initialData.faculty_id || "",
       });
     } else {
       // For new major, use selectedFaculty if available
       setFormData({
         major_id: "",
-        major_name: "",
+        name: "",
         faculty_id: selectedFaculty?.faculty_id || "",
       });
     }
@@ -44,7 +44,7 @@ export default function MajorFormModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.major_name || !formData.major_name.trim()) {
+    if (!formData.name || !formData.name.trim()) {
       alert("Please fill out major name");
       return;
     }
@@ -96,10 +96,10 @@ export default function MajorFormModal({
                 )}
 
                 <input
-                  name="major_name"
+                  name="name"
                   type="text"
                   placeholder="Major Name"
-                  value={formData.major_name || ""}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition"
@@ -111,14 +111,13 @@ export default function MajorFormModal({
                   onChange={handleChange}
                   disabled={!!selectedFaculty && !isEditing}
                   required
-                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition cursor-pointer ${
-                    selectedFaculty && !isEditing ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-main focus:ring-2 focus:ring-accent outline-none transition cursor-pointer ${selectedFaculty && !isEditing ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   <option value="">Select Faculty</option>
                   {faculties.map((f) => (
                     <option key={f.faculty_id} value={f.faculty_id}>
-                      {f.faculty_name}
+                      {f.name}
                     </option>
                   ))}
                 </select>
