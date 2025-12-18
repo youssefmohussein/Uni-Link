@@ -31,7 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Error handling - return JSON errors
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     http_response_code(500);
     echo json_encode([
         'status' => 'error',
@@ -42,7 +42,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     exit;
 });
 
-set_exception_handler(function($e) {
+set_exception_handler(function ($e) {
     http_response_code($e->getCode() ?: 500);
     echo json_encode([
         'status' => 'error',
@@ -78,14 +78,14 @@ $matched = false;
 
 foreach ($routes as $route => $handler) {
     list($method, $path) = explode(' ', $route, 2);
-    
+
     if ($method === $requestMethod && $path === $requestUri) {
         list($controllerName, $methodName) = $handler;
-        
+
         try {
             // Get controller from DI container
             $controller = $container->get($controllerName);
-            
+
             if (method_exists($controller, $methodName)) {
                 $controller->$methodName();
                 $matched = true;

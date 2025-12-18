@@ -11,6 +11,8 @@ import LoginPage from "./Pages/Login/LoginPage";
 import HomePage from "./Pages/HomePage";
 import AboutUsPage from "./Pages/AboutUs/AboutUsPage";
 import FacultiesPage from "./Pages/FacultiesPage";
+
+import FacultyDetailsPage from "./Pages/FacultyDetailsPage";
 import LoadingPage from "./Pages/loadingPage";
 import ProfilePage from "./Pages/Profile/ProfilePage";
 import ProtectedRoute from "./Components/ProtectedRoute";
@@ -44,6 +46,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/faculties" element={<FacultiesPage />} />
+          <Route path="/faculty/:id" element={<FacultyDetailsPage />} />
           <Route
             path="/admin/dashboard"
             element={

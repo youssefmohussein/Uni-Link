@@ -6,44 +6,77 @@ namespace App\Repositories;
  * 
  * Data access layer for Faculty entity
  */
-class FacultyRepository extends BaseRepository {
+class FacultyRepository extends BaseRepository
+{
     protected string $table = 'faculties';
     protected string $primaryKey = 'faculty_id';
-    
+
     /**
      * Find faculty by name
      * 
      * @param string $name Faculty name
      * @return array|null Faculty data or null
      */
-    public function findByName(string $name): ?array {
+    public function findByName(string $name): ?array
+    {
         return $this->findOneBy('name', $name);
     }
-    
+
     /**
      * Get all majors for a faculty
      * 
      * @param int $facultyId Faculty ID
      * @return array Array of majors
      */
-    public function getMajors(int $facultyId): array {
+    public function getMajors(int $facultyId): array
+    {
         $sql = "SELECT * FROM majors WHERE faculty_id = ? ORDER BY name ASC";
         return $this->query($sql, [$facultyId]);
     }
-    
+
     /**
-     * Get faculty with major count
+     * Get faculty with major count and student count
      * 
-     * @return array Array of faculties with major counts
+     * @return array Array of faculties with counts
      */
-    public function getAllWithMajorCount(): array {
+    public function getAllWithDetails(): array
+    {
         $sql = "
-            SELECT f.*, COUNT(m.major_id) as major_count
+            SELECT 
+                f.*, 
+                COUNT(DISTINCT m.major_id) as major_count,
+                COUNT(DISTINCT CASE WHEN u.role = 'Student' THEN u.user_id END) as student_count,
+                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count
             FROM faculties f
             LEFT JOIN majors m ON f.faculty_id = m.faculty_id
+            LEFT JOIN users u ON f.faculty_id = u.faculty_id
             GROUP BY f.faculty_id
             ORDER BY f.name ASC
         ";
         return $this->query($sql);
+    }
+
+    /**
+     * Find faculty by ID with details
+     * 
+     * @param int $id Faculty ID
+     * @return array|null Faculty data or null
+     */
+    public function findByIdWithDetails(int $id): ?array
+    {
+        $sql = "
+            SELECT 
+                f.*, 
+                COUNT(DISTINCT m.major_id) as major_count,
+                COUNT(DISTINCT CASE WHEN u.role = 'Student' THEN u.user_id END) as student_count,
+                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count
+            FROM faculties f
+            LEFT JOIN majors m ON f.faculty_id = m.faculty_id
+            LEFT JOIN users u ON f.faculty_id = u.faculty_id
+            WHERE f.faculty_id = ?
+            GROUP BY f.faculty_id
+        ";
+        $result = $this->query($sql, [$id]);
+        return $result ? $result[0] : null;
     }
 }

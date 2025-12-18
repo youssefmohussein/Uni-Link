@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PlanetScene3D from '../Components/PlanetScene3D';
 import GlassCard from '../Components/GlassCard';
 import Navbar from '../Components/Navbar';
@@ -8,6 +9,7 @@ import { getAllFaculties } from '../../api/facultyandmajorHandler';
 const Galaxy = lazy(() => import('../Animations/Galaxy/Galaxy'));
 
 const FacultiesPage = () => {
+    const navigate = useNavigate();
     const [faculties, setFaculties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -96,7 +98,10 @@ const FacultiesPage = () => {
                                         </p>
 
                                         <div className="flex flex-col sm:flex-row gap-4">
-                                            <button className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-full text-lg transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
+                                            <button
+                                                onClick={() => navigate(`/faculty/${faculty.faculty_id}`)}
+                                                className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-full text-lg transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)] text-center"
+                                            >
                                                 Explore Faculty
                                             </button>
                                             <button className="border-2 border-[#008080] hover:bg-[#008080]/20 text-white font-bold py-3 px-8 rounded-full text-lg transition-all">
@@ -107,15 +112,15 @@ const FacultiesPage = () => {
                                         {/* Faculty Stats */}
                                         <div className="mt-8 pt-8 border-t border-white/20 grid grid-cols-3 gap-4 text-center">
                                             <div>
-                                                <div className="text-3xl font-bold text-[#008080]">50+</div>
-                                                <div className="text-sm text-gray-400 mt-1">Programs</div>
+                                                <div className="text-3xl font-bold text-[#008080]">{faculty.major_count || 0}</div>
+                                                <div className="text-sm text-gray-400 mt-1">Majors</div>
                                             </div>
                                             <div>
-                                                <div className="text-3xl font-bold text-[#ffb547]">100+</div>
-                                                <div className="text-sm text-gray-400 mt-1">Faculty</div>
+                                                <div className="text-3xl font-bold text-[#ffb547]">{faculty.professor_count || 0}</div>
+                                                <div className="text-sm text-gray-400 mt-1">Professors</div>
                                             </div>
                                             <div>
-                                                <div className="text-3xl font-bold text-purple-400">5000+</div>
+                                                <div className="text-3xl font-bold text-purple-400">{faculty.student_count || 0}</div>
                                                 <div className="text-sm text-gray-400 mt-1">Students</div>
                                             </div>
                                         </div>

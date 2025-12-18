@@ -8,116 +8,153 @@ use App\Services\FacultyService;
  * 
  * Handles faculty operations
  */
-class FacultyController extends BaseController {
+class FacultyController extends BaseController
+{
     private FacultyService $facultyService;
-    
-    public function __construct(FacultyService $facultyService) {
+
+    public function __construct(FacultyService $facultyService)
+    {
         $this->facultyService = $facultyService;
     }
-    
+
     /**
      * Get all faculties
      */
-    public function getAll(): void {
+    public function getAll(): void
+    {
+        header('X-UniLink-Debug: controller-is-running');
         try {
             $faculties = $this->facultyService->getAllFaculties();
-            
+
             // Return in format expected by frontend
             echo json_encode([
                 'status' => 'success',
                 'data' => $faculties
             ]);
-            
+
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 500);
         }
     }
-    
+
+    /**
+     * Get faculty by ID
+     */
+    public function getById(): void
+    {
+        try {
+            $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+
+            if (!$id) {
+                throw new \Exception('Faculty ID is required', 400);
+            }
+
+            $faculty = $this->facultyService->getFacultyById($id);
+
+            if (!$faculty) {
+                throw new \Exception('Faculty not found', 404);
+            }
+
+            $this->success([
+                'status' => 'success',
+                'data' => $faculty
+            ]);
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 500);
+        }
+    }
+
     /**
      * Create faculty
      */
-    public function create(): void {
+    public function create(): void
+    {
         try {
             $this->requireRole('Admin');
-            
+
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['faculty_name']);
-            
+
             // For now, just return success - implement actual creation in FacultyService
             $this->success([
                 'status' => 'success',
                 'message' => 'Faculty created successfully',
                 'faculty_id' => 1 // Placeholder
             ]);
-            
+
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 500);
         }
     }
-    
+
     /**
      * Update faculty
      */
-    public function update(): void {
+    public function update(): void
+    {
         try {
             $this->requireRole('Admin');
-            
+
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['faculty_id']);
-            
+
             $this->success([
                 'status' => 'success',
                 'message' => 'Faculty updated successfully'
             ]);
-            
+
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 500);
         }
     }
-    
+
     /**
      * Delete faculty
      */
-    public function delete(): void {
+    public function delete(): void
+    {
         try {
             $this->requireRole('Admin');
-            
+
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['faculty_id']);
-            
+
             $this->success([
                 'status' => 'success',
                 'message' => 'Faculty deleted successfully'
             ]);
-            
+
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 500);
         }
     }
-    
+
     /**
      * Get majors by faculty
      */
-    public function getMajors(): void {
+    public function getMajors(): void
+    {
         try {
-            $facultyId = isset($_GET['faculty_id']) ? (int)$_GET['faculty_id'] : null;
-            
+            $facultyId = isset($_GET['faculty_id']) ? (int) $_GET['faculty_id'] : null;
+
             if (!$facultyId) {
                 throw new \Exception('Faculty ID is required', 400);
             }
-            
+
             $majors = $this->facultyService->getMajorsByFaculty($facultyId);
             $this->success([
                 'count' => count($majors),
                 'data' => $majors
             ]);
-            
+
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 500);
         }
     }

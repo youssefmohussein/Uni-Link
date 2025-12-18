@@ -16,6 +16,17 @@ export const getAllFaculties = async () => {
 };
 
 /**
+ * Fetch faculty by ID
+ */
+export const getFacultyById = async (id) => {
+  const res = await apiRequest(`getFaculty?id=${id}`, "GET");
+  if (res.status !== "success")
+    throw new Error(res.message || "Failed to fetch faculty");
+
+  return res.data;
+};
+
+/**
  * Add a faculty
  * @param {Object} facultyData
  */
