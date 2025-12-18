@@ -159,3 +159,25 @@ h6 {
     }
   }
 }
+
+/* ============================= */
+/* 🎨 Form Elements - Select & Options */
+/* ============================= */
+select {
+  background-color: var(--panel);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+select option {
+  background-color: var(--panel);
+  color: var(--text);
+  padding: 8px;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: var(--hover-bg);
+  color: var(--text);
+}

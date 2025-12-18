@@ -10,7 +10,7 @@ export default function UserForm({
   faculties,
   majors,
 }) {
-  const defaultData = {
+  const defaultData = useMemo(() => ({
     user_id: "",
     username: "",
     email: "",
@@ -26,14 +26,18 @@ export default function UserForm({
     major_name: "",
     year: "",
     gpa: "0.0",
-  };
+  }), []);
 
   const [formData, setFormData] = useState(defaultData);
   const isEditing = !!initialData?.user_id;
 
   useEffect(() => {
-    setFormData({ ...defaultData, ...initialData });
-  }, [initialData]);
+    if (initialData) {
+      setFormData({ ...defaultData, ...initialData });
+    } else {
+      setFormData(defaultData);
+    }
+  }, [initialData, defaultData]);
 
   useEffect(() => {
     if (formData.role === "Student" && formData.year === "1") {
@@ -207,7 +211,7 @@ export default function UserForm({
                   </option>
                   {(faculties || []).map((f) => (
                     <option key={f.faculty_id} className="cursor-pointer" value={f.faculty_id}>
-                      {f.faculty_name}
+                      {f.name}
                     </option>
                   ))}
                 </select>
@@ -218,16 +222,15 @@ export default function UserForm({
                   value={formData.major_id || ""}
                   onChange={handleChange}
                   disabled={!formData.faculty_id}
-                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer ${
-                    !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 cursor-pointer ${!formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   <option className="cursor-pointer" value="">
                     Select Major
                   </option>
                   {filteredMajors.map((m) => (
                     <option key={m.major_id} className="cursor-pointer" value={m.major_id}>
-                      {m.major_name}
+                      {m.name}
                     </option>
                   ))}
                 </select>
@@ -265,11 +268,10 @@ export default function UserForm({
                       disabled={formData.year === "1"}
                       onChange={handleChange}
                       placeholder="GPA"
-                      className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 ${
-                        formData.year === "1"
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }`}
+                      className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 ${formData.year === "1"
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                        }`}
                     />
                   </>
                 )}

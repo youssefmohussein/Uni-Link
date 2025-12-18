@@ -57,6 +57,10 @@ export const getAllFaculties = async () => {
  */
 export const getAllMajors = async () => {
   const res = await apiRequest("getAllMajors", "GET");
+  // Handle nested data structure: data.data
+  if (res.data?.data && Array.isArray(res.data.data)) {
+    return res.data.data;
+  }
   return res.data ?? [];
 };
 
