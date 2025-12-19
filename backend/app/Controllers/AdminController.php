@@ -27,7 +27,7 @@ class AdminController extends BaseController {
             
             // Filter only admins
             $admins = array_filter($users, function($user) {
-                return $user['role'] === 'Admin';
+                return strtoupper($user['role']) === 'ADMIN';
             });
             
             $this->success([
@@ -36,7 +36,8 @@ class AdminController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
     
@@ -56,7 +57,8 @@ class AdminController extends BaseController {
             $this->success($user, 'Admin updated successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
 }

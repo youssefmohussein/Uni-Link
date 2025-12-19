@@ -36,8 +36,8 @@ class ProfessorRepository extends BaseRepository {
      */
     public function getAllWithUserInfo(): array {
         $sql = "
-            SELECT p.*, u.username, u.email, u.phone, u.profile_picture as profile_image,
-                   f.faculty_name, m.major_name
+            SELECT p.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.role,
+                   f.name as faculty_name, m.name as major_name
             FROM professors p
             JOIN users u ON p.user_id = u.user_id
             LEFT JOIN faculties f ON u.faculty_id = f.faculty_id

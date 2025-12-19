@@ -22,7 +22,8 @@ export const getUsers = async () => {
 export const getProfessors = async () => {
   const data = await apiRequest("/api/professors", "GET"); // Updated to /api/professors
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
-  return data.data ?? [];
+  // Backend returns {data: {count, data: []}}, extract the array
+  return data.data?.data ?? data.data ?? [];
 };
 
 /* ============================================================

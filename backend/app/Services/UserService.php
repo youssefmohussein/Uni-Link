@@ -96,7 +96,39 @@ class UserService extends BaseService {
                 'major_id' => $data['major_id'] ?? null
             ]);
             
-            // No separate role tables - all role information is in Users table
+            // Insert into role-specific table based on user role
+            switch ($sanitized['role']) {
+                case 'STUDENT':
+                    // Insert into students table
+                    $this->studentRepo->create([
+                        'user_id' => $userId,
+                        'year' => (int)($data['year'] ?? 1),
+                        'gpa' => $data['gpa'] ?? null,
+                        'points' => 0,
+                        'enrollment_date' => $data['enrollment_date'] ?? date('Y-m-d')
+                    ]);
+                    break;
+                    
+                case 'PROFESSOR':
+                    // Insert into professors table
+                    $this->professorRepo->create([
+                        'user_id' => $userId,
+                        'academic_rank' => $data['academic_rank'] ?? null,
+                        'department' => $data['department'] ?? null,
+                        'office_location' => $data['office_location'] ?? null,
+                        'office_hours' => $data['office_hours'] ?? null
+                    ]);
+                    break;
+                    
+                case 'ADMIN':
+                    // Insert into admins table
+                    $this->adminRepo->create([
+                        'user_id' => $userId,
+                        'permissions' => $data['permissions'] ?? json_encode([])
+                    ]);
+                    break;
+            }
+            
             return $this->userRepo->find($userId);
         }, $this->userRepo);
     }
@@ -154,16 +186,75 @@ class UserService extends BaseService {
             // Update Users table
             $this->userRepo->update($userId, $updateData);
             
-            // Role change is handled by updating the role field in Users table
-            // No separate role tables to update
+            // Handle role change if role has changed
+            if ($oldRole !== $newRole) {
+                $this->changeRole($userId, $oldRole, $newRole, $data);
+            } else {
+                // Update role-specific table data even if role hasn't changed
+                $this->updateRoleSpecificData($userId, $newRole, $data);
+            }
             
             return $this->userRepo->find($userId);
         }, $this->userRepo);
     }
     
     /**
+     * Update role-specific data without changing role
+     * 
+     * @param int $userId User ID
+     * @param string $role Current role
+     * @param array $data Additional data
+     */
+    private function updateRoleSpecificData(int $userId, string $role, array $data): void {
+        switch ($role) {
+            case 'STUDENT':
+                // Find student record
+                $student = $this->studentRepo->findOneBy('user_id', $userId);
+                if ($student) {
+                    $updateData = [];
+                    if (isset($data['year'])) $updateData['year'] = (int)$data['year'];
+                    if (isset($data['gpa'])) $updateData['gpa'] = $data['gpa'];
+                    if (isset($data['enrollment_date'])) $updateData['enrollment_date'] = $data['enrollment_date'];
+                    
+                    if (!empty($updateData)) {
+                        $this->studentRepo->update($student['student_id'], $updateData);
+                    }
+                }
+                break;
+                
+            case 'PROFESSOR':
+                // Find professor record
+                $professor = $this->professorRepo->findOneBy('user_id', $userId);
+                if ($professor) {
+                    $updateData = [];
+                    if (isset($data['academic_rank'])) $updateData['academic_rank'] = $data['academic_rank'];
+                    if (isset($data['department'])) $updateData['department'] = $data['department'];
+                    if (isset($data['office_location'])) $updateData['office_location'] = $data['office_location'];
+                    if (isset($data['office_hours'])) $updateData['office_hours'] = $data['office_hours'];
+                    
+                    if (!empty($updateData)) {
+                        $this->professorRepo->update($professor['professor_id'], $updateData);
+                    }
+                }
+                break;
+                
+            case 'ADMIN':
+                // Find admin record
+                $admin = $this->adminRepo->findOneBy('user_id', $userId);
+                if ($admin) {
+                    if (isset($data['permissions'])) {
+                        $this->adminRepo->update($admin['admin_id'], [
+                            'permissions' => $data['permissions']
+                        ]);
+                    }
+                }
+                break;
+        }
+    }
+    
+    /**
      * Change user role
-     * Role is stored in Users table, no separate role tables to update
+     * Deletes old role-specific record and creates new one
      * 
      * @param int $userId User ID
      * @param string $oldRole Old role
@@ -171,9 +262,59 @@ class UserService extends BaseService {
      * @param array $data Additional data
      */
     private function changeRole(int $userId, string $oldRole, string $newRole, array $data): void {
-        // Role change is handled by updating the role field in Users table
-        // No separate role tables exist - all role information is in Users table
-        // This method is kept for compatibility but does nothing
+        // Delete old role-specific record
+        switch ($oldRole) {
+            case 'STUDENT':
+                $student = $this->studentRepo->findOneBy('user_id', $userId);
+                if ($student) {
+                    $this->studentRepo->delete($student['student_id']);
+                }
+                break;
+                
+            case 'PROFESSOR':
+                $professor = $this->professorRepo->findOneBy('user_id', $userId);
+                if ($professor) {
+                    $this->professorRepo->delete($professor['professor_id']);
+                }
+                break;
+                
+            case 'ADMIN':
+                $admin = $this->adminRepo->findOneBy('user_id', $userId);
+                if ($admin) {
+                    $this->adminRepo->delete($admin['admin_id']);
+                }
+                break;
+        }
+        
+        // Create new role-specific record
+        switch ($newRole) {
+            case 'STUDENT':
+                $this->studentRepo->create([
+                    'user_id' => $userId,
+                    'year' => (int)($data['year'] ?? 1),
+                    'gpa' => $data['gpa'] ?? null,
+                    'points' => 0,
+                    'enrollment_date' => $data['enrollment_date'] ?? date('Y-m-d')
+                ]);
+                break;
+                
+            case 'PROFESSOR':
+                $this->professorRepo->create([
+                    'user_id' => $userId,
+                    'academic_rank' => $data['academic_rank'] ?? null,
+                    'department' => $data['department'] ?? null,
+                    'office_location' => $data['office_location'] ?? null,
+                    'office_hours' => $data['office_hours'] ?? null
+                ]);
+                break;
+                
+            case 'ADMIN':
+                $this->adminRepo->create([
+                    'user_id' => $userId,
+                    'permissions' => $data['permissions'] ?? json_encode([])
+                ]);
+                break;
+        }
     }
     
     /**
