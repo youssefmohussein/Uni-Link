@@ -162,8 +162,8 @@ class ProjectRepository extends BaseRepository {
             FROM projects p
             LEFT JOIN users u ON p.student_id = u.user_id
             LEFT JOIN users s ON p.supervisor_id = s.user_id
-            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
-            LEFT JOIN majors m ON u.major_id = m.major_id
+            LEFT JOIN faculty f ON u.faculty_id = f.faculty_id
+            LEFT JOIN major m ON u.major_id = m.major_id
             ORDER BY p.created_at DESC
         ";
         
