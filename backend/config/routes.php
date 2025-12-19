@@ -169,10 +169,12 @@ return [
     'GET /api/faculty' => ['FacultyController', 'getById'],
     'GET /api/majors' => ['MajorController', 'getAll'],
     'GET /api/faculties/majors' => ['FacultyController', 'getMajors'],
+    'GET /api/faculties/seed' => ['FacultyController', 'seedData'],
 
     // Legacy faculty/major routes
     'GET /getAllFaculties' => ['FacultyController', 'getAll'],
     'GET /getFaculty' => ['FacultyController', 'getById'],
+    'GET /seedFaculties' => ['FacultyController', 'seedData'],
     'GET /getAllMajors' => ['MajorController', 'getAll'],
     'POST /addFaculty' => ['FacultyController', 'create'],
     'POST /updateFaculty' => ['FacultyController', 'update'],

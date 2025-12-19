@@ -8,7 +8,7 @@ import { apiRequest } from "./apiClient";
  * Fetch all faculties
  */
 export const getAllFaculties = async () => {
-  const res = await apiRequest("getAllFaculties", "GET");
+  const res = await apiRequest(`getAllFaculties?v=${Date.now()}`, "GET");
   if (res.status !== "success")
     throw new Error(res.message || "Failed to fetch faculties");
 
@@ -19,7 +19,7 @@ export const getAllFaculties = async () => {
  * Fetch faculty by ID
  */
 export const getFacultyById = async (id) => {
-  const res = await apiRequest(`getFaculty?id=${id}`, "GET");
+  const res = await apiRequest(`getFaculty?id=${id}&v=${Date.now()}`, "GET");
   if (res.status !== "success")
     throw new Error(res.message || "Failed to fetch faculty");
 
