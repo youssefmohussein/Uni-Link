@@ -353,9 +353,14 @@ export const deletePost = async (postId) => {
  * @returns {Promise<Array>} Array of all students
  */
 export const getAllStudents = async () => {
-  const data = await apiRequest('/api/students', 'GET'); // Updated to /api/students
+  const data = await apiRequest('/api/students', 'GET');
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch students');
+  }
+  // Backend returns { count: N, data: [...] } in response.data
+  // So distinct array is in response.data.data
+  if (data.data && Array.isArray(data.data.data)) {
+    return data.data.data;
   }
   return data.data ?? [];
 };

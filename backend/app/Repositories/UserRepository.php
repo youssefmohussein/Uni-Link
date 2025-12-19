@@ -11,19 +11,21 @@ use PDO;
  * Handles all database operations for users
  * Implements Repository Pattern for data access layer
  */
-class UserRepository extends BaseRepository implements UserRepositoryInterface {
+class UserRepository extends BaseRepository implements UserRepositoryInterface
+{
     protected string $table = 'users';
     protected string $primaryKey = 'user_id';
-    
+
     // Constructor inherited from BaseRepository
-    
+
     /**
      * Get user profile data with joins
      * 
      * @param int $userId User ID
      * @return array|null User profile data
      */
-    public function getUserProfileData(int $userId): ?array {
+    public function getUserProfileData(int $userId): ?array
+    {
         // All user data is in users table, no need to join with separate role tables
         $sql = "
             SELECT 
@@ -35,14 +37,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             LEFT JOIN majors m ON u.major_id = m.major_id
             WHERE u.user_id = ?
         ";
-        
+
         $result = $this->queryOne($sql, [$userId]);
-        
+
         // Normalize role if user found
         if ($result && isset($result['role'])) {
             $result['role'] = $this->normalizeRole($result['role']);
         }
-        
+
         return $result;
     }
 
@@ -52,45 +54,48 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @param int $id User ID
      * @return array|null User data
      */
-    public function find(int $id, bool $includeSoftDeleted = false): ?array {
+    public function find(int $id, bool $includeSoftDeleted = false): ?array
+    {
         return parent::find($id, $includeSoftDeleted);
     }
-    
+
     /**
      * Find all users
      * 
      * @return array Array of users
      */
-    public function findAll(?int $limit = null, int $offset = 0, string $orderBy = ''): array {
+    public function findAll(?int $limit = null, int $offset = 0, string $orderBy = ''): array
+    {
         return parent::findAll($limit, $offset, $orderBy ?: 'user_id ASC');
     }
-    
+
     /**
      * Create new user
      * 
      * @param array $data User data
      * @return int User ID
      */
-    public function create(array $data): int {
+    public function create(array $data): int
+    {
         // Use parent create method which handles the table correctly
         // Map password to password_hash if needed
         if (isset($data['password']) && !isset($data['password_hash'])) {
             $data['password_hash'] = $data['password'];
             unset($data['password']);
         }
-        
+
         // Map profile_image to profile_picture if needed
         if (isset($data['profile_image']) && !isset($data['profile_picture'])) {
             $data['profile_picture'] = $data['profile_image'];
             unset($data['profile_image']);
         }
-        
+
         // Remove job_title as it doesn't exist in schema
         unset($data['job_title']);
-        
+
         return parent::create($data);
     }
-    
+
     /**
      * Update user
      * 
@@ -98,70 +103,75 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @param array $data Updated data
      * @return bool Success
      */
-    public function update(int $id, array $data): bool {
+    public function update(int $id, array $data): bool
+    {
         // Map password to password_hash if needed
         if (isset($data['password']) && !isset($data['password_hash'])) {
             $data['password_hash'] = $data['password'];
             unset($data['password']);
         }
-        
+
         // Map profile_image to profile_picture if needed
         if (isset($data['profile_image']) && !isset($data['profile_picture'])) {
             $data['profile_picture'] = $data['profile_image'];
             unset($data['profile_image']);
         }
-        
+
         // Remove job_title as it doesn't exist in schema
         unset($data['job_title']);
-        
+
         // Use parent update method
         return parent::update($id, $data);
     }
-    
+
     /**
      * Delete user
      * 
      * @param int $id User ID
      * @return bool Success
      */
-    public function delete(int $id): bool {
+    public function delete(int $id): bool
+    {
         return parent::delete($id);
     }
-    
+
     /**
      * Find user by email
      * 
      * @param string $email Email
      * @return array|null User data
      */
-    public function findByEmail(string $email): ?array {
+    public function findByEmail(string $email): ?array
+    {
         return $this->findOneBy('email', $email);
     }
-    
+
     /**
      * Find user by username
      * 
      * @param string $username Username
      * @return array|null User data
      */
-    public function findByUsername(string $username): ?array {
+    public function findByUsername(string $username): ?array
+    {
         return $this->findOneBy('username', $username);
     }
-    
+
     /**
      * Find user by email or username
      * 
      * @param string $identifier Email or username
      * @return array|null User data
      */
-    public function findByEmailOrUsername(string $identifier): ?array {
+    public function findByEmailOrUsername(string $identifier): ?array
+    {
         try {
             // Trim whitespace from identifier
             $identifier = trim($identifier);
-            
+
             // Log the search attempt
             error_log("UserRepository: Searching for user with identifier: '{$identifier}'");
-            
+
             $stmt = $this->db->prepare("
                 SELECT * FROM {$this->table} 
                 WHERE email = ? OR username = ? 
@@ -169,26 +179,26 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             ");
             $stmt->execute([$identifier, $identifier]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($result) {
                 error_log("UserRepository: User found - ID: {$result['user_id']}, Username: {$result['username']}, Email: {$result['email']}, Role: {$result['role']}");
             } else {
                 error_log("UserRepository: No user found with identifier: '{$identifier}'");
-                
+
                 // Additional debug: Check if any users exist
                 $countStmt = $this->db->prepare("SELECT COUNT(*) as count FROM {$this->table}");
                 $countStmt->execute();
                 $count = $countStmt->fetch(PDO::FETCH_ASSOC);
                 error_log("UserRepository: Total users in database: {$count['count']}");
             }
-            
+
             return $result ?: null;
         } catch (\PDOException $e) {
             error_log("UserRepository: Database error in findByEmailOrUsername: " . $e->getMessage());
             throw new \Exception("Database error: " . $e->getMessage());
         }
     }
-    
+
     /**
      * Get user with role-specific data
      * All role information is stored in the Users table, no separate role tables needed
@@ -196,43 +206,46 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
      * @param int $id User ID
      * @return array|null Complete user data
      */
-    public function findWithRoleData(int $id): ?array {
+    public function findWithRoleData(int $id): ?array
+    {
         $user = $this->find($id);
         if (!$user) {
             return null;
         }
-        
+
         // Normalize role from database (uppercase: ADMIN/PROFESSOR/STUDENT) to mixed case (Admin/Professor/Student)
         $dbRole = $user['role'] ?? '';
         $normalizedRole = $this->normalizeRole($dbRole);
         $user['role'] = $normalizedRole;
-        
+
         // All role information is in the Users table, no need to query separate tables
         // Return user data with normalized role
         return $user;
     }
-    
+
     /**
      * Normalize role from database format (uppercase) to code format (mixed case)
      * 
      * @param string $role Role from database
      * @return string Normalized role
      */
-    private function normalizeRole(string $role): string {
-        return match(strtoupper($role)) {
+    private function normalizeRole(string $role): string
+    {
+        return match (strtoupper($role)) {
             'ADMIN' => 'Admin',
             'PROFESSOR' => 'Professor',
             'STUDENT' => 'Student',
             default => $role // Return as-is if not recognized
         };
     }
-    
+
     /**
      * Get weekly user activity (registrations per day)
      * 
      * @return array Weekly activity data
      */
-    public function getWeeklyActivity(): array {
+    public function getWeeklyActivity(): array
+    {
         return $this->query("
             SELECT DATE(created_at) as date, COUNT(*) as count
             FROM {$this->table}
@@ -241,13 +254,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             ORDER BY date ASC
         ");
     }
-    
+
     /**
      * Get faculty distribution of students
      * 
      * @return array Faculty distribution
      */
-    public function getFacultyDistribution(): array {
+    public function getFacultyDistribution(): array
+    {
         return $this->query("
             SELECT f.name as faculty_name, COUNT(DISTINCT u.user_id) as student_count
             FROM faculties f
