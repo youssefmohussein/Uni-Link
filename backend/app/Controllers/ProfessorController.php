@@ -41,32 +41,6 @@ class ProfessorController extends BaseController {
     }
 
     /**
-     * Get professors by faculty
-     * GET /api/professors/by-faculty?faculty_id=1
-     */
-    public function getByFaculty(): void {
-        try {
-            $this->requireAuth();
-            
-            $facultyId = isset($_GET['faculty_id']) ? (int)$_GET['faculty_id'] : null;
-            
-            if (!$facultyId) {
-                throw new \Exception('Faculty ID is required', 400);
-            }
-            
-            $professors = $this->professorRepo->findByFaculty($facultyId);
-            
-            $this->success([
-                'count' => count($professors),
-                'data' => $professors
-            ]);
-            
-        } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
-        }
-    }
-
-    /**
      * Update professor
      * PUT /api/professors
      */

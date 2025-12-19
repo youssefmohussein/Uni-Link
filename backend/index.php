@@ -107,24 +107,10 @@ foreach ($routes as $route => $handler) {
 // Route not found
 if (!$matched) {
     http_response_code(404);
-    // Only include available routes in debug mode to avoid large responses
-    $debugInfo = [
+    echo json_encode([
         'status' => 'error',
         'message' => 'Route not found',
         'requested' => "$requestMethod $requestUri",
-        'raw_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
-    ];
-    
-    // Check if any similar routes exist
-    $similarRoutes = [];
-    foreach (array_keys($routes) as $route) {
-        if (strpos($route, $requestUri) !== false || strpos($requestUri, explode(' ', $route)[1] ?? '') !== false) {
-            $similarRoutes[] = $route;
-        }
-    }
-    if (!empty($similarRoutes)) {
-        $debugInfo['similar_routes'] = $similarRoutes;
-    }
-    
-    echo json_encode($debugInfo);
+        'available_routes' => array_keys($routes)
+    ]);
 }

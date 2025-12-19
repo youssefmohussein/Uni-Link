@@ -22,26 +22,7 @@ class ProjectRoomController extends BaseController {
         try {
             $this->requireAuth();
             
-            // Handle both JSON and Multipart/Form-Data
-            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-            if (strpos($contentType, 'application/json') !== false) {
-                $data = $this->getJsonInput();
-            } else {
-                $data = $_POST;
-            }
-
-            // Handle File Upload
-            if (isset($_FILES['room_photo']) && $_FILES['room_photo']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = 'uploads/room_photos';
-                try {
-                    $photoPath = $this->handleFileUpload('room_photo', $uploadDir, ['image/jpeg', 'image/png', 'image/webp']);
-                    $data['photo_url'] = $photoPath;
-                } catch (\Exception $e) {
-                    // Log error but continue (optional photo)
-                    error_log("Photo upload failed: " . $e->getMessage());
-                }
-            }
-
+            $data = $this->getJsonInput();
             // Use created_by if provided, otherwise use current user
             if (!isset($data['owner_id']) && !isset($data['created_by'])) {
                 $data['owner_id'] = $this->getCurrentUserId();
@@ -49,23 +30,13 @@ class ProjectRoomController extends BaseController {
                 $data['owner_id'] = $data['created_by'];
             }
             
-            // Validate Faculty and Professor
-            if (isset($data['faculty_id'])) {
-                $data['faculty_id'] = (int)$data['faculty_id'];
-            }
-            if (isset($data['professor_id'])) {
-                $data['professor_id'] = (int)$data['professor_id'];
-            }
-            
             $room = $this->roomService->createRoom($data);
             $this->success($room, 'Room created successfully', 201);
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
-    
     
     /**
      * Get all rooms
@@ -81,8 +52,7 @@ class ProjectRoomController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
     
@@ -94,16 +64,15 @@ class ProjectRoomController extends BaseController {
             $this->requireAuth();
             
             $userId = $this->getCurrentUserId();
-            $rooms = $this->roomService->getUserRooms($userId);
+            // This would need implementation in service
             
             $this->success([
-                'count' => count($rooms),
-                'data' => $rooms
+                'count' => 0,
+                'data' => []
             ]);
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
     
@@ -124,8 +93,7 @@ class ProjectRoomController extends BaseController {
             $this->success($room);
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
     
@@ -143,8 +111,7 @@ class ProjectRoomController extends BaseController {
             $this->success($room, 'Room updated successfully');
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
     
@@ -162,8 +129,7 @@ class ProjectRoomController extends BaseController {
             $this->success(null, 'Room deleted successfully');
             
         } catch (\Exception $e) {
-            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
-            $this->error($e->getMessage(), $code);
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
 }
