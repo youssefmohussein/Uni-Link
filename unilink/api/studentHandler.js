@@ -359,10 +359,13 @@ export const getAllStudents = async () => {
   }
   // Backend returns { count: N, data: [...] } in response.data
   // So distinct array is in response.data.data
-  if (data.data && Array.isArray(data.data.data)) {
+  if (data.data?.data && Array.isArray(data.data.data)) {
     return data.data.data;
   }
-  return data.data ?? [];
+  if (Array.isArray(data.data)) {
+    return data.data;
+  }
+  return [];
 };
 
 /**
@@ -432,26 +435,30 @@ export const deleteStudent = async (userId) => {
 // FACULTY / MAJOR
 // ============================================================
 
-/**
- * Get all faculties
- * @returns {Promise<Array>} Array of faculties
- */
+// Get all faculties
 export const getAllFaculties = async () => {
-  const res = await apiRequest('getAllFaculties', 'GET');
-  if (res.status !== 'success') {
-    throw new Error(res.message || 'Failed to fetch faculties');
+  try {
+    const data = await apiRequest("/api/faculties", "GET");
+    if (data.status === "success" && Array.isArray(data.data)) {
+      return data.data;
+    }
+    return [];
+  } catch (err) {
+    console.error(err);
+    return [];
   }
-  return res.data ?? [];
 };
 
-/**
- * Get all majors
- * @returns {Promise<Array>} Array of majors
- */
+// Get all majors
 export const getAllMajors = async () => {
-  const res = await apiRequest('getAllMajors', 'GET');
-  if (res.status !== 'success') {
-    throw new Error(res.message || 'Failed to fetch majors');
+  try {
+    const data = await apiRequest("/api/majors", "GET");
+    if (data.status === "success" && Array.isArray(data.data)) {
+      return data.data;
+    }
+    return [];
+  } catch (err) {
+    console.error(err);
+    return [];
   }
-  return res.data ?? [];
 };

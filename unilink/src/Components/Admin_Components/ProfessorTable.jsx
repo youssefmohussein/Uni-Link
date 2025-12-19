@@ -20,6 +20,7 @@ export default function ProfessorTable({
     const q = query.toLowerCase();
 
     return professors.filter((p) => {
+      if (!p) return false;
       const fields = [
         p.username,
         p.email,
@@ -72,32 +73,32 @@ export default function ProfessorTable({
 
       {/* Table Header */}
       <div
-        className="grid grid-cols-14 gap-2 px-4 py-3 border-b border-white/10 
+        className="grid grid-cols-16 gap-2 px-4 py-3 border-b border-white/10 
                       text-xs font-semibold uppercase text-accent"
       >
         <div className="col-span-2">Username</div>
         <div className="col-span-3">Email</div>
-        <div className="col-span-2">Faculty</div>
+        <div className="col-span-3">Faculty</div>
         <div className="col-span-2">Major</div>
         <div className="col-span-2">Rank</div>
         <div className="col-span-2">Office</div>
-        <div className="col-span-1 text-right">Actions</div>
+        <div className="col-span-2 text-right">Actions</div>
       </div>
 
       {/* Table Rows */}
       {paginated.length > 0 ? (
         paginated.map((p) => (
           <div
-            key={p.user_id}
-            className="grid grid-cols-14 gap-2 px-4 py-3 border-b border-white/10 items-center text-sm text-white/80 hover:bg-white/5"
+            key={p?.user_id || Math.random()}
+            className="grid grid-cols-16 gap-2 px-4 py-3 border-b border-white/10 items-center text-sm text-white/80 hover:bg-white/5"
           >
-            <div className="col-span-2 truncate">{p.username}</div>
-            <div className="col-span-3 truncate">{p.email}</div>
-            <div className="col-span-2 truncate">{p.faculty_name ?? "-"}</div>
-            <div className="col-span-2 truncate">{p.major_name ?? "-"}</div>
-            <div className="col-span-2 truncate">{p.academic_rank ?? "-"}</div>
-            <div className="col-span-2 truncate">{p.office_location ?? "-"}</div>
-            <div className="col-span-1 flex justify-end gap-2">
+            <div className="col-span-2 truncate">{p?.username || "-"}</div>
+            <div className="col-span-3 truncate">{p?.email || "-"}</div>
+            <div className="col-span-3 truncate">{p?.faculty_name ?? "-"}</div>
+            <div className="col-span-2 truncate">{p?.major_name ?? "-"}</div>
+            <div className="col-span-2 truncate">{p?.academic_rank ?? "-"}</div>
+            <div className="col-span-2 truncate">{p?.office_location ?? "-"}</div>
+            <div className="col-span-2 flex justify-end gap-2">
               <button
                 onClick={() => setEditingProfessor(p)}
                 className="

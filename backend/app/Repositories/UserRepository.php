@@ -70,6 +70,25 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * Find users by role with pagination
+     * 
+     * @param string $role Role (case insensitive)
+     * @param int|null $limit Limit
+     * @param int $offset Offset
+     * @return array Array of users with that role
+     */
+    public function findByRole(string $role, ?int $limit = null, int $offset = 0): array
+    {
+        // Normalize role to uppercase for database query
+        $dbRole = match (strtoupper($role)) {
+            'ADMIN', 'PROFESSOR', 'STUDENT' => strtoupper($role),
+            default => $role
+        };
+
+        return $this->findWhere(['role' => $dbRole], 'user_id ASC', $limit, $offset);
+    }
+
+    /**
      * Create new user
      * 
      * @param array $data User data
@@ -232,10 +251,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     private function normalizeRole(string $role): string
     {
         return match (strtoupper($role)) {
-            'ADMIN' => 'Admin',
-            'PROFESSOR' => 'Professor',
-            'STUDENT' => 'Student',
-            default => $role // Return as-is if not recognized
+            'ADMIN' => 'ADMIN',
+            'PROFESSOR' => 'PROFESSOR',
+            'STUDENT' => 'STUDENT',
+            default => strtoupper($role) // Return as uppercase if not recognized
         };
     }
 

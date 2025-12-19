@@ -16,19 +16,25 @@ export default function StudentsTable({
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 4;
 
-  const getFacultyName = (id) =>
-    faculties.find((f) => f.faculty_id === id)?.faculty_name || "-";
+  const getFacultyName = (id) => {
+    if (!id) return "-";
+    const found = faculties.find((f) => f && f.faculty_id == id);
+    return found ? (found.faculty_name || found.name) : "-";
+  };
 
-  const getMajorName = (id) =>
-    majors.find((m) => m.major_id === id)?.major_name || "-";
+  const getMajorName = (id) => {
+    if (!id) return "-";
+    const found = majors.find((m) => m && m.major_id == id);
+    return found ? (found.major_name || found.name) : "-";
+  };
 
   const filtered = useMemo(() => {
     if (!query.trim()) return students;
     const q = query.toLowerCase();
     return students.filter(
       (s) =>
-        s.username?.toLowerCase().includes(q) ||
-        s.email?.toLowerCase().includes(q)
+      (s?.username?.toLowerCase().includes(q) ||
+        s?.email?.toLowerCase().includes(q))
     );
   }, [students, query]);
 
@@ -74,11 +80,11 @@ export default function StudentsTable({
       />
 
       {/* Table Header */}
-      <div className="grid grid-cols-13 gap-2 px-4 py-3 border-b border-white/10 items-center text-xs font-semibold uppercase text-accent mb-2">
+      <div className="grid grid-cols-16 gap-2 px-4 py-3 border-b border-white/10 items-center text-xs font-semibold uppercase text-accent mb-2">
         <div className="col-span-2">Username</div>
         <div className="col-span-3">Email</div>
-        <div className="col-span-1">Faculty</div>
-        <div className="col-span-1">Major</div>
+        <div className="col-span-3">Faculty</div>
+        <div className="col-span-2">Major</div>
         <div className="col-span-1">Year</div>
         <div className="col-span-1">GPA</div>
         <div className="col-span-1">Points</div>
@@ -88,16 +94,16 @@ export default function StudentsTable({
       {/* Rows */}
       {paginated.map((s) => (
         <div
-          key={s.student_id}
-          className="grid grid-cols-13 gap-2 px-4 py-3 border-b border-white/5 hover:bg-white/5 transition text-sm items-center"
+          key={s?.student_id || Math.random()}
+          className="grid grid-cols-16 gap-2 px-4 py-3 border-b border-white/5 hover:bg-white/5 transition text-sm items-center"
         >
-          <div className="col-span-2">{s.username}</div>
-          <div className="col-span-3">{s.email}</div>
-          <div className="col-span-1">{getFacultyName(s.faculty_id)}</div>
-          <div className="col-span-1">{getMajorName(s.major_id)}</div>
-          <div className="col-span-1">{s.year ?? 0}</div>
-          <div className="col-span-1">{s.gpa ?? 0}</div>
-          <div className="col-span-1">{s.points ?? 0}</div>
+          <div className="col-span-2 truncate">{s?.username || "-"}</div>
+          <div className="col-span-3 truncate">{s?.email || "-"}</div>
+          <div className="col-span-3 truncate">{getFacultyName(s?.faculty_id)}</div>
+          <div className="col-span-2 truncate">{getMajorName(s?.major_id)}</div>
+          <div className="col-span-1">{s?.year ?? 0}</div>
+          <div className="col-span-1">{s?.gpa ?? 0}</div>
+          <div className="col-span-1">{s?.points ?? 0}</div>
 
           {/* Actions */}
           <div className="col-span-3 flex justify-end gap-3">

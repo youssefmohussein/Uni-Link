@@ -11,7 +11,13 @@ import { apiRequest } from "./apiClient";
 export const getUsers = async () => {
   const data = await apiRequest("getUsers", "GET");
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch users");
-  return data.data ?? [];
+  if (data.data?.data && Array.isArray(data.data.data)) {
+    return data.data.data;
+  }
+  if (Array.isArray(data.data)) {
+    return data.data;
+  }
+  return [];
 };
 
 /**
@@ -22,8 +28,13 @@ export const getUsers = async () => {
 export const getProfessors = async () => {
   const data = await apiRequest("/api/professors", "GET"); // Updated to /api/professors
   if (data.status !== "success") throw new Error(data.message || "Failed to fetch professors");
-  // Backend returns {data: {count, data: []}}, extract the array
-  return data.data?.data ?? data.data ?? [];
+  if (data.data?.data && Array.isArray(data.data.data)) {
+    return data.data.data;
+  }
+  if (Array.isArray(data.data)) {
+    return data.data;
+  }
+  return [];
 };
 
 /* ============================================================
