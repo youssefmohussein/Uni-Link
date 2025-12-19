@@ -7,7 +7,7 @@
 
 // Load autoloader
 require_once __DIR__ . '/config/autoload.php';
-
+ 
 // CORS Headers for React frontend - MUST be before any output
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
