@@ -46,7 +46,8 @@ class FacultyRepository extends BaseRepository
                 f.*, 
                 COUNT(DISTINCT m.major_id) as major_count,
                 COUNT(DISTINCT CASE WHEN u.role = 'Student' THEN u.user_id END) as student_count,
-                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count
+                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count,
+                GROUP_CONCAT(DISTINCT m.name SEPARATOR ', ') as major_names
             FROM faculties f
             LEFT JOIN majors m ON f.faculty_id = m.faculty_id
             LEFT JOIN users u ON f.faculty_id = u.faculty_id
@@ -69,7 +70,8 @@ class FacultyRepository extends BaseRepository
                 f.*, 
                 COUNT(DISTINCT m.major_id) as major_count,
                 COUNT(DISTINCT CASE WHEN u.role = 'Student' THEN u.user_id END) as student_count,
-                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count
+                COUNT(DISTINCT CASE WHEN u.role = 'Professor' THEN u.user_id END) as professor_count,
+                GROUP_CONCAT(DISTINCT m.name SEPARATOR ', ') as major_names
             FROM faculties f
             LEFT JOIN majors m ON f.faculty_id = m.faculty_id
             LEFT JOIN users u ON f.faculty_id = u.faculty_id

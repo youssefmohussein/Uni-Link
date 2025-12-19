@@ -14,12 +14,27 @@ const FacultiesPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const normalizeFaculties = (data) => {
+        if (!Array.isArray(data)) return [];
+        return data.map(item => {
+            const normalized = {};
+            Object.keys(item).forEach(key => {
+                normalized[key.toLowerCase()] = item[key];
+            });
+            // Fallbacks
+            normalized.name = normalized.name || normalized.faculty_name || 'Faculty';
+            normalized.major_count = normalized.major_count || 0;
+            return normalized;
+        });
+    };
+
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
                 setLoading(true);
-                const data = await getAllFaculties();
-                setFaculties(data);
+                const rawData = await getAllFaculties();
+                const normalized = normalizeFaculties(rawData);
+                setFaculties(normalized);
                 setError(null);
             } catch (err) {
                 console.error('Error fetching faculties:', err);
@@ -54,7 +69,7 @@ const FacultiesPage = () => {
     }
 
     return (
-        <div className="relative w-full min-h-screen bg-black text-white overflow-x-hidden">
+        <div className="relative w-full min-h-screen bg-black text-white overflow-hidden">
             {/* Galaxy Background - Lazy loaded */}
             <Suspense fallback={<div className="fixed inset-0 bg-black" />}>
                 <div className="fixed inset-0 w-full h-full z-0">
@@ -88,40 +103,61 @@ const FacultiesPage = () => {
                                 className="h-screen flex items-center px-10 md:px-20 max-w-7xl mx-auto"
                             >
                                 <div className={`w-full flex items-center ${isEven ? 'justify-end' : 'justify-start'}`}>
-                                    <GlassCard className={`p-10 max-w-2xl ${isEven ? 'text-left' : 'text-left'}`}>
-                                        <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50">
+                                    <GlassCard className={`p-8 max-w-2xl shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-500 ${isEven ? 'text-left' : 'text-left'}`}>
+                                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-[#008080] to-white/70 leading-tight">
                                             {faculty.name || faculty.faculty_name || `Faculty ${index + 1}`}
                                         </h2>
 
-                                        <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                                            {faculty.description || 'Discover excellence in education and research. Join a community of innovators, thinkers, and leaders shaping the future.'}
-                                        </p>
-
-                                        <div className="flex flex-col sm:flex-row gap-4">
+                                        <div className="flex flex-col sm:flex-row gap-4 mb-8">
                                             <button
                                                 onClick={() => navigate(`/faculty/${faculty.faculty_id}`)}
-                                                className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 px-8 rounded-full text-lg transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)] text-center"
+                                                className="bg-gradient-to-r from-[#008080] to-[#00a0a0] hover:from-[#006666] hover:to-[#008080] text-white font-bold py-3 px-8 rounded-full text-base transition-all shadow-[0_0_30px_rgba(0,128,128,0.5)] hover:shadow-[0_0_50px_rgba(0,128,128,0.8)] text-center transform hover:scale-105 duration-300"
                                             >
-                                                Explore Faculty
-                                            </button>
-                                            <button className="border-2 border-[#008080] hover:bg-[#008080]/20 text-white font-bold py-3 px-8 rounded-full text-lg transition-all">
                                                 Learn More
                                             </button>
                                         </div>
 
-                                        {/* Faculty Stats */}
-                                        <div className="mt-8 pt-8 border-t border-white/20 grid grid-cols-3 gap-4 text-center">
-                                            <div>
-                                                <div className="text-3xl font-bold text-[#008080]">{faculty.major_count || 0}</div>
-                                                <div className="text-sm text-gray-400 mt-1">Majors</div>
+                                        <div className="flex items-center justify-between gap-8 border-t border-white/10 pt-6">
+                                            <div className="group relative cursor-default flex-1 text-center">
+                                                <div className="text-3xl font-bold text-[#008080] group-hover:scale-110 transition-transform duration-300">
+                                                    {faculty.major_count || 0}
+                                                </div>
+                                                <div className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Majors</div>
+
+                                                {/* Enhanced Majors Hover Tooltip */}
+                                                {faculty.major_names && (
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-64 p-6 bg-gradient-to-br from-gray-900 to-black border-2 border-[#008080]/40 rounded-3xl backdrop-blur-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 z-50 shadow-[0_25px_60px_rgba(0,128,128,0.4)] pointer-events-none">
+                                                        <div className="text-[#008080] font-bold mb-3 text-sm uppercase tracking-wider border-b border-[#008080]/20 pb-2 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-[#008080] animate-pulse"></span>
+                                                            Specializations
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            {String(faculty.major_names || '').split(',').map(m => m.trim()).filter(m => m).slice(0, 6).map((major, idx) => (
+                                                                <div key={idx} className="text-gray-300 text-sm flex items-center gap-3 p-1">
+                                                                    <div className="w-2 h-2 rounded-full bg-[#008080] shadow-lg shadow-[#008080]/50"></div>
+                                                                    <span className="font-medium">{major}</span>
+                                                                </div>
+                                                            ))}
+                                                            {String(faculty.major_names || '').split(',').map(m => m.trim()).filter(m => m).length > 6 && (
+                                                                <div className="text-gray-400 text-xs text-center pt-2 border-t border-white/10">
+                                                                    +{String(faculty.major_names || '').split(',').map(m => m.trim()).filter(m => m).length - 6} more
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {/* Enhanced Arrow */}
+                                                        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-gray-900 to-black border-r-2 border-b-2 border-[#008080]/40 rotate-45"></div>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div>
-                                                <div className="text-3xl font-bold text-[#ffb547]">{faculty.professor_count || 0}</div>
-                                                <div className="text-sm text-gray-400 mt-1">Professors</div>
+
+                                            <div className="flex-1 text-center">
+                                                <div className="text-3xl font-bold text-[#ffb547] hover:scale-110 transition-transform duration-300">{faculty.professor_count || 0}</div>
+                                                <div className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Professors</div>
                                             </div>
-                                            <div>
-                                                <div className="text-3xl font-bold text-purple-400">{faculty.student_count || 0}</div>
-                                                <div className="text-sm text-gray-400 mt-1">Students</div>
+
+                                            <div className="flex-1 text-center">
+                                                <div className="text-3xl font-bold text-purple-400 hover:scale-110 transition-transform duration-300">{faculty.student_count || 0}</div>
+                                                <div className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Students</div>
                                             </div>
                                         </div>
                                     </GlassCard>
@@ -144,6 +180,23 @@ const FacultiesPage = () => {
                     </section>
                 </main>
             </PlanetScene3D>
+
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #008080;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #00a0a0;
+                }
+            `}</style>
         </div>
     );
 };
