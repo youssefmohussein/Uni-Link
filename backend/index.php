@@ -7,7 +7,7 @@
 
 // Load autoloader
 require_once __DIR__ . '/config/autoload.php';
- 
+
 // CORS Headers for React frontend - MUST be before any output
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
@@ -107,10 +107,24 @@ foreach ($routes as $route => $handler) {
 // Route not found
 if (!$matched) {
     http_response_code(404);
-    echo json_encode([
+    // Only include available routes in debug mode to avoid large responses
+    $debugInfo = [
         'status' => 'error',
         'message' => 'Route not found',
         'requested' => "$requestMethod $requestUri",
-        'available_routes' => array_keys($routes)
-    ]);
+        'raw_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
+    ];
+    
+    // Check if any similar routes exist
+    $similarRoutes = [];
+    foreach (array_keys($routes) as $route) {
+        if (strpos($route, $requestUri) !== false || strpos($requestUri, explode(' ', $route)[1] ?? '') !== false) {
+            $similarRoutes[] = $route;
+        }
+    }
+    if (!empty($similarRoutes)) {
+        $debugInfo['similar_routes'] = $similarRoutes;
+    }
+    
+    echo json_encode($debugInfo);
 }

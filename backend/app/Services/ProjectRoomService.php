@@ -104,6 +104,16 @@ class ProjectRoomService extends BaseService {
     public function getAllRooms(): array {
         return $this->roomRepo->findAll(null, 0, 'created_at DESC');
     }
+
+    /**
+     * Get user rooms
+     * 
+     * @param int $userId User ID
+     * @return array Array of user's rooms
+     */
+    public function getUserRooms(int $userId): array {
+        return $this->roomRepo->findUserRooms($userId);
+    }
     
     /**
      * Update room

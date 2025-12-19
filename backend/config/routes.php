@@ -48,6 +48,7 @@ return [
     // Professor Routes (Legacy compatibility)
     // ============================================
     'GET /api/professors' => ['ProfessorController', 'getAll'],
+    'GET /api/professors/by-faculty' => ['ProfessorController', 'getByFaculty'],
     'PUT /api/professors' => ['ProfessorController', 'update'],
 
     // ============================================
@@ -125,9 +126,9 @@ return [
     'GET /api/project-rooms/room' => ['ProjectRoomController', 'getRoom'],
     'PUT /api/project-rooms' => ['ProjectRoomController', 'update'],
     'DELETE /api/project-rooms' => ['ProjectRoomController', 'delete'],
-
     // Legacy project room routes (for frontend compatibility)
     'GET /getAllRooms' => ['ProjectRoomController', 'getAll'],
+    'GET /getUserRooms' => ['ProjectRoomController', 'getUserRooms'],
     'POST /createRoom' => ['ProjectRoomController', 'create'],
     'GET /getRoom' => ['ProjectRoomController', 'getRoom'],
     'POST /updateRoom' => ['ProjectRoomController', 'update'],
