@@ -28,7 +28,8 @@ class UserController extends BaseController {
             $this->success($user, 'User created successfully', 201);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
     
@@ -48,7 +49,8 @@ class UserController extends BaseController {
             $this->success($user, 'User updated successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
     
@@ -66,7 +68,8 @@ class UserController extends BaseController {
             $this->success(null, 'User deleted successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
     
@@ -86,7 +89,8 @@ class UserController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
     
@@ -105,7 +109,8 @@ class UserController extends BaseController {
             $this->success($profile);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
 }
