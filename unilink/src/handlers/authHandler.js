@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost/backend';
+const API_BASE_URL = 'http://localhost:8080/backend';
 
 /**
  * Centralized authentication handler
@@ -33,7 +33,7 @@ class AuthHandler {
 
             // ResponseHandler wraps data in 'data' key: { status: 'success', data: { id, username, email, role, redirect } }
             const loginData = responseData.data || responseData;
-            
+
             // Save user data to localStorage for frontend authentication checks
             const userData = {
                 id: loginData.id,
@@ -107,7 +107,7 @@ class AuthHandler {
 
             // ResponseHandler wraps data in 'data' key: { status: 'success', data: { authenticated, user } }
             const sessionData = responseData.data || responseData;
-            
+
             // Sync session data with localStorage
             if (sessionData.authenticated && sessionData.user) {
                 localStorage.setItem('user', JSON.stringify(sessionData.user));

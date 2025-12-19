@@ -21,6 +21,7 @@ use App\Repositories\MajorRepository;
 use App\Repositories\AnnouncementRepository;
 use App\Repositories\CvRepository;
 use App\Repositories\ProjectRoomRepository;
+use App\Repositories\SubjectRepository;
 
 // Services
 use App\Services\AuthService;
@@ -36,6 +37,7 @@ use App\Services\SavedPostService;
 use App\Services\DashboardService;
 use App\Services\CvService;
 use App\Services\ProjectRoomService;
+use App\Services\SubjectService;
 
 // Controllers
 use App\Controllers\AuthController;
@@ -120,6 +122,10 @@ $container->singleton('CvRepository', function($c) {
 
 $container->singleton('ProjectRoomRepository', function($c) {
     return new ProjectRoomRepository();
+});
+
+$container->singleton('SubjectRepository', function($c) {
+    return new SubjectRepository();
 });
 
 // ============================================
@@ -215,6 +221,10 @@ $container->singleton('ProjectRoomService', function($c) {
     return new ProjectRoomService($c->get('ProjectRoomRepository'));
 });
 
+$container->singleton('SubjectService', function($c) {
+    return new SubjectService($c->get('SubjectRepository'));
+});
+
 // ============================================
 // Register Controllers
 // ============================================
@@ -276,7 +286,9 @@ $container->set('AnnouncementController', function($c) {
 });
 
 $container->set('ProjectRoomController', function($c) {
-    return new ProjectRoomController($c->get('ProjectRoomService'));
+    return new ProjectRoomController(
+        $c->get('ProjectRoomService')
+    );
 });
 
 $container->set('SavedPostController', function($c) {

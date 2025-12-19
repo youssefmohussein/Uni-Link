@@ -86,6 +86,16 @@ export const getAllMajors = async () => {
   return res.data ?? [];
 };
 
+/**
+ * Get professors by faculty ID
+ * @param {number} facultyId Faculty ID
+ */
+export const getProfessorsByFaculty = async (facultyId) => {
+  const res = await apiRequest(`api/professors/by-faculty?faculty_id=${facultyId}`, "GET");
+  if (res.status !== "success") throw new Error(res.message || "Failed to fetch professors");
+  return res.data ?? [];
+};
+
 /* ============================================================
    NEW PROFESSOR FEATURES (Profile, Reviews, Analytics)
    ============================================================ */

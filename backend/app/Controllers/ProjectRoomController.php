@@ -22,12 +22,39 @@ class ProjectRoomController extends BaseController {
         try {
             $this->requireAuth();
             
-            $data = $this->getJsonInput();
+            // Handle both JSON and Multipart/Form-Data
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $data = $this->getJsonInput();
+            } else {
+                $data = $_POST;
+            }
+
+            // Handle File Upload
+            if (isset($_FILES['room_photo']) && $_FILES['room_photo']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = 'uploads/room_photos';
+                try {
+                    $photoPath = $this->handleFileUpload('room_photo', $uploadDir, ['image/jpeg', 'image/png', 'image/webp']);
+                    $data['photo_url'] = $photoPath;
+                } catch (\Exception $e) {
+                    // Log error but continue (optional photo)
+                    error_log("Photo upload failed: " . $e->getMessage());
+                }
+            }
+
             // Use created_by if provided, otherwise use current user
             if (!isset($data['owner_id']) && !isset($data['created_by'])) {
                 $data['owner_id'] = $this->getCurrentUserId();
             } elseif (isset($data['created_by'])) {
                 $data['owner_id'] = $data['created_by'];
+            }
+            
+            // Validate Faculty and Professor
+            if (isset($data['faculty_id'])) {
+                $data['faculty_id'] = (int)$data['faculty_id'];
+            }
+            if (isset($data['professor_id'])) {
+                $data['professor_id'] = (int)$data['professor_id'];
             }
             
             $room = $this->roomService->createRoom($data);
@@ -37,6 +64,7 @@ class ProjectRoomController extends BaseController {
             $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
+    
     
     /**
      * Get all rooms
@@ -64,11 +92,11 @@ class ProjectRoomController extends BaseController {
             $this->requireAuth();
             
             $userId = $this->getCurrentUserId();
-            // This would need implementation in service
+            $rooms = $this->roomService->getUserRooms($userId);
             
             $this->success([
-                'count' => 0,
-                'data' => []
+                'count' => count($rooms),
+                'data' => $rooms
             ]);
             
         } catch (\Exception $e) {

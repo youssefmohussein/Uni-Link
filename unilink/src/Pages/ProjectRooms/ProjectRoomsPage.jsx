@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Posts/Header";
 import { FiRefreshCw, FiPlus } from "react-icons/fi";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
+import * as facultyHandler from "../../../api/facultyandmajorHandler";
+import * as professorHandler from "../../../api/professorHandler";
 import { API_BASE_URL } from "../../../config/api";
 
 const CreateRoomModal = ({ onClose, onCreated, userId }) => {
@@ -11,8 +13,60 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
     const [password, setPassword] = useState("");
     const [photoFile, setPhotoFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+
+    // Faculty and Professor States
+    const [faculties, setFaculties] = useState([]);
+    const [professors, setProfessors] = useState([]);
+    const [facultyId, setFacultyId] = useState("");
+    const [professorId, setProfessorId] = useState("");
+
     const [loading, setLoading] = useState(false);
+    const [loadingFaculties, setLoadingFaculties] = useState(false);
+    const [loadingProfessors, setLoadingProfessors] = useState(false);
     const [error, setError] = useState(null);
+
+    // Fetch faculties on mount
+    useEffect(() => {
+        const loadFaculties = async () => {
+            try {
+                setLoadingFaculties(true);
+                const data = await facultyHandler.getAllFaculties();
+                setFaculties(data);
+            } catch (err) {
+                console.error("Failed to load faculties:", err);
+                setError("Failed to load faculties. Please refresh the page.");
+            } finally {
+                setLoadingFaculties(false);
+            }
+        };
+        loadFaculties();
+    }, []);
+
+    // Fetch professors when faculty is selected
+    useEffect(() => {
+        const loadProfessors = async () => {
+            if (!facultyId) {
+                setProfessors([]);
+                setProfessorId("");
+                return;
+            }
+            
+            try {
+                setLoadingProfessors(true);
+                const data = await professorHandler.getProfessorsByFaculty(parseInt(facultyId));
+                setProfessors(data);
+                // Reset professor selection when faculty changes
+                setProfessorId("");
+            } catch (err) {
+                console.error("Failed to load professors:", err);
+                setError("Failed to load professors for selected faculty.");
+                setProfessors([]);
+            } finally {
+                setLoadingProfessors(false);
+            }
+        };
+        loadProfessors();
+    }, [facultyId]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -27,21 +81,29 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
         setLoading(true);
         setError(null);
 
-        // Debug: Check userId
-        console.log("CreateRoomModal - userId:", userId);
+        // Validate required fields
+        if (!facultyId) {
+            setError("Please select a faculty.");
+            setLoading(false);
+            return;
+        }
 
-        if (!userId && userId !== 0) {
-            setError("User ID is missing. Please log in again.");
+        if (!professorId) {
+            setError("Please select a professor.");
             setLoading(false);
             return;
         }
 
         try {
             const formData = new FormData();
-            formData.append('owner_id', userId.toString());
+            // Don't pass owner_id - let backend use session user ID
+            // This ensures authentication is properly validated
             formData.append('name', name);
             if (desc) formData.append('description', desc);
             formData.append('password', password);
+            formData.append('faculty_id', facultyId);
+            formData.append('professor_id', professorId);
+
             if (photoFile) {
                 formData.append('room_photo', photoFile);
             }
@@ -56,7 +118,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
             onCreated();
         } catch (err) {
             console.error("Room creation error:", err);
-            setError(err.message);
+            setError(err.message || "Failed to create room. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -80,6 +142,54 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                             required
                             placeholder="e.g. Final Year Project Team A"
                         />
+                    </div>
+
+                    {/* Faculty and Professor Selection */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-gray-400 mb-1 text-sm">
+                                Faculty <span className="text-red-400">*</span>
+                            </label>
+                            <select
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                                value={facultyId}
+                                onChange={e => setFacultyId(e.target.value)}
+                                required
+                                disabled={loadingFaculties}
+                            >
+                                <option value="">{loadingFaculties ? "Loading..." : "Select Faculty"}</option>
+                                {faculties.map(faculty => (
+                                    <option key={faculty.faculty_id} value={faculty.faculty_id}>
+                                        {faculty.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-gray-400 mb-1 text-sm">
+                                Professor <span className="text-red-400">*</span>
+                            </label>
+                            <select
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                                value={professorId}
+                                onChange={e => setProfessorId(e.target.value)}
+                                required
+                                disabled={!facultyId || loadingProfessors}
+                            >
+                                <option value="">
+                                    {!facultyId 
+                                        ? "Select Faculty First" 
+                                        : loadingProfessors 
+                                        ? "Loading..." 
+                                        : "Select Professor"}
+                                </option>
+                                {professors.map(prof => (
+                                    <option key={prof.professor_id} value={prof.professor_id}>
+                                        {prof.username}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -391,7 +501,7 @@ const ProjectRoomsPage = () => {
 
             {showModal && (
                 <CreateRoomModal
-                    userId={user?.id}
+                    userId={user?.id || user?.user_id}
                     onClose={() => setShowModal(false)}
                     onCreated={() => {
                         setShowModal(false);
