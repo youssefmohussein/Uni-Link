@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/backend';
+const API_BASE_URL = 'http://localhost:/backend';
 
 /**
  * Centralized authentication handler
