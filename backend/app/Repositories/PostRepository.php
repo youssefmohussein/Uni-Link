@@ -152,7 +152,7 @@ class PostRepository extends BaseRepository {
                    COUNT(DISTINCT pi.interaction_id) as likes_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN faculty f ON u.faculty_id = f.faculty_id
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
             LEFT JOIN postinteraction pi ON p.post_id = pi.post_id AND pi.type = 'Like'
             GROUP BY p.post_id
             ORDER BY p.created_at DESC

@@ -61,7 +61,8 @@ class ProjectRoomController extends BaseController {
             $this->success($room, 'Room created successfully', 201);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
     
@@ -80,7 +81,8 @@ class ProjectRoomController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
     
@@ -100,7 +102,8 @@ class ProjectRoomController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
     
@@ -121,7 +124,8 @@ class ProjectRoomController extends BaseController {
             $this->success($room);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
     
@@ -139,7 +143,8 @@ class ProjectRoomController extends BaseController {
             $this->success($room, 'Room updated successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
     
@@ -157,7 +162,8 @@ class ProjectRoomController extends BaseController {
             $this->success(null, 'Room deleted successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int)$e->getCode() : 400;
+            $this->error($e->getMessage(), $code);
         }
     }
 }

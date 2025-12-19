@@ -54,7 +54,9 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
             try {
                 setLoadingProfessors(true);
                 const data = await professorHandler.getProfessorsByFaculty(parseInt(facultyId));
-                setProfessors(data);
+                // Ensure data is always an array
+                const professorsList = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
+                setProfessors(professorsList);
                 // Reset professor selection when faculty changes
                 setProfessorId("");
             } catch (err) {
@@ -183,7 +185,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                                         ? "Loading..." 
                                         : "Select Professor"}
                                 </option>
-                                {professors.map(prof => (
+                                {Array.isArray(professors) && professors.map(prof => (
                                     <option key={prof.professor_id} value={prof.professor_id}>
                                         {prof.username}
                                     </option>
