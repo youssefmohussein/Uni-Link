@@ -8,20 +8,23 @@ use App\Services\ProjectRoomService;
  * 
  * Handles project room operations
  */
-class ProjectRoomController extends BaseController {
+class ProjectRoomController extends BaseController
+{
     private ProjectRoomService $roomService;
-    
-    public function __construct(ProjectRoomService $roomService) {
+
+    public function __construct(ProjectRoomService $roomService)
+    {
         $this->roomService = $roomService;
     }
-    
+
     /**
      * Create room
      */
-    public function create(): void {
+    public function create(): void
+    {
         try {
             $this->requireAuth();
-            
+
             // Handle both JSON and Multipart/Form-Data
             $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
             if (strpos($contentType, 'application/json') !== false) {
@@ -42,122 +45,148 @@ class ProjectRoomController extends BaseController {
                 }
             }
 
-            // Use created_by if provided, otherwise use current user
-            if (!isset($data['owner_id']) && !isset($data['created_by'])) {
-                $data['owner_id'] = $this->getCurrentUserId();
-            } elseif (isset($data['created_by'])) {
-                $data['owner_id'] = $data['created_by'];
+            // Security: Always use the authenticated user ID as the owner_id
+            $currentUserId = $this->getCurrentUserId();
+
+            // Log for debugging
+            if ($currentUserId) {
+                $data['owner_id'] = $currentUserId;
+            } else {
+                // This shouldn't happen due to requireAuth, but if it does, 
+                // we want to catch it early rather than failing with SQL error
+                throw new \Exception('No valid user session found for room creation', 401);
             }
-            
-            // Validate Faculty and Professor
-            if (isset($data['faculty_id'])) {
-                $data['faculty_id'] = (int)$data['faculty_id'];
+
+            // Handle optional fields that might be empty strings from forms
+            // Convert empty strings to NULL to avoid foreign key issues
+            if (isset($data['faculty_id']) && $data['faculty_id'] === '') {
+                $data['faculty_id'] = null;
             }
-            if (isset($data['professor_id'])) {
-                $data['professor_id'] = (int)$data['professor_id'];
+            if (isset($data['professor_id']) && $data['professor_id'] === '') {
+                $data['professor_id'] = null;
             }
-            
-            $room = $this->roomService->createRoom($data);
+
+            // Filter only allowed fields for chat_rooms table to avoid SQL errors
+            $allowedFields = [
+                'name',
+                'description',
+                'password_hash',
+                'owner_id',
+                'photo_url',
+                'is_private',
+                'password',
+                'room_name',
+                'faculty_id',
+                'professor_id'
+            ];
+            $insertData = array_intersect_key($data, array_flip($allowedFields));
+
+            $room = $this->roomService->createRoom($insertData);
             $this->success($room, 'Room created successfully', 201);
-            
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
-    
-    
+
+
     /**
      * Get all rooms
      */
-    public function getAll(): void {
+    public function getAll(): void
+    {
         try {
             $this->requireAuth();
-            
+
             $rooms = $this->roomService->getAllRooms();
-            $this->success([
-                'count' => count($rooms),
-                'data' => $rooms
-            ]);
-            
+            $this->success($rooms);
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
-    
+
     /**
      * Get user rooms
      */
-    public function getUserRooms(): void {
+    public function getUserRooms(): void
+    {
         try {
             $this->requireAuth();
-            
+
             $userId = $this->getCurrentUserId();
             $rooms = $this->roomService->getUserRooms($userId);
-            
-            $this->success([
-                'count' => count($rooms),
-                'data' => $rooms
-            ]);
-            
+
+            $this->success($rooms);
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
-    
+
     /**
      * Get room details
      */
-    public function getRoom(): void {
+    public function getRoom(): void
+    {
         try {
             $this->requireAuth();
-            
-            $roomId = isset($_GET['room_id']) ? (int)$_GET['room_id'] : null;
-            
+
+            $roomId = isset($_GET['room_id']) ? (int) $_GET['room_id'] : null;
+
             if (!$roomId) {
                 throw new \Exception('Room ID is required', 400);
             }
-            
+
             $room = $this->roomService->getRoom($roomId);
             $this->success($room);
-            
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
-    
+
     /**
      * Update room
      */
-    public function update(): void {
+    public function update(): void
+    {
         try {
             $this->requireAuth();
-            
+
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['room_id']);
-            
-            $room = $this->roomService->updateRoom((int)$data['room_id'], $data);
+
+            $room = $this->roomService->updateRoom((int) $data['room_id'], $data);
             $this->success($room, 'Room updated successfully');
-            
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
-    
+
     /**
      * Delete room
      */
-    public function delete(): void {
+    public function delete(): void
+    {
         try {
             $this->requireAuth();
-            
+
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['room_id']);
-            
-            $this->roomService->deleteRoom((int)$data['room_id']);
+
+            $this->roomService->deleteRoom((int) $data['room_id']);
             $this->success(null, 'Room deleted successfully');
-            
+
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
         }
     }
 }

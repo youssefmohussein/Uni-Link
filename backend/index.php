@@ -22,11 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Start session for authentication
-// Using default PHP session configuration for localhost
 if (session_status() === PHP_SESSION_NONE) {
-    // Only set httponly for security, let PHP handle the rest
     ini_set('session.cookie_httponly', '1');
     ini_set('session.cookie_samesite', 'Lax');
+
+    // Set custom error log for debugging
+    $logDir = __DIR__ . '/logs';
+    if (!is_dir($logDir)) {
+        @mkdir($logDir, 0777, true);
+    }
+    if (is_dir($logDir)) {
+        ini_set('log_errors', '1');
+        ini_set('error_log', $logDir . '/debug.log');
+    }
+
     session_start();
 }
 
@@ -58,28 +67,24 @@ $container = require_once __DIR__ . '/config/services.php';
 $routes = require_once __DIR__ . '/config/routes.php';
 
 // Parse request
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 // Remove /backend/index.php or /backend from path
-$requestUri = str_replace('/backend/index.php', '', $requestUri);
-$requestUri = str_replace('/backend', '', $requestUri);
+$requestUri = str_replace(['/backend/index.php', '/backend'], '', $path);
 
 // Ensure path starts with /
 if ($requestUri === '' || $requestUri[0] !== '/') {
     $requestUri = '/' . $requestUri;
 }
 
-// Log request for debugging
-error_log("API Request: $requestMethod $requestUri");
-
 // Match route
 $matched = false;
 
 foreach ($routes as $route => $handler) {
-    list($method, $path) = explode(' ', $route, 2);
+    list($method, $pathPattern) = explode(' ', $route, 2);
 
-    if ($method === $requestMethod && $path === $requestUri) {
+    if ($method === $requestMethod && $pathPattern === $requestUri) {
         list($controllerName, $methodName) = $handler;
 
         try {
@@ -94,7 +99,7 @@ foreach ($routes as $route => $handler) {
                 throw new Exception("Method {$methodName} not found in {$controllerName}");
             }
         } catch (Exception $e) {
-            http_response_code(500);
+            http_response_code($e->getCode() ?: 500);
             echo json_encode([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -107,24 +112,8 @@ foreach ($routes as $route => $handler) {
 // Route not found
 if (!$matched) {
     http_response_code(404);
-    // Only include available routes in debug mode to avoid large responses
-    $debugInfo = [
+    echo json_encode([
         'status' => 'error',
-        'message' => 'Route not found',
-        'requested' => "$requestMethod $requestUri",
-        'raw_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
-    ];
-    
-    // Check if any similar routes exist
-    $similarRoutes = [];
-    foreach (array_keys($routes) as $route) {
-        if (strpos($route, $requestUri) !== false || strpos($requestUri, explode(' ', $route)[1] ?? '') !== false) {
-            $similarRoutes[] = $route;
-        }
-    }
-    if (!empty($similarRoutes)) {
-        $debugInfo['similar_routes'] = $similarRoutes;
-    }
-    
-    echo json_encode($debugInfo);
+        'message' => 'Route not found: ' . "$requestMethod $requestUri"
+    ]);
 }

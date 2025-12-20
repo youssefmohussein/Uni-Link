@@ -31,10 +31,10 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
             try {
                 setLoadingFaculties(true);
                 const data = await facultyHandler.getAllFaculties();
-                setFaculties(data);
+                setFaculties(Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []));
             } catch (err) {
                 console.error("Failed to load faculties:", err);
-                setError("Failed to load faculties. Please refresh the page.");
+                setError(err.message || "Failed to load faculties. Please refresh the page.");
             } finally {
                 setLoadingFaculties(false);
             }
@@ -50,7 +50,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                 setProfessorId("");
                 return;
             }
-            
+
             try {
                 setLoadingProfessors(true);
                 const data = await professorHandler.getProfessorsByFaculty(parseInt(facultyId));
@@ -61,7 +61,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                 setProfessorId("");
             } catch (err) {
                 console.error("Failed to load professors:", err);
-                setError("Failed to load professors for selected faculty.");
+                setError(err.message || "Failed to load professors for selected faculty.");
                 setProfessors([]);
             } finally {
                 setLoadingProfessors(false);
@@ -128,7 +128,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold text-white mb-4">Create Project Room</h2>
                 {error && <div className="bg-red-500/20 text-red-200 p-3 rounded mb-4 text-sm">{error}</div>}
 
@@ -179,14 +179,14 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                                 disabled={!facultyId || loadingProfessors}
                             >
                                 <option value="">
-                                    {!facultyId 
-                                        ? "Select Faculty First" 
-                                        : loadingProfessors 
-                                        ? "Loading..." 
-                                        : "Select Professor"}
+                                    {!facultyId
+                                        ? "Select Faculty First"
+                                        : loadingProfessors
+                                            ? "Loading..."
+                                            : "Select Professor"}
                                 </option>
                                 {Array.isArray(professors) && professors.map(prof => (
-                                    <option key={prof.professor_id} value={prof.professor_id}>
+                                    <option key={prof.user_id} value={prof.user_id}>
                                         {prof.username}
                                     </option>
                                 ))}
@@ -300,12 +300,16 @@ const ProjectRoomsPage = () => {
                 projectRoomHandler.getAllRooms()
             ]);
 
-            setMyRooms(userRoomsData);
+            setMyRooms(Array.isArray(userRoomsData) ? userRoomsData : []);
 
             // Filter all rooms to find ones I'm NOT in
             // Set of my room IDs for fast lookup
-            const myRoomIds = new Set(userRoomsData.map(r => r.room_id));
-            const others = allRoomsData.filter(r => !myRoomIds.has(r.room_id));
+            // Ensure they are arrays before using them
+            const safeUserRooms = Array.isArray(userRoomsData) ? userRoomsData : [];
+            const safeAllRooms = Array.isArray(allRoomsData) ? allRoomsData : [];
+
+            const myRoomIds = new Set(safeUserRooms.map(r => r.room_id));
+            const others = safeAllRooms.filter(r => !myRoomIds.has(r.room_id));
             setOtherRooms(others);
 
         } catch (err) {
@@ -375,7 +379,7 @@ const ProjectRoomsPage = () => {
                         className={`pb-4 px-2 font-semibold transition relative ${activeTab === "my" ? "text-[#58a6ff]" : "text-gray-400 hover:text-white"
                             }`}
                     >
-                        My Rooms ({myRooms.length})
+                        My Rooms ({(Array.isArray(myRooms) ? myRooms : []).length})
                         {activeTab === "my" && (
                             <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#58a6ff] rounded-t-full"></div>
                         )}
@@ -385,7 +389,7 @@ const ProjectRoomsPage = () => {
                         className={`pb-4 px-2 font-semibold transition relative ${activeTab === "other" ? "text-[#58a6ff]" : "text-gray-400 hover:text-white"
                             }`}
                     >
-                        Other Rooms ({otherRooms.length})
+                        Other Rooms ({(Array.isArray(otherRooms) ? otherRooms : []).length})
                         {activeTab === "other" && (
                             <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#58a6ff] rounded-t-full"></div>
                         )}
@@ -399,7 +403,7 @@ const ProjectRoomsPage = () => {
                     </div>
                 ) : (
                     activeTab === "my" ? (
-                        myRooms.length === 0 ? (
+                        (Array.isArray(myRooms) ? myRooms : []).length === 0 ? (
                             <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
                                 <div className="text-6xl mb-4">📭</div>
                                 <h3 className="text-2xl font-bold mb-2">No Rooms Found</h3>
@@ -416,7 +420,7 @@ const ProjectRoomsPage = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {myRooms.map(room => (
+                                {(Array.isArray(myRooms) ? myRooms : []).map(room => (
                                     <div key={room.room_id} className="bg-[#121212] border border-white/5 rounded-2xl p-6 hover:border-accent/50 transition group relative overflow-hidden h-48 flex flex-col justify-end">
                                         {room.photo_url ? (
                                             <>
@@ -453,7 +457,7 @@ const ProjectRoomsPage = () => {
                             </div>
                         )
                     ) : (
-                        otherRooms.length === 0 ? (
+                        (Array.isArray(otherRooms) ? otherRooms : []).length === 0 ? (
                             <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
                                 <div className="text-6xl mb-4">🌍</div>
                                 <h3 className="text-2xl font-bold mb-2">No Other Rooms</h3>
@@ -461,7 +465,7 @@ const ProjectRoomsPage = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {otherRooms.map(room => (
+                                {(Array.isArray(otherRooms) ? otherRooms : []).map(room => (
                                     <div key={room.room_id} className="bg-[#121212]/50 border border-white/5 rounded-2xl p-6 hover:border-white/20 transition group relative overflow-hidden h-48 flex flex-col justify-end grayscale hover:grayscale-0">
                                         {room.photo_url ? (
                                             <>

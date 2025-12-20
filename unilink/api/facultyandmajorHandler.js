@@ -12,7 +12,9 @@ export const getAllFaculties = async () => {
   if (res.status !== "success")
     throw new Error(res.message || "Failed to fetch faculties");
 
-  return res.data ?? [];
+  if (res.data && Array.isArray(res.data)) return res.data;
+  if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+  return Array.isArray(res) ? res : [];
 };
 
 /**

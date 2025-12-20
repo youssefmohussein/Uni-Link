@@ -14,13 +14,17 @@ export const createRoom = async (roomData) => {
 export const getAllRooms = async () => {
     const res = await apiRequest("getAllRooms", "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch rooms");
-    return res.data;
+    if (res.data && Array.isArray(res.data)) return res.data;
+    if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+    return Array.isArray(res) ? res : [];
 };
 
 export const getUserRooms = async () => {
     const res = await apiRequest("getUserRooms", "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch your rooms");
-    return res.data;
+    if (res.data && Array.isArray(res.data)) return res.data;
+    if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+    return Array.isArray(res) ? res : [];
 };
 
 export const getRoomById = async (room_id) => {
