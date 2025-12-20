@@ -71,11 +71,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     /**
      * Find users by role with pagination
+     * Returns user_id aliased as role-specific ID (admin_id, student_id, professor_id)
      * 
      * @param string $role Role (case insensitive)
      * @param int|null $limit Limit
      * @param int $offset Offset
-     * @return array Array of users with that role
+     * @return array Array of users with that role and role-specific data
      */
     public function findByRole(string $role, ?int $limit = null, int $offset = 0): array
     {
@@ -85,8 +86,108 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             default => $role
         };
 
-        return $this->findWhere(['role' => $dbRole], 'user_id ASC', $limit, $offset);
+        // Build query based on role to alias user_id as role-specific ID
+        switch ($dbRole) {
+            case 'ADMIN':
+                $sql = "
+                    SELECT 
+                        u.user_id,
+                        u.user_id as admin_id,
+                        u.username,
+                        u.email,
+                        u.phone,
+                        u.role,
+                        u.faculty_id,
+                        u.major_id,
+                        u.profile_picture,
+                        u.bio,
+                        u.created_at,
+                        u.updated_at,
+                        a.permissions,
+                        'Active' as status
+                    FROM users u
+                    LEFT JOIN admins a ON u.user_id = a.user_id
+                    WHERE u.role = ?
+                    ORDER BY u.user_id ASC
+                ";
+                break;
+
+            case 'STUDENT':
+                $sql = "
+                    SELECT 
+                        u.user_id,
+                        u.user_id as student_id,
+                        u.username,
+                        u.email,
+                        u.phone,
+                        u.role,
+                        u.faculty_id,
+                        u.major_id,
+                        u.profile_picture,
+                        u.bio,
+                        u.created_at,
+                        u.updated_at,
+                        s.year,
+                        s.gpa,
+                        s.points,
+                        s.enrollment_date,
+                        f.name as faculty_name,
+                        m.name as major_name
+                    FROM users u
+                    LEFT JOIN students s ON u.user_id = s.user_id
+                    LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+                    LEFT JOIN majors m ON u.major_id = m.major_id
+                    WHERE u.role = ?
+                    ORDER BY u.user_id ASC
+                ";
+                break;
+
+            case 'PROFESSOR':
+                $sql = "
+                    SELECT 
+                        u.user_id,
+                        u.user_id as professor_id,
+                        u.username,
+                        u.email,
+                        u.phone,
+                        u.role,
+                        u.faculty_id,
+                        u.major_id,
+                        u.profile_picture,
+                        u.bio,
+                        u.created_at,
+                        u.updated_at,
+                        p.academic_rank,
+                        p.department,
+                        p.office_location,
+                        p.office_hours,
+                        f.name as faculty_name,
+                        m.name as major_name
+                    FROM users u
+                    LEFT JOIN professors p ON u.user_id = p.user_id
+                    LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+                    LEFT JOIN majors m ON u.major_id = m.major_id
+                    WHERE u.role = ?
+                    ORDER BY u.user_id ASC
+                ";
+                break;
+
+            default:
+                // Fallback to simple query
+                return $this->findWhere(['role' => $dbRole], 'user_id ASC', $limit, $offset);
+        }
+
+        // Add pagination
+        if ($limit !== null) {
+            $sql .= " LIMIT ? OFFSET ?";
+            $params = [$dbRole, $limit, $offset];
+        } else {
+            $params = [$dbRole];
+        }
+
+        return $this->query($sql, $params);
     }
+
 
     /**
      * Create new user
