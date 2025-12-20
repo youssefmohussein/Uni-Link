@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../Components/Posts/Header";
 import LeftSidebar from "../../Components/Posts/LeftSidebar";
 import RightSidebar from "../../Components/Posts/RightSidebar";
@@ -242,9 +242,17 @@ const PostPage = () => {
   };
 
   // Determine which posts to display
-  const displayPosts = searchQuery ? searchResults : posts;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sharedPostId = searchParams.get('id');
+
+  let displayPosts = searchQuery ? searchResults : posts;
+
+  if (sharedPostId) {
+    displayPosts = displayPosts.filter(p => p.post_id == sharedPostId);
+  }
 
   const filteredPosts = displayPosts.filter((post) => {
+    if (sharedPostId) return true;
     if (filter === "all") return true;
     if (filter === "trending") return post.isTrending;
     return post.category === filter;

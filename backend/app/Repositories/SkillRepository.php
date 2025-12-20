@@ -75,7 +75,7 @@ class SkillRepository extends BaseRepository {
      * @return array Array of categories
      */
     public function getAllCategories(): array {
-        return $this->query("SELECT * FROM skillcategory ORDER BY category_name");
+        return $this->query("SELECT * FROM skill_categories ORDER BY category_name");
     }
 
     /**

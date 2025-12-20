@@ -187,8 +187,8 @@ class PostController extends BaseController {
                 $fileTmpName = $_FILES['media']['tmp_name'][$i];
                 $fileType = $_FILES['media']['type'][$i];
                 
-                // Determine media type
-                $mediaType = strpos($fileType, 'image') !== false ? 'Image' : 'Video';
+                // Determine media type (uppercase for ENUM)
+                $mediaType = strpos($fileType, 'image') !== false ? 'IMAGE' : 'VIDEO';
                 
                 // Generate unique filename
                 $extension = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -202,7 +202,7 @@ class PostController extends BaseController {
                     
                     $db = $this->postService->getPostRepo()->getDb();
                     $stmt = $db->prepare("
-                        INSERT INTO media (post_id, media_type, media_path, uploaded_at) 
+                        INSERT INTO post_media (post_id, type, path, created_at) 
                         VALUES (?, ?, ?, NOW())
                     ");
                     $stmt->execute([$postId, $mediaType, $relativePath]);

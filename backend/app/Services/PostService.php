@@ -51,8 +51,12 @@ class PostService extends BaseService {
         $data['content'] = $this->sanitize($data['content']);
         $data['created_at'] = date('Y-m-d H:i:s');
         
+        // Filter out fields that are not in the posts table (like faculty_id)
+        $validFields = ['author_id', 'content', 'category', 'status', 'visibility', 'created_at', 'updated_at'];
+        $insertData = array_intersect_key($data, array_flip($validFields));
+        
         // Create
-        $postId = $this->postRepo->create($data);
+        $postId = $this->postRepo->create($insertData);
         
         // Return the created post with post_id
         $post = $this->postRepo->find($postId);

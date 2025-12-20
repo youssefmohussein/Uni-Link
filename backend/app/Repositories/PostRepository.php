@@ -25,7 +25,7 @@ class PostRepository extends BaseRepository {
      */
     public function findByUser(int $userId, ?int $limit = null): array {
         $sql = "
-            SELECT p.*, u.username, u.profile_image,
+            SELECT p.*, u.username, u.profile_picture,
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
@@ -60,7 +60,7 @@ class PostRepository extends BaseRepository {
      */
     public function findByCategory(string $category): array {
         return $this->query("
-            SELECT p.*, u.username, u.profile_image,
+            SELECT p.*, u.username, u.profile_picture,
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
@@ -80,7 +80,7 @@ class PostRepository extends BaseRepository {
     public function search(string $query): array {
         $searchTerm = "%{$query}%";
         return $this->query("
-            SELECT p.*, u.username, u.profile_image
+            SELECT p.*, u.username, u.profile_picture
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
             WHERE p.content LIKE ? OR p.category LIKE ?
@@ -101,9 +101,8 @@ class PostRepository extends BaseRepository {
             return null;
         }
         
-        // Get media
         $media = $this->query("
-            SELECT * FROM postmedia WHERE post_id = ?
+            SELECT media_id, type as media_type, path as media_path FROM post_media WHERE post_id = ?
         ", [$postId]);
         
         $post['media'] = $media;
@@ -120,7 +119,7 @@ class PostRepository extends BaseRepository {
      */
     public function getAllWithUserInfo(?int $limit = null, int $offset = 0): array {
         $sql = "
-            SELECT p.*, u.username, u.profile_image,
+            SELECT p.*, u.username, u.profile_picture,
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
@@ -147,14 +146,14 @@ class PostRepository extends BaseRepository {
         $sql = "
             SELECT p.*, 
                    u.username as author_name,
-                   u.profile_image,
-                   f.faculty_name,
+                   u.profile_picture,
+                   f.name as faculty_name,
                    COUNT(DISTINCT pi.interaction_id) as likes_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN faculty f ON u.faculty_id = f.faculty_id
-            LEFT JOIN postinteraction pi ON p.post_id = pi.post_id AND pi.type = 'Like'
-            GROUP BY p.post_id
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+            LEFT JOIN post_interactions pi ON p.post_id = pi.post_id AND pi.type = 'Like'
+            GROUP BY p.post_id, u.username, u.profile_picture, f.name
             ORDER BY p.created_at DESC
         ";
         
@@ -167,8 +166,8 @@ class PostRepository extends BaseRepository {
         // Get media for each post
         foreach ($posts as &$post) {
             $media = $this->query("
-                SELECT media_id, media_type, media_path 
-                FROM media 
+                SELECT media_id, type as media_type, path as media_path 
+                FROM post_media 
                 WHERE post_id = ?
             ", [$post['post_id']]);
             
