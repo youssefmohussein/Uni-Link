@@ -27,11 +27,15 @@ class ProjectRoomController extends BaseController
 
             // Handle both JSON and Multipart/Form-Data
             $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            $data = [];
             if (strpos($contentType, 'application/json') !== false) {
                 $data = $this->getJsonInput();
-            } else {
-                $data = $_POST;
             }
+
+            // Merge with $_POST for multipart/form-data support
+            $data = array_merge($data, $_POST);
+
+            error_log("Incoming request data: " . json_encode($data));
 
             // Handle File Upload
             if (isset($_FILES['room_photo']) && $_FILES['room_photo']['error'] === UPLOAD_ERR_OK) {
@@ -55,6 +59,11 @@ class ProjectRoomController extends BaseController
                 // This shouldn't happen due to requireAuth, but if it does, 
                 // we want to catch it early rather than failing with SQL error
                 throw new \Exception('No valid user session found for room creation', 401);
+            }
+
+            // Handle room_name as name fallback (for legacy compatibility)
+            if (!isset($data['name']) && isset($data['room_name'])) {
+                $data['name'] = $data['room_name'];
             }
 
             // Handle optional fields that might be empty strings from forms
@@ -81,10 +90,19 @@ class ProjectRoomController extends BaseController
             ];
             $insertData = array_intersect_key($data, array_flip($allowedFields));
 
+            // Handle is_private specifically (FormData sends strings)
+            if (isset($insertData['is_private'])) {
+                $insertData['is_private'] = ($insertData['is_private'] === 'true' || $insertData['is_private'] === '1' || $insertData['is_private'] === 1) ? 1 : 0;
+            }
+
+            error_log("Filtering complete. Data for repository: " . json_encode($insertData));
+
             $room = $this->roomService->createRoom($insertData);
             $this->success($room, 'Room created successfully', 201);
 
         } catch (\Exception $e) {
+            error_log("Room creation failed: " . $e->getMessage());
+            error_log("Payload: " . json_encode($data));
             $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 400);
         }
@@ -183,6 +201,28 @@ class ProjectRoomController extends BaseController
 
             $this->roomService->deleteRoom((int) $data['room_id']);
             $this->success(null, 'Room deleted successfully');
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
+
+    /**
+     * Join room with password
+     */
+    public function join(): void
+    {
+        try {
+            $this->requireAuth();
+
+            $data = $this->getJsonInput();
+            $this->validateRequired($data, ['room_id', 'password']);
+
+            $userId = $this->getCurrentUserId();
+            $this->roomService->joinRoom((int) $data['room_id'], $userId, $data['password']);
+
+            $this->success(null, 'Welcome to the room!');
 
         } catch (\Exception $e) {
             $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;

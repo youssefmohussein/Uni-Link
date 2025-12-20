@@ -21,6 +21,7 @@ import CollectionsPage from "./Pages/Collections/Collections";
 import ProfessorPage from "./Pages/Professor/ProfessorPage";
 import ProjectRoomsPage from "./Pages/ProjectRooms/ProjectRoomsPage";
 import ProjectChatPage from "./Pages/ProjectRooms/ProjectChatPage";
+import { Toaster } from "react-hot-toast";
 import "./index.css"; // Must be at the top
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
   return (
     <>
       {isLoading && <LoadingPage onComplete={() => setIsLoading(false)} />}
+      <Toaster position="top-center" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
