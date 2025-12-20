@@ -48,13 +48,50 @@ class FacultyController extends BaseController
     public function getById(): void
     {
         try {
-            $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+            $idOrName = isset($_GET['id']) ? $_GET['id'] : null;
 
-            if (!$id) {
-                throw new \Exception('Faculty ID is required', 400);
+            if (!$idOrName) {
+                throw new \Exception('Faculty ID or name is required', 400);
             }
 
-            $faculty = $this->facultyService->getFacultyById($id);
+            if (is_numeric($idOrName)) {
+                $faculty = $this->facultyService->getFacultyById((int) $idOrName);
+            } else {
+                // Handle name-based slug (e.g., "Faculty-of-Al-Alsun")
+                $slug = urldecode($idOrName);
+
+                // 1. Try search with the provided slug as-is (e.g., "Faculty-of-Al-Alsun")
+                $faculty = $this->facultyService->getFacultyByName($slug);
+
+                if (!$faculty) {
+                    // 2. Strip prefix if present (e.g., "Faculty-of-Al-Alsun" -> "Al-Alsun")
+                    $nameToSearch = $slug;
+                    if (stripos($slug, 'Faculty-of-') === 0) {
+                        $nameToSearch = substr($slug, 11);
+                    }
+
+                    // Try searching for the stripped name
+                    $faculty = $this->facultyService->getFacultyByName($nameToSearch);
+
+                    if (!$faculty) {
+                        // 3. Try replacing hyphens with spaces (e.g., "Al-Alsun" -> "Al Alsun")
+                        $nameWithSpaces = str_replace('-', ' ', $nameToSearch);
+                        $faculty = $this->facultyService->getFacultyByName($nameWithSpaces);
+
+                        if (!$faculty) {
+                            // 4. Try fuzzy matching with wildcards (e.g., "Al%Alsun" matches "Al-Alsun")
+                            $fuzzyTerm = str_replace([' ', '-'], '%', $nameToSearch);
+                            $faculty = $this->facultyService->getFacultyByNameFuzzy($fuzzyTerm);
+                        }
+                    }
+                }
+
+                if (!$faculty) {
+                    // 5. Final fallback: try partial naming match on full slug with wildcards
+                    $fuzzySlug = str_replace([' ', '-'], '%', $slug);
+                    $faculty = $this->facultyService->getFacultyByNameFuzzy($fuzzySlug);
+                }
+            }
 
             if (!$faculty) {
                 throw new \Exception('Faculty not found', 404);
@@ -64,7 +101,7 @@ class FacultyController extends BaseController
             $faculty = array_change_key_case($faculty, CASE_LOWER);
 
             // Add debug info
-            $faculty['_debug_id_received'] = $id;
+            $faculty['_debug_param_received'] = $idOrName;
             $faculty['_debug_timestamp'] = time();
 
             $this->success($faculty);

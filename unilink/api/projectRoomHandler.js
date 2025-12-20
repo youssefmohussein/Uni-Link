@@ -63,3 +63,9 @@ export const joinRoom = async (roomId, password) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to join room");
     return res;
 };
+
+export const getRoomMembers = async (room_id) => {
+    const res = await apiRequest(`getRoomMembers?room_id=${room_id}`, "GET");
+    if (res.status !== "success") throw new Error(res.message || "Failed to fetch room members");
+    return res.data;
+};

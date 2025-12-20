@@ -14,7 +14,7 @@ const HeroSection = ({ className = '', style = {} }) => {
                 <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
                     Your College Journey, Simplified.
                     <br />
-                    <span className="text-[#008080]"> The all-in-one platform where students connect, collaborate, and conquer projects.</span>
+                    <span className="text-accent"> The all-in-one platform where students connect, collaborate, and conquer projects.</span>
                 </p>
                 <GlassCard className="inline-block px-8 py-4 cursor-pointer">
                     <span className="text-lg font-semibold tracking-wide"><a href="/login">Get Started</a></span>

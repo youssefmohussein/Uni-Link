@@ -17,7 +17,7 @@ export default function StatsCard({ label, value, icon: Icon, color, sparklineDa
             <CountUp end={value} duration={1.5} separator="," />
           </h2>
         </div>
-        <Icon className={`text-3xl ${color}`} />
+        <Icon className={`text-3xl ${color.startsWith('admin-') ? '' : color}`} style={color.startsWith('admin-') ? { color: `var(--${color})` } : {}} />
       </div>
       {sparklineData && (
         <div className="mt-3">

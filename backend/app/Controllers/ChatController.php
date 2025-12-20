@@ -15,28 +15,31 @@ use App\Utils\ResponseHandler;
  * Handles chat room and messaging API endpoints
  * Uses Chain of Responsibility pattern for message processing
  */
-class ChatController extends BaseController {
+class ChatController extends BaseController
+{
     private ChatRepository $chatRepo;
     private ProjectRoomRepository $roomRepo;
     private UserRepository $userRepo;
     private NotificationService $notificationService;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         parent::__construct();
         $this->chatRepo = new ChatRepository();
         $this->roomRepo = new ProjectRoomRepository();
         $this->userRepo = new UserRepository();
         $this->notificationService = new NotificationService();
     }
-    
+
     /**
      * Send a message (uses Chain of Responsibility)
      * POST /api/chat/send
      */
-    public function sendMessage(): void {
+    public function sendMessage(): void
+    {
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
-        
+
         // Prepare message data
         $messageData = [
             'room_id' => $_POST['room_id'] ?? null,
@@ -45,111 +48,114 @@ class ChatController extends BaseController {
             'message_type' => $_POST['message_type'] ?? 'TEXT',
             'file_path' => $_POST['file_path'] ?? null
         ];
-        
+
         // Build the Chain of Responsibility
         $validation = new ValidationHandler();
         $permission = new PermissionHandler($this->roomRepo);
         $mention = new MentionHandler($this->userRepo, $this->notificationService);
         $persistence = new PersistenceHandler($this->chatRepo, $this->notificationService);
-        
+
         $validation->setNext($permission)
-                  ->setNext($mention)
-                  ->setNext($persistence);
-        
+            ->setNext($mention)
+            ->setNext($persistence);
+
         // Process message through the chain
         $result = $validation->handle($messageData);
-        
+
         if (isset($result['error'])) {
             ResponseHandler::error($result['error'], 400);
         } else {
             ResponseHandler::success($result);
         }
     }
-    
+
     /**
      * Get messages for a room
      * GET /api/chat/rooms/:id/messages
      */
-    public function getRoomMessages(): void {
+    public function getRoomMessages(): void
+    {
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
-        
+
         $roomId = $_GET['room_id'] ?? $_GET['id'] ?? null;
-        
+
         if (!$roomId) {
             ResponseHandler::error('Room ID is required', 400);
             return;
         }
-        
+
         // Verify user is a member of the room
         if (!$this->roomRepo->isUserMember($roomId, $userId)) {
             ResponseHandler::error('You are not a member of this room', 403);
             return;
         }
-        
-        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
-        $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
-        
+
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
+        $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
+
         $messages = $this->chatRepo->getRoomMessages($roomId, $limit, $offset);
-        
+
         ResponseHandler::success([
             'messages' => $messages,
             'count' => count($messages),
             'room_id' => $roomId
         ]);
     }
-    
+
     /**
      * Get message count for a room
      * GET /api/chat/rooms/:id/message-count
      */
-    public function getMessageCount(): void {
+    public function getMessageCount(): void
+    {
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
-        
+
         $roomId = $_GET['room_id'] ?? $_GET['id'] ?? null;
-        
+
         if (!$roomId) {
             ResponseHandler::error('Room ID is required', 400);
             return;
         }
-        
+
         // Verify user is a member of the room
         if (!$this->roomRepo->isUserMember($roomId, $userId)) {
             ResponseHandler::error('You are not a member of this room', 403);
             return;
         }
-        
+
         $count = $this->chatRepo->getRoomMessageCount($roomId);
-        
+
         ResponseHandler::success([
             'message_count' => $count,
             'room_id' => $roomId
         ]);
     }
-    
+
     /**
      * Delete a message
      * DELETE /api/chat/messages/:id
      */
-    public function deleteMessage(): void {
+    public function deleteMessage(): void
+    {
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
-        
+
         $messageId = $_POST['message_id'] ?? $_GET['id'] ?? null;
-        
+
         if (!$messageId) {
             ResponseHandler::error('Message ID is required', 400);
             return;
         }
-        
+
         // Get message to verify ownership
         $message = $this->chatRepo->findById($messageId);
         if (!$message) {
             ResponseHandler::error('Message not found', 404);
             return;
         }
-        
+
         // Only sender or room admin can delete
         if ($message['sender_id'] != $userId) {
             // Check if user is room admin
@@ -159,9 +165,9 @@ class ChatController extends BaseController {
                 return;
             }
         }
-        
+
         $success = $this->chatRepo->deleteMessage($messageId);
-        
+
         if ($success) {
             ResponseHandler::success(['message' => 'Message deleted successfully']);
         } else {

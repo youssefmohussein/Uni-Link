@@ -4,7 +4,7 @@ import { FaChartLine, FaGripHorizontal, FaUsers, FaCog, FaPlug, FaShieldAlt } fr
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = '0, 128, 128';
+const DEFAULT_GLOW_COLOR = '88, 166, 255';
 const MOBILE_BREAKPOINT = 768;
 
 const cardData = [
@@ -14,7 +14,7 @@ const cardData = [
         description: 'Track user behavior and performance metrics',
         label: 'Insights',
         icon: FaChartLine,
-        iconColor: '#00CED1'
+        iconColor: '#58a6ff'
     },
     {
         color: 'rgba(0, 0, 0, 0.2)',
@@ -22,7 +22,7 @@ const cardData = [
         description: 'Centralized data view at a glance',
         label: 'Overview',
         icon: FaGripHorizontal,
-        iconColor: '#20B2AA'
+        iconColor: '#58a6ff'
     },
     {
         color: 'rgba(0, 0, 0, 0.2)',
@@ -30,7 +30,7 @@ const cardData = [
         description: 'Work together seamlessly in real-time',
         label: 'Teamwork',
         icon: FaUsers,
-        iconColor: '#48D1CC'
+        iconColor: '#58a6ff'
     },
     {
         color: 'rgba(0, 0, 0, 0.2)',
@@ -38,7 +38,7 @@ const cardData = [
         description: 'Streamline workflows with smart tools',
         label: 'Efficiency',
         icon: FaCog,
-        iconColor: '#40E0D0'
+        iconColor: '#58a6ff'
     },
     {
         color: 'rgba(0, 0, 0, 0.2)',
@@ -46,7 +46,7 @@ const cardData = [
         description: 'Connect your favorite tools effortlessly',
         label: 'Connectivity',
         icon: FaPlug,
-        iconColor: '#00CED1'
+        iconColor: '#58a6ff'
     },
     {
         color: 'rgba(0, 0, 0, 0.2)',
@@ -54,7 +54,7 @@ const cardData = [
         description: 'Enterprise-grade protection for your data',
         label: 'Protection',
         icon: FaShieldAlt,
-        iconColor: '#5F9EA0'
+        iconColor: '#58a6ff'
     }
 ];
 
@@ -516,9 +516,9 @@ const MagicBento = ({
             --border-color: rgba(255, 255, 255, 0.15);
             --background-dark: rgba(0, 0, 0, 0.2);
             --white: hsl(0, 0%, 100%);
-            --teal-primary: rgba(0, 128, 128, 1);
-            --teal-glow: rgba(0, 128, 128, 0.3);
-            --teal-border: rgba(0, 128, 128, 0.5);
+            --teal-primary: rgba(88, 166, 255, 1);
+            --teal-glow: rgba(88, 166, 255, 0.3);
+            --teal-border: rgba(88, 166, 255, 0.5);
           }
           
           .card-responsive {
@@ -562,7 +562,7 @@ const MagicBento = ({
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.125);
             box-shadow: 
-              0 8px 32px 0 rgba(0, 128, 128, 0.1),
+              0 8px 32px 0 rgba(88, 166, 255, 0.1),
               inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
           }
           
@@ -605,10 +605,10 @@ const MagicBento = ({
           
           .card--border-glow:hover {
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(0, 128, 128, 0.3);
+            border-color: rgba(88, 166, 255, 0.3);
             box-shadow: 
-              0 8px 32px 0 rgba(0, 128, 128, 0.2),
-              0 0 40px rgba(0, 128, 128, 0.15),
+              0 8px 32px 0 rgba(88, 166, 255, 0.2),
+              0 0 40px rgba(88, 166, 255, 0.15),
               inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
           }
           
@@ -639,7 +639,7 @@ const MagicBento = ({
           }
           
           .particle-container:hover {
-            box-shadow: 0 4px 20px rgba(0, 128, 128, 0.2), 0 0 30px rgba(0, 128, 128, 0.2);
+            box-shadow: 0 4px 20px rgba(88, 166, 255, 0.2), 0 0 30px rgba(88, 166, 255, 0.2);
           }
           
           .text-clamp-1 {

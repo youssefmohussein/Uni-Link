@@ -104,14 +104,21 @@ const FacultiesPage = () => {
                             >
                                 <div className={`w-full flex items-center ${isEven ? 'justify-end' : 'justify-start'}`}>
                                     <GlassCard className={`p-8 max-w-2xl shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-500 ${isEven ? 'text-left' : 'text-left'}`}>
-                                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-[#008080] to-white/70 leading-tight">
+                                        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-accent to-white/70 leading-tight">
                                             {faculty.name || faculty.faculty_name || `Faculty ${index + 1}`}
                                         </h2>
 
                                         <div className="flex flex-col sm:flex-row gap-4 mb-8">
                                             <button
-                                                onClick={() => navigate(`/faculty/${faculty.faculty_id}`)}
-                                                className="bg-gradient-to-r from-[#008080] to-[#00a0a0] hover:from-[#006666] hover:to-[#008080] text-white font-bold py-3 px-8 rounded-full text-base transition-all shadow-[0_0_30px_rgba(0,128,128,0.5)] hover:shadow-[0_0_50px_rgba(0,128,128,0.8)] text-center transform hover:scale-105 duration-300"
+                                                onClick={() => {
+                                                    let name = faculty.name || '';
+                                                    let slug = name.replace(/\s+/g, '-');
+                                                    if (!slug.startsWith('Faculty-of-')) {
+                                                        slug = `Faculty-of-${slug}`;
+                                                    }
+                                                    navigate(`/faculty/${encodeURIComponent(slug)}`);
+                                                }}
+                                                className="bg-accent hover:bg-accent-hover text-white font-bold py-3 px-8 rounded-full text-base transition-all shadow-[0_0_30px_rgba(88,166,255,0.5)] hover:shadow-[0_0_50px_rgba(88,166,255,0.8)] text-center transform hover:scale-105 duration-300"
                                             >
                                                 Learn More
                                             </button>
@@ -119,22 +126,22 @@ const FacultiesPage = () => {
 
                                         <div className="flex items-center justify-between gap-8 border-t border-white/10 pt-6">
                                             <div className="group relative cursor-default flex-1 text-center">
-                                                <div className="text-3xl font-bold text-[#008080] group-hover:scale-110 transition-transform duration-300">
+                                                <div className="text-3xl font-bold text-accent group-hover:scale-110 transition-transform duration-300">
                                                     {faculty.major_count || 0}
                                                 </div>
                                                 <div className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">Majors</div>
 
                                                 {/* Enhanced Majors Hover Tooltip */}
                                                 {faculty.major_names && (
-                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-64 p-6 bg-gradient-to-br from-gray-900 to-black border-2 border-[#008080]/40 rounded-3xl backdrop-blur-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 z-50 shadow-[0_25px_60px_rgba(0,128,128,0.4)] pointer-events-none">
-                                                        <div className="text-[#008080] font-bold mb-3 text-sm uppercase tracking-wider border-b border-[#008080]/20 pb-2 flex items-center gap-2">
-                                                            <span className="w-2 h-2 rounded-full bg-[#008080] animate-pulse"></span>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-64 p-6 bg-gradient-to-br from-gray-900 to-black border-2 border-accent/40 rounded-3xl backdrop-blur-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 z-50 shadow-[0_25px_60px_rgba(88,166,255,0.4)] pointer-events-none">
+                                                        <div className="text-accent font-bold mb-3 text-sm uppercase tracking-wider border-b border-accent/20 pb-2 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
                                                             Specializations
                                                         </div>
                                                         <div className="space-y-2">
                                                             {String(faculty.major_names || '').split(',').map(m => m.trim()).filter(m => m).slice(0, 6).map((major, idx) => (
                                                                 <div key={idx} className="text-gray-300 text-sm flex items-center gap-3 p-1">
-                                                                    <div className="w-2 h-2 rounded-full bg-[#008080] shadow-lg shadow-[#008080]/50"></div>
+                                                                    <div className="w-2 h-2 rounded-full bg-accent shadow-lg shadow-accent/50"></div>
                                                                     <span className="font-medium">{major}</span>
                                                                 </div>
                                                             ))}
@@ -145,7 +152,7 @@ const FacultiesPage = () => {
                                                             )}
                                                         </div>
                                                         {/* Enhanced Arrow */}
-                                                        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-gray-900 to-black border-r-2 border-b-2 border-[#008080]/40 rotate-45"></div>
+                                                        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-gray-900 to-black border-r-2 border-b-2 border-accent/40 rotate-45"></div>
                                                     </div>
                                                 )}
                                             </div>
@@ -173,7 +180,7 @@ const FacultiesPage = () => {
                             <p className="text-xl text-gray-300 mb-10">
                                 Explore all our faculties and discover where your passion leads you.
                             </p>
-                            <button className="bg-[#008080] hover:bg-[#006666] text-white font-bold py-4 px-10 rounded-full text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
+                            <button className="bg-accent hover:bg-accent-hover text-white font-bold py-4 px-10 rounded-full text-xl transition-all shadow-[0_0_20px_rgba(88,166,255,0.5)] hover:shadow-[0_0_40px_rgba(88,166,255,0.7)]">
                                 Apply Now
                             </button>
                         </GlassCard>
@@ -190,11 +197,11 @@ const FacultiesPage = () => {
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #008080;
+                    background: #58a6ff;
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #00a0a0;
+                    background: #3b82f6;
                 }
             `}</style>
         </div>

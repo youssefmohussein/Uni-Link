@@ -20,29 +20,6 @@ const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch, hideSha
           </span>
         </Link>
 
-        {/* Center: Search Bar */}
-        <div className="relative flex-grow max-w-lg hidden sm:flex mx-8">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
-          <input
-            type="text"
-            placeholder="Search posts by content or hashtags..."
-            value={searchQuery || ""}
-            onChange={(e) => onSearch?.(e.target.value)}
-            className="w-full bg-[#0d1117]/80 text-[#c9d1d9] rounded-full py-2.5 pl-11 pr-10 
-            focus:outline-none focus:ring-2 focus:ring-[#58a6ff] 
-            transition-all placeholder:text-gray-500 border border-[#21262d] hover:border-[#30363d]"
-          />
-          {searchQuery && (
-            <button
-              onClick={onClearSearch}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              aria-label="Clear search"
-            >
-              <FiX className="text-lg" />
-            </button>
-          )}
-        </div>
-
         {/* Right: Actions */}
         <div className="flex items-center space-x-4">
 

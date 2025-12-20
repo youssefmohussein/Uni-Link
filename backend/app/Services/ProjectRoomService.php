@@ -173,13 +173,8 @@ class ProjectRoomService extends BaseService
             throw new \Exception('Room not found', 404);
         }
 
-        return $this->transaction(function () use ($roomId) {
-            // Delete memberships first (cascade)
-            $this->roomRepo->deleteMemberships($roomId);
-
-            // Delete room
-            return $this->roomRepo->delete($roomId);
-        }, $this->roomRepo);
+        // Rely on DB-level ON DELETE CASCADE for room_members and chat_messages
+        return $this->roomRepo->delete($roomId);
     }
 
     /**
@@ -197,5 +192,16 @@ class ProjectRoomService extends BaseService
         }
 
         return $room;
+    }
+
+    /**
+     * Get room members
+     * 
+     * @param int $roomId Room ID
+     * @return array Array of members
+     */
+    public function getRoomMembers(int $roomId): array
+    {
+        return $this->roomRepo->findMembers($roomId);
     }
 }

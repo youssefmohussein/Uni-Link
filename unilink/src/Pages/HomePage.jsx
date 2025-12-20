@@ -73,7 +73,7 @@ const HomePage = () => {
                             clickEffect={true}
                             spotlightRadius={300}
                             particleCount={12}
-                            glowColor="0, 128, 128"
+                            glowColor="88, 166, 255"
                         />
                     </section>
 
@@ -84,7 +84,7 @@ const HomePage = () => {
                             <p className="text-lg sm:text-xl text-gray-300 mb-8 md:mb-10">
                                 Join thousands of students and professors using Uni-Link today.
                             </p>
-                            <button className="cursor-pointer bg-[#008080] hover:bg-[#006666] text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(0,128,128,0.5)] hover:shadow-[0_0_40px_rgba(0,128,128,0.7)]">
+                            <button className="cursor-pointer bg-accent hover:bg-accent-alt text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(88,166,255,0.5)] hover:shadow-[0_0_40px_rgba(88,166,255,0.7)]">
                                 <a href="/login">Join Now</a>
                             </button>
                         </GlassCard>
@@ -126,10 +126,10 @@ const HomePage = () => {
                             <div>
                                 <h5 className="text-white font-bold mb-4 md:mb-6">Explore</h5>
                                 <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Home</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">About Us</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Features</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Community</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Home</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">About Us</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Features</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Community</a></li>
                                 </ul>
                             </div>
 
@@ -137,10 +137,10 @@ const HomePage = () => {
                             <div>
                                 <h5 className="text-white font-bold mb-4 md:mb-6">Resources</h5>
                                 <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Documentation</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Help Center</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Guidelines</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Privacy Policy</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Documentation</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Help Center</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Guidelines</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Privacy Policy</a></li>
                                 </ul>
                             </div>
 
@@ -148,10 +148,10 @@ const HomePage = () => {
                             <div>
                                 <h5 className="text-white font-bold mb-4 md:mb-6">Connect</h5>
                                 <ul className="space-y-3 md:space-y-4 text-gray-400 text-sm">
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Twitter</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">LinkedIn</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">Instagram</a></li>
-                                    <li><a href="#" className="hover:text-[#008080] transition-colors">GitHub</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Twitter</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">LinkedIn</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">Instagram</a></li>
+                                    <li><a href="#" className="hover:text-accent transition-colors">GitHub</a></li>
                                 </ul>
                             </div>
                         </div>

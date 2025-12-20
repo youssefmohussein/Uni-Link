@@ -152,21 +152,17 @@ function ProfilePageUser() {
         {/* Galaxy animation provides the starry effect */}
       </div>
 
-      {/* Animated stars overlay */}
+      {/* Animated stars overlay - Static purple/blue galaxy like About Us */}
       <div className="fixed inset-0 z-0 mix-blend-screen opacity-60">
         <Galaxy
           transparent={true}
-          hueShift={0}
-          density={0.2}
-          glowIntensity={0.3}
-          saturation={0.0}
-          speed={0.05}
-          mouseRepulsion={true}
-          repulsionStrength={0.5}
-          twinkleIntensity={1.0}
+          hueShift={260}
+          density={1.5}
+          glowIntensity={0.1}
+          saturation={0.6}
+          speed={0.15}
+          mouseRepulsion={false}
           disableAnimation={false}
-          rotationSpeed={0.005}
-          starSpeed={0.2}
         />
       </div>
 
@@ -248,8 +244,8 @@ function ProfilePageUser() {
                 </div>
 
                 {/* Posts */}
-                <PostsSection 
-                  posts={posts} 
+                <PostsSection
+                  posts={posts}
                   onRefresh={() => fetchProfileData(currentUserId)}
                   userId={currentUserId}
                 />

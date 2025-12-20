@@ -70,7 +70,7 @@ export default function AdminDashboardPage() {
       <div className="flex min-h-screen bg-bg text-main">
         <Sidebar />
         <div className="flex-1 p-10 flex items-center justify-center">
-          <div className="text-2xl text-accent">Loading dashboard...</div>
+          <div className="text-2xl" style={{ color: 'var(--admin-accent)' }}>Loading dashboard...</div>
         </div>
       </div>
     );
@@ -87,7 +87,8 @@ export default function AdminDashboardPage() {
             <div className="text-gray-400">{error}</div>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-6 py-2 bg-accent text-bg rounded-lg hover:opacity-80"
+              className="mt-4 px-6 py-2 text-bg rounded-lg hover:opacity-80"
+              style={{ backgroundColor: 'var(--admin-accent)' }}
             >
               Retry
             </button>
@@ -103,7 +104,7 @@ export default function AdminDashboardPage() {
       label: "Students",
       value: dashboardData.stats.students,
       icon: FiUsers,
-      color: "text-accent",
+      color: "admin-accent",
       path: "/admin/students",
       sparklineData: {
         labels: dashboardData.weeklyActivity.map(d => d.day),
@@ -118,7 +119,7 @@ export default function AdminDashboardPage() {
       label: "Professors",
       value: dashboardData.stats.professors,
       icon: FiUserCheck,
-      color: "text-accent",
+      color: "admin-accent",
       sparklineData: {
         labels: dashboardData.weeklyActivity.map(d => d.day),
         datasets: [{
@@ -132,13 +133,13 @@ export default function AdminDashboardPage() {
       label: "Admins",
       value: dashboardData.stats.admins,
       icon: FiShield,
-      color: "text-accent"
+      color: "admin-accent"
     },
     {
       label: "Total Users",
       value: dashboardData.stats.totalUsers,
       icon: FiUser,
-      color: "text-accent",
+      color: "admin-accent",
       sparklineData: {
         labels: dashboardData.weeklyActivity.map(d => d.day),
         datasets: [{
@@ -191,7 +192,7 @@ export default function AdminDashboardPage() {
       <div className="flex-1 p-10">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-          {loading && <div className="text-sm text-accent animate-pulse">Updating...</div>}
+          {loading && <div className="text-sm animate-pulse" style={{ color: 'var(--admin-accent)' }}>Updating...</div>}
         </div>
 
         {/* Stats Cards */}

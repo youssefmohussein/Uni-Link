@@ -16,7 +16,10 @@ class ProjectRoomRepository extends BaseRepository
      */
     public function find(int $id, bool $includeSoftDeleted = false): ?array
     {
-        $sql = "SELECT pr.*, pr.name as room_name FROM {$this->table} pr WHERE pr.{$this->primaryKey} = ?";
+        $sql = "SELECT pr.*, pr.name as room_name, u.username as owner_name 
+                FROM {$this->table} pr 
+                LEFT JOIN users u ON pr.owner_id = u.user_id 
+                WHERE pr.{$this->primaryKey} = ?";
         return $this->queryOne($sql, [$id]);
     }
 
@@ -25,7 +28,9 @@ class ProjectRoomRepository extends BaseRepository
      */
     public function findAll(?int $limit = null, int $offset = 0, string $orderBy = ''): array
     {
-        $sql = "SELECT pr.*, pr.name as room_name FROM {$this->table} pr";
+        $sql = "SELECT pr.*, pr.name as room_name, u.username as owner_name 
+                FROM {$this->table} pr
+                LEFT JOIN users u ON pr.owner_id = u.user_id";
 
         if ($orderBy) {
             $sql .= " ORDER BY pr.{$orderBy}";
@@ -47,9 +52,10 @@ class ProjectRoomRepository extends BaseRepository
     public function findUserRooms(int $userId): array
     {
         return $this->query("
-            SELECT pr.*, pr.name as room_name, rm.role as user_role
+            SELECT pr.*, pr.name as room_name, rm.role as user_role, u.username as owner_name
             FROM {$this->table} pr
             JOIN room_members rm ON pr.room_id = rm.room_id
+            LEFT JOIN users u ON pr.owner_id = u.user_id
             WHERE rm.user_id = ?
             ORDER BY pr.created_at DESC
         ", [$userId]);

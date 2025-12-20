@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
+import { useNavigate } from 'react-router-dom';
 import RealisticPlanet from './RealisticPlanet';
 
 // Ultra-Realistic Sun Component - Space Quality
@@ -109,6 +110,7 @@ const Planets = ({ isOpen }) => {
     // State for rotation and hover
     const [rotation, setRotation] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const navigate = useNavigate();
     const [hoveredPlanet, setHoveredPlanet] = useState(null);
     const groupRef = useRef();
 
@@ -162,7 +164,7 @@ const Planets = ({ isOpen }) => {
             ring: { innerRadius: 0.25, outerRadius: 0.45 }
         },
         {
-            name: "Architecture",
+            name: "Al-Alsun",
             size: 0.2,
             textures: {
                 map: THREEX + 'uranusmap.jpg',
@@ -193,8 +195,13 @@ const Planets = ({ isOpen }) => {
     };
 
     const handleClick = (facultyName) => {
-        const slug = facultyName.toLowerCase().replace(/\s+/g, '-');
-        window.location.href = `/faculty/${slug}`;
+        // Create a URL-friendly slug
+        let slug = facultyName.replace(/\s+/g, '-');
+        if (!slug.startsWith('Faculty-of-')) {
+            slug = `Faculty-of-${slug}`;
+        }
+        // Use navigate + encodeURIComponent for robust routing
+        navigate(`/faculty/${encodeURIComponent(slug)}`);
     };
 
     // Orbit configuration
@@ -252,6 +259,7 @@ const Planets = ({ isOpen }) => {
                         onPointerOver={() => handlePointerOver(index)}
                         onPointerOut={handlePointerOut}
                         onClick={() => handleClick(faculty.name)}
+                        onPointerDown={() => handleClick(faculty.name)} // Added for reliability
                     >
                         <RealisticPlanet
                             name={faculty.name}
@@ -267,12 +275,12 @@ const Planets = ({ isOpen }) => {
                         {hoveredPlanet === index && (
                             <Text
                                 position={[0, faculty.size + 0.3, 0]}
-                                fontSize={0.15}
+                                fontSize={0.18}
                                 color="#ffffff"
                                 anchorX="center"
                                 anchorY="bottom"
-                                font="https://raw.githubusercontent.com/google/fonts/main/ofl/greatvibes/GreatVibes-Regular.ttf"
-                                outlineWidth={0.01}
+                                fontWeight="bold"
+                                outlineWidth={0.015}
                                 outlineColor="#000000"
                             >
                                 {faculty.name}

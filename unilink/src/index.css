@@ -28,15 +28,23 @@
   /* Highlight / badges / alerts - warm amber */
 
   /* Accent Colors */
-  --accent: #008080;
-  /* Primary accent - purple */
-  --accent-alt: #20B2AA;
-  /* Secondary accent - same as primary */
-  --accent-hover: #20B2AA;
-  /* Hover shade teal */
-  --accent-light: #E0FFFF;
-  /* Light cyan highlight (for icons/text) */
+  --accent: #58a6ff;
+  /* Primary accent - blue */
+  --accent-alt: #3b82f6;
+  /* Secondary accent - blue */
+  --accent-hover: #1d4ed8;
+  /* Hover shade blue */
+  --accent-light: #dbeafe;
+  /* Light blue highlight */
   --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-hover));
+
+  /* Admin Dashboard Specific Colors */
+  --admin-accent: #008080;
+  /* Turquoise for admin dashboard */
+  --admin-accent-alt: #20B2AA;
+  /* Light turquoise */
+  --admin-accent-hover: #006666;
+  /* Darker turquoise */
 
   /* Borders & Shadows */
   --border: #2b2b2b;

@@ -103,7 +103,7 @@ return [
     // ============================================
     'POST /api/comments' => ['CommentController', 'create'],
     'GET /api/comments' => ['CommentController', 'getByPost'],
-    
+
     // Legacy comment routes
     'POST /addComment' => ['CommentController', 'create'],
     'GET /getComments' => ['CommentController', 'getByPost'],
@@ -148,6 +148,9 @@ return [
     'POST /deleteRoom' => ['ProjectRoomController', 'delete'],
     'POST /joinRoom' => ['ProjectRoomController', 'join'],
     'POST /api/project-rooms/join' => ['ProjectRoomController', 'join'],
+    'POST /sendMessage' => ['ChatController', 'sendMessage'],
+    'GET /getMessages' => ['ChatController', 'getRoomMessages'],
+    'GET /getRoomMembers' => ['ProjectRoomController', 'getRoomMembers'],
 
     // ============================================
     // CV Routes (Legacy compatibility)

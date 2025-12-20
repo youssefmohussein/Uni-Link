@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Posts/Header";
-import { FiRefreshCw, FiPlus } from "react-icons/fi";
+import { FiRefreshCw, FiPlus, FiSearch, FiTrash } from "react-icons/fi";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import * as facultyHandler from "../../../api/facultyandmajorHandler";
 import * as professorHandler from "../../../api/professorHandler";
@@ -131,7 +131,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold text-white mb-4">Create Project Room</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">Create Project</h2>
                 {error && <div className="bg-red-500/20 text-red-200 p-3 rounded mb-4 text-sm">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -255,7 +255,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
                             disabled={loading}
                             className="px-6 py-2 bg-accent text-white rounded-lg font-bold hover:bg-accent/80 transition disabled:opacity-50"
                         >
-                            {loading ? "Creating..." : "Create Room"}
+                            {loading ? "Creating..." : "Create Project"}
                         </button>
                     </div>
                 </form>
@@ -277,6 +277,11 @@ const ProjectRoomsPage = () => {
     const navigate = useNavigate();
     const hasFetched = useRef(false);
 
+    // Search and Filter States
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedFaculty, setSelectedFaculty] = useState("");
+    const [faculties, setFaculties] = useState([]);
+
     // Get current user once
     const user = useMemo(() => JSON.parse(localStorage.getItem('user')), []);
 
@@ -295,13 +300,14 @@ const ProjectRoomsPage = () => {
 
     const handleJoinRequest = (room) => {
         const userId = user?.id || user?.user_id;
-        // If owner, enter directly
-        if (parseInt(room.owner_id) === parseInt(userId)) {
+        const isOwner = parseInt(room.owner_id) === parseInt(userId);
+        const isAlreadyMember = !!room.user_role; // role is present if member
+
+        if (isOwner || isAlreadyMember) {
             navigate(`/project-room/${room.room_id}`);
             return;
         }
 
-        // Show password modal for others
         setSelectedRoom(room);
         setShowPasswordModal(true);
     };
@@ -348,6 +354,78 @@ const ProjectRoomsPage = () => {
         }
     };
 
+    const handleDeleteRoom = async (e, roomId) => {
+        e.stopPropagation();
+        if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
+
+        try {
+            await projectRoomHandler.deleteRoom(roomId);
+            toast.success("Project deleted successfully");
+            fetchRooms();
+        } catch (err) {
+            toast.error("Failed to delete project: " + err.message);
+        }
+    };
+
+    // Fetch faculties for filter
+    useEffect(() => {
+        const loadFaculties = async () => {
+            try {
+                const data = await facultyHandler.getAllFaculties();
+                setFaculties(Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []));
+            } catch (err) {
+                console.error("Failed to load faculties:", err);
+            }
+        };
+        loadFaculties();
+    }, []);
+
+    // Computed filtered rooms based on search and faculty filter
+    const filteredOtherRooms = useMemo(() => {
+        let filtered = otherRooms;
+
+        // Apply search filter (room name or owner name)
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(room =>
+                room.name?.toLowerCase().includes(query) ||
+                room.owner_name?.toLowerCase().includes(query)
+            );
+        }
+
+        // Apply faculty filter
+        if (selectedFaculty) {
+            filtered = filtered.filter(room =>
+                room.faculty_id === parseInt(selectedFaculty)
+            );
+        }
+
+        return filtered;
+    }, [otherRooms, searchQuery, selectedFaculty]);
+
+    // Computed filtered My Rooms with same logic
+    const filteredMyRooms = useMemo(() => {
+        let filtered = myRooms;
+
+        // Apply search filter (room name or owner name)
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(room =>
+                room.name?.toLowerCase().includes(query) ||
+                room.owner_name?.toLowerCase().includes(query)
+            );
+        }
+
+        // Apply faculty filter
+        if (selectedFaculty) {
+            filtered = filtered.filter(room =>
+                room.faculty_id === parseInt(selectedFaculty)
+            );
+        }
+
+        return filtered;
+    }, [myRooms, searchQuery, selectedFaculty]);
+
     return (
         <div className="min-h-screen bg-main text-white font-main">
             <Header logoSize="large" hideShareButton={true} />
@@ -355,8 +433,8 @@ const ProjectRoomsPage = () => {
             <div className="container mx-auto pt-24 px-4 md:px-8 max-w-7xl">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">Project Rooms</h1>
-                        <p className="text-gray-400">Collaborate with peers and mentors</p>
+                        <h1 className="text-3xl font-bold mb-2">Projects</h1>
+                        <p className="text-gray-400">Collaborate With Your Fellow Colleagues</p>
                     </div>
                     <div className="flex gap-3">
                         <button
@@ -372,7 +450,7 @@ const ProjectRoomsPage = () => {
                                 disabled:opacity-50
                                 disabled:cursor-not-allowed
                             "
-                            title="Refresh Rooms"
+                            title="Refresh Projects"
                         >
                             <FiRefreshCw size={20} className={refreshing ? 'animate-spin' : ''} />
                         </button>
@@ -387,41 +465,73 @@ const ProjectRoomsPage = () => {
                             }}
                             className="
                                 p-2 rounded-full cursor-pointer
-                                text-[#58a6ff]
+                                text-accent
                                 transition-all duration-200
                                 hover:scale-110
                                 hover:drop-shadow-[0_0_6px_currentColor]
                                 hover:bg-white/10
                             "
-                            title="Create Room"
+                            title="Create Project"
                         >
                             <FiPlus size={20} />
                         </button>
                     </div>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex gap-6 border-b border-white/10 mb-8">
-                    <button
-                        onClick={() => setActiveTab("my")}
-                        className={`pb-4 px-2 font-semibold transition relative ${activeTab === "my" ? "text-[#58a6ff]" : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        My Rooms ({(Array.isArray(myRooms) ? myRooms : []).length})
-                        {activeTab === "my" && (
-                            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#58a6ff] rounded-t-full"></div>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("other")}
-                        className={`pb-4 px-2 font-semibold transition relative ${activeTab === "other" ? "text-[#58a6ff]" : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        Other Rooms ({(Array.isArray(otherRooms) ? otherRooms : []).length})
-                        {activeTab === "other" && (
-                            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#58a6ff] rounded-t-full"></div>
-                        )}
-                    </button>
+                {/* Tabs with Search and Filter */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-4 mb-8">
+                    {/* Tabs */}
+                    <div className="flex gap-6">
+                        <button
+                            onClick={() => setActiveTab("my")}
+                            className={`pb-4 px-2 font-semibold transition relative ${activeTab === "my" ? "text-accent" : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            My Rooms ({(Array.isArray(filteredMyRooms) ? filteredMyRooms : []).length})
+                            {activeTab === "my" && (
+                                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-accent rounded-t-full"></div>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("other")}
+                            className={`pb-4 px-2 font-semibold transition relative ${activeTab === "other" ? "text-accent" : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            Other Rooms ({(Array.isArray(filteredOtherRooms) ? filteredOtherRooms : []).length})
+                            {activeTab === "other" && (
+                                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-accent rounded-t-full"></div>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Search and Filter - Show for both tabs */}
+                    <div className="flex gap-3 items-center">
+                        {/* Search Input */}
+                        <div className="relative">
+                            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search rooms or creators..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent transition-all text-sm w-64"
+                            />
+                        </div>
+
+                        {/* Faculty Filter */}
+                        <select
+                            value={selectedFaculty}
+                            onChange={(e) => setSelectedFaculty(e.target.value)}
+                            className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-accent transition-all text-sm cursor-pointer"
+                        >
+                            <option value="">All Faculties</option>
+                            {faculties.map(faculty => (
+                                <option key={faculty.faculty_id} value={faculty.faculty_id}>
+                                    {faculty.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {loading ? (
@@ -431,24 +541,44 @@ const ProjectRoomsPage = () => {
                     </div>
                 ) : (
                     activeTab === "my" ? (
-                        (Array.isArray(myRooms) ? myRooms : []).length === 0 ? (
-                            <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-                                <div className="text-6xl mb-4">📭</div>
-                                <h3 className="text-2xl font-bold mb-2">No Rooms Found</h3>
-                                <p className="text-gray-400 mb-6">You haven't joined any project rooms yet.</p>
-                                <div className="flex gap-3 justify-center">
+                        (Array.isArray(filteredMyRooms) ? filteredMyRooms : []).length === 0 ? (
+                            // Check if filters are active
+                            searchQuery.trim() || selectedFaculty ? (
+                                // Filters active but no results
+                                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+                                    <div className="text-6xl mb-4">🔍</div>
+                                    <h3 className="text-2xl font-bold mb-2">No Rooms Matching Your Filter</h3>
+                                    <p className="text-gray-400 mb-6">Try adjusting your search or filter criteria.</p>
                                     <button
-                                        onClick={() => setShowModal(true)}
-                                        className="px-6 py-2 bg-[#58a6ff] text-white rounded-full hover:bg-[#3b82f6] transition hover:shadow-[0_0_15px_rgba(88,166,255,0.4)]"
+                                        onClick={() => {
+                                            setSearchQuery("");
+                                            setSelectedFaculty("");
+                                        }}
+                                        className="px-6 py-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition"
                                     >
-                                        <i className="fa-solid fa-plus mr-2"></i>
-                                        Create Room
+                                        Clear Filters
                                     </button>
                                 </div>
-                            </div>
+                            ) : (
+                                // No filters, genuinely no rooms
+                                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+                                    <div className="text-6xl mb-4">📭</div>
+                                    <h3 className="text-2xl font-bold mb-2">No Rooms Found</h3>
+                                    <p className="text-gray-400 mb-6">You haven't joined any project rooms yet.</p>
+                                    <div className="flex gap-3 justify-center">
+                                        <button
+                                            onClick={() => setShowModal(true)}
+                                            className="px-6 py-2 bg-accent text-white rounded-full hover:bg-accent-alt transition hover:shadow-[0_0_15px_rgba(88,166,255,0.4)]"
+                                        >
+                                            <i className="fa-solid fa-plus mr-2"></i>
+                                            Create Project
+                                        </button>
+                                    </div>
+                                </div>
+                            )
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {(Array.isArray(myRooms) ? myRooms : []).map(room => (
+                                {(Array.isArray(filteredMyRooms) ? filteredMyRooms : []).map(room => (
                                     <div key={room.room_id} className="bg-[#121212] border border-white/5 rounded-2xl p-6 hover:border-accent/50 transition group relative overflow-hidden h-48 flex flex-col justify-end">
                                         {room.photo_url ? (
                                             <>
@@ -466,18 +596,28 @@ const ProjectRoomsPage = () => {
 
                                         <div className="relative z-10">
                                             <h3 className="text-xl font-bold mb-1 truncate">{room.name}</h3>
-                                            <p className="text-gray-300 text-sm mb-3 line-clamp-2">{room.description || "No description"}</p>
 
                                             <div className="flex justify-between items-center">
                                                 <div className="text-xs text-gray-400">
-                                                    By <span className="text-white">{room.creator_name}</span>
+                                                    By <span className="text-white">{room.owner_name || "Unknown"}</span>
                                                 </div>
-                                                <button
-                                                    onClick={() => handleJoinRequest(room)}
-                                                    className="px-3 py-1.5 bg-white/10 hover:bg-accent text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm"
-                                                >
-                                                    Enter
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    {parseInt(room.owner_id) === parseInt(user?.id || user?.user_id) && (
+                                                        <button
+                                                            onClick={(e) => handleDeleteRoom(e, room.room_id)}
+                                                            className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition"
+                                                            title="Delete Room"
+                                                        >
+                                                            <FiTrash size={16} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleJoinRequest(room)}
+                                                        className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm cursor-pointer"
+                                                    >
+                                                        Enter
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -485,15 +625,35 @@ const ProjectRoomsPage = () => {
                             </div>
                         )
                     ) : (
-                        (Array.isArray(otherRooms) ? otherRooms : []).length === 0 ? (
-                            <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-                                <div className="text-6xl mb-4">🌍</div>
-                                <h3 className="text-2xl font-bold mb-2">No Other Rooms</h3>
-                                <p className="text-gray-400">There are no other active rooms to join right now.</p>
-                            </div>
+                        (Array.isArray(filteredOtherRooms) ? filteredOtherRooms : []).length === 0 ? (
+                            // Check if filters are active
+                            searchQuery.trim() || selectedFaculty ? (
+                                // Filters active but no results
+                                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+                                    <div className="text-6xl mb-4">🔍</div>
+                                    <h3 className="text-2xl font-bold mb-2">No Rooms Matching Your Filter</h3>
+                                    <p className="text-gray-400 mb-6">Try adjusting your search or filter criteria.</p>
+                                    <button
+                                        onClick={() => {
+                                            setSearchQuery("");
+                                            setSelectedFaculty("");
+                                        }}
+                                        className="px-6 py-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition"
+                                    >
+                                        Clear Filters
+                                    </button>
+                                </div>
+                            ) : (
+                                // No filters, genuinely no other rooms
+                                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+                                    <div className="text-6xl mb-4">🌍</div>
+                                    <h3 className="text-2xl font-bold mb-2">No Other Rooms</h3>
+                                    <p className="text-gray-400">There are no other active rooms to join right now.</p>
+                                </div>
+                            )
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {(Array.isArray(otherRooms) ? otherRooms : []).map(room => (
+                                {(Array.isArray(filteredOtherRooms) ? filteredOtherRooms : []).map(room => (
                                     <div key={room.room_id} className="bg-[#121212]/50 border border-white/5 rounded-2xl p-6 hover:border-white/20 transition group relative overflow-hidden h-48 flex flex-col justify-end grayscale hover:grayscale-0">
                                         {room.photo_url ? (
                                             <>
@@ -511,15 +671,14 @@ const ProjectRoomsPage = () => {
 
                                         <div className="relative z-10">
                                             <h3 className="text-xl font-bold mb-1 truncate">{room.name}</h3>
-                                            <p className="text-gray-300 text-sm mb-3 line-clamp-2">{room.description || "No description"}</p>
 
                                             <div className="flex justify-between items-center">
                                                 <div className="text-xs text-gray-400">
-                                                    By <span className="text-white">{room.creator_name}</span>
+                                                    By <span className="text-white">{room.owner_name || "Unknown"}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => handleJoinRequest(room)}
-                                                    className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm"
+                                                    className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm cursor-pointer"
                                                 >
                                                     Join
                                                 </button>

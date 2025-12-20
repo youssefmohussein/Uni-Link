@@ -48,7 +48,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/faculties" element={<FacultiesPage />} />
-          <Route path="/faculty/:id" element={<FacultyDetailsPage />} />
+          <Route path="/faculty/:idOrName" element={<FacultyDetailsPage />} />
           <Route
             path="/admin/dashboard"
             element={

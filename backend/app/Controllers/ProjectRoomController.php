@@ -229,4 +229,27 @@ class ProjectRoomController extends BaseController
             $this->error($e->getMessage(), $code ?: 400);
         }
     }
+
+    /**
+     * Get room members
+     */
+    public function getRoomMembers(): void
+    {
+        try {
+            $this->requireAuth();
+
+            $roomId = isset($_GET['room_id']) ? (int) $_GET['room_id'] : null;
+
+            if (!$roomId) {
+                throw new \Exception('Room ID is required', 400);
+            }
+
+            $members = $this->roomService->getRoomMembers($roomId);
+            $this->success($members);
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
 }
