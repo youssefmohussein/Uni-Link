@@ -50,7 +50,8 @@ class PostInteractionService extends BaseService {
                 throw new \Exception('Invalid interaction type', 400);
         }
         
-        return $this->context->executeInteraction($postId, $userId);
+        $this->context->executeInteraction($postId, $userId);
+        return true;
     }
     
     /**
@@ -83,7 +84,8 @@ class PostInteractionService extends BaseService {
                 throw new \Exception('Invalid interaction type', 400);
         }
         
-        return $this->context->removeInteraction($postId, $userId);
+        $this->context->executeInteraction($postId, $userId);
+        return true;
     }
     
     /**

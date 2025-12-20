@@ -29,7 +29,7 @@ class PostRepository extends BaseRepository {
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN comments c ON p.post_id = c.entity_id AND c.entity_type = 'post'
+            LEFT JOIN comments c ON p.post_id = c.post_id
             WHERE p.author_id = ?
             GROUP BY p.post_id
             ORDER BY p.created_at DESC
@@ -64,7 +64,7 @@ class PostRepository extends BaseRepository {
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN comments c ON p.post_id = c.entity_id AND c.entity_type = 'post'
+            LEFT JOIN comments c ON p.post_id = c.post_id
             WHERE p.category = ?
             GROUP BY p.post_id
             ORDER BY p.created_at DESC
@@ -123,7 +123,7 @@ class PostRepository extends BaseRepository {
                    COUNT(DISTINCT c.comment_id) as comment_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN comments c ON p.post_id = c.entity_id AND c.entity_type = 'post'
+            LEFT JOIN comments c ON p.post_id = c.post_id
             GROUP BY p.post_id
             ORDER BY p.created_at DESC
         ";
@@ -148,11 +148,13 @@ class PostRepository extends BaseRepository {
                    u.username as author_name,
                    u.profile_picture,
                    f.name as faculty_name,
-                   COUNT(DISTINCT pi.interaction_id) as likes_count
+                   COUNT(DISTINCT pi.interaction_id) as likes_count,
+                   COUNT(DISTINCT c.comment_id) as comments_count
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
             LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
             LEFT JOIN post_interactions pi ON p.post_id = pi.post_id AND pi.type = 'Like'
+            LEFT JOIN comments c ON p.post_id = c.post_id
             GROUP BY p.post_id, u.username, u.profile_picture, f.name
             ORDER BY p.created_at DESC
         ";

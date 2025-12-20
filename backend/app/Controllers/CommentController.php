@@ -38,7 +38,22 @@ class CommentController extends BaseController {
      */
     public function getByPost(): void {
         try {
-            $data = $this->getJsonInput();
+            // For GET requests, use query parameters instead of JSON body
+            $data = [];
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                if (isset($_GET['post_id'])) {
+                    $data['post_id'] = $_GET['post_id'];
+                }
+            } else {
+                // For POST/PUT requests, try to get JSON input
+                try {
+                    $data = $this->getJsonInput();
+                } catch (\Exception $e) {
+                    // If JSON parsing fails, fall back to empty array
+                    $data = [];
+                }
+            }
+            
             $this->validateRequired($data, ['post_id']);
             
             $comments = $this->commentService->getByPost((int)$data['post_id']);

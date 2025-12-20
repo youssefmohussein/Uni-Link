@@ -79,13 +79,10 @@ export const addInteraction = async (post_id, user_id, type = "Like") => {
     const res = await apiRequest("addInteraction", "POST", {
         post_id,
         user_id,
-        type,
+        type: type.toLowerCase(),
     });
     if (res.status !== "success") throw new Error(res.message || "Failed to add interaction");
-    return {
-        interaction_id: res.interaction_id,
-        action: res.action // 'added' or 'updated'
-    };
+    return res.data;
 };
 
 /**
@@ -119,10 +116,14 @@ export const getReactionCounts = async (post_id) => {
 
 /**
  * Delete an interaction
- * @param {number} interaction_id
+ * @param {number} post_id
+ * @param {string} type
  */
-export const deleteInteraction = async (interaction_id) => {
-    const res = await apiRequest("deleteInteraction", "POST", { interaction_id });
+export const deleteInteraction = async (post_id, type = "Like") => {
+    const res = await apiRequest("deleteInteraction", "POST", {
+        post_id,
+        type: type.toLowerCase()
+    });
     if (res.status !== "success") throw new Error(res.message || "Failed to delete interaction");
     return true;
 };
@@ -136,9 +137,12 @@ export const deleteInteraction = async (interaction_id) => {
  * @param {number} post_id
  */
 export const getCommentsByPost = async (post_id) => {
-    const res = await apiRequest(`getComments/post/${post_id}`, "GET");
-    // CommentController returns array directly, not wrapped in status/data
-    return Array.isArray(res) ? res : [];
+    const res = await apiRequest(`getComments?post_id=${post_id}`, "GET");
+    // Handle nested data structure from new Controller
+    if (res.status === "success" && res.data && Array.isArray(res.data.data)) {
+        return res.data.data;
+    }
+    return [];
 };
 
 /**
@@ -150,8 +154,7 @@ export const getCommentsByPost = async (post_id) => {
  */
 export const addComment = async (post_id, user_id, content, parent_id = null) => {
     const res = await apiRequest("addComment", "POST", {
-        entity_type: "post",
-        entity_id: post_id,
+        post_id,
         user_id,
         content,
         parent_id,

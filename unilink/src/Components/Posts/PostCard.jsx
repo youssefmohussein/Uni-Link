@@ -6,6 +6,7 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
   const [post, setPost] = useState(initialPost);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
+  const [commentsCount, setCommentsCount] = useState(initialPost.commentsCount || 0);
   const [newComment, setNewComment] = useState("");
   const [loadingComments, setLoadingComments] = useState(false);
   const [loadingInteraction, setLoadingInteraction] = useState(false);
@@ -18,6 +19,13 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
   if (post.category === "Questions") borderColor = "border-blue-500/60";
   if (post.category === "Events") borderColor = "border-green-500/60";
   if (post.category === "Projects") borderColor = "border-purple-500/60";
+
+  // Sync comment count when post data updates
+  useEffect(() => {
+    if (initialPost.commentsCount !== undefined) {
+      setCommentsCount(initialPost.commentsCount);
+    }
+  }, [initialPost.commentsCount]);
 
   // Fetch comments when comments section is opened
   useEffect(() => {
@@ -41,6 +49,8 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
       }));
 
       setComments(transformedComments);
+      // Update count based on fetched comments
+      setCommentsCount(transformedComments.length);
     } catch (err) {
       console.error("Failed to fetch comments:", err);
     } finally {
@@ -83,9 +93,8 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
         // Add like
         await postHandler.addInteraction(post.post_id, currentUserId, "Like");
       } else {
-        // Remove like - would need interaction_id, for now just toggle
-        // TODO: Store interaction_id when fetching posts to enable unlike
-        console.warn("Unlike functionality requires interaction_id from backend");
+        // Remove like
+        await postHandler.deleteInteraction(post.post_id, "Like");
       }
 
       // Refresh to get accurate count
@@ -113,14 +122,11 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
       // Clear input
       setNewComment("");
 
-      // Refresh comments
-      await fetchComments();
+      // Increment comment count immediately (optimistic update)
+      setCommentsCount(prev => prev + 1);
 
-      // Update comment count in post
-      setPost((prev) => ({
-        ...prev,
-        comments: [...prev.comments, { content: newComment }], // Temporary update
-      }));
+      // Refresh comments to get the new one
+      await fetchComments();
     } catch (err) {
       console.error("Failed to add comment:", err);
       alert("Failed to add comment: " + (err.message || "Unknown error"));
@@ -224,33 +230,52 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
         </div>
 
         {/* 📸 Media Gallery */}
-        {post.media && post.media.length > 0 && (
+        {post.media && Array.isArray(post.media) && post.media.length > 0 && (
           <div className={`grid gap-3 mb-6 rounded-xl overflow-hidden ${post.media.length === 1 ? 'grid-cols-1' :
             post.media.length === 2 ? 'grid-cols-2' :
               'grid-cols-2 md:grid-cols-3'
             }`}>
-            {post.media.map((item, index) => (
-              <div key={item.media_id || index} className="relative group overflow-hidden bg-black/20">
-                {item.type === 'Image' ? (
-                  <div className="overflow-hidden h-64 w-full">
-                    <img
+            {post.media.map((item, index) => {
+              // Normalize media type (backend uses 'IMAGE', frontend expects 'Image')
+              const mediaType = (item.type || '').toUpperCase();
+              const isImage = mediaType === 'IMAGE';
+              const isVideo = mediaType === 'VIDEO';
+              
+              return (
+                <div key={item.media_id || index} className="relative group overflow-hidden bg-black/20 rounded-lg">
+                  {isImage ? (
+                    <div className={`overflow-hidden w-full ${post.media.length === 1 ? 'max-h-96' : 'h-48 md:h-64'}`}>
+                      <img
+                        src={item.url}
+                        alt={`Post media ${index + 1}`}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+                        onClick={() => window.open(item.url, '_blank')}
+                        onError={(e) => {
+                          console.error('Failed to load image:', item.url);
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ) : isVideo ? (
+                    <video
                       src={item.url}
-                      alt={`Post media ${index + 1}`}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 cursor-pointer"
-                      onClick={() => window.open(item.url, '_blank')}
-                    />
-                  </div>
-                ) : item.type === 'Video' ? (
-                  <video
-                    src={item.url}
-                    controls
-                    className="w-full h-64 object-cover"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                ) : null}
-              </div>
-            ))}
+                      controls
+                      className={`w-full ${post.media.length === 1 ? 'max-h-96' : 'h-48 md:h-64'} object-cover`}
+                      onError={(e) => {
+                        console.error('Failed to load video:', item.url);
+                        e.target.style.display = 'none';
+                      }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <div className="p-4 text-gray-400 text-sm">
+                      Unknown media type: {item.type}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -285,7 +310,7 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
             >
               <i className={`${showComments ? "fas" : "far"} fa-comment text-lg`}></i>
               <span className="font-medium text-sm">
-                {comments.length || post.comments.length}
+                {commentsCount}
               </span>
             </button>
           </div>

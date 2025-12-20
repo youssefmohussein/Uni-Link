@@ -50,6 +50,12 @@ const PostPage = () => {
       setError(null);
       const data = await postHandler.getAllPosts();
 
+      // Debug: Log first post to check media structure
+      if (data.length > 0) {
+        console.log("Sample post data:", data[0]);
+        console.log("Media data:", data[0].media);
+      }
+
       // Transform backend data to match PostCard expected format
       const transformedPosts = data.map((post) => ({
         id: post.post_id,
@@ -61,17 +67,18 @@ const PostPage = () => {
         timeAgo: formatTimeAgo(post.created_at),
         category: post.category,
         content: post.content,
-        media: post.media && post.media.length > 0
+        media: post.media && Array.isArray(post.media) && post.media.length > 0
           ? post.media.map(m => ({
             media_id: m.media_id,
-            type: m.media_type,
-            url: `http://localhost/backend/${m.media_path}`
+            type: m.media_type || m.type, // Handle both formats
+            url: `http://localhost/backend/${m.media_path || m.path}`
           }))
           : [],
         reactions: post.likes_count || 0,
         isReacted: false, // TODO: Check if current user has liked
         isTrending: false, // TODO: Add trending logic
-        comments: [],
+        comments: [], // Array for storing comment objects when fetched
+        commentsCount: post.comments_count || 0, // Initial count from backend
         post_id: post.post_id, // Keep original ID for API calls
       }));
 
@@ -205,17 +212,18 @@ const PostPage = () => {
           timeAgo: formatTimeAgo(post.created_at),
           category: post.category,
           content: post.content,
-          media: post.media && post.media.length > 0
+          media: post.media && Array.isArray(post.media) && post.media.length > 0
             ? post.media.map(m => ({
               media_id: m.media_id,
-              type: m.media_type,
-              url: `http://localhost/backend/${m.media_path}`
+              type: m.media_type || m.type, // Handle both formats
+              url: `http://localhost/backend/${m.media_path || m.path}`
             }))
             : [],
           reactions: post.likes_count || 0,
           isReacted: false,
           isTrending: false,
           comments: [],
+          commentsCount: post.comments_count || 0,
           post_id: post.post_id,
         }));
 

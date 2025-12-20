@@ -48,8 +48,9 @@ class PostController extends BaseController {
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['post_id']);
             
-            $post = $this->postService->updatePost((int)$data['post_id'], $data);
-            $this->success($post, 'Post updated successfully');
+            $userId = $this->getCurrentUserId();
+            $this->postService->updatePost((int)$data['post_id'], $userId, $data);
+            $this->success(null, 'Post updated successfully');
             
         } catch (\Exception $e) {
             $code = is_int($e->getCode()) ? $e->getCode() : 500;
@@ -67,7 +68,8 @@ class PostController extends BaseController {
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['post_id']);
             
-            $this->postService->deletePost((int)$data['post_id']);
+            $userId = $this->getCurrentUserId();
+            $this->postService->deletePost((int)$data['post_id'], $userId);
             $this->success(null, 'Post deleted successfully');
             
         } catch (\Exception $e) {

@@ -21,39 +21,39 @@ class CelebrationStrategy implements PostInteractionStrategyInterface {
         try {
             $stmt = $this->db->prepare("
                 SELECT interaction_id, type 
-                FROM PostInteraction 
+                FROM post_interactions 
                 WHERE post_id = ? AND user_id = ?
             ");
             $stmt->execute([$postId, $userId]);
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($existing) {
-                if ($existing['type'] === 'celberation') {
+                if ($existing['type'] === 'CELEBRATE') {
                     $deleteStmt = $this->db->prepare("
-                        DELETE FROM PostInteraction WHERE interaction_id = ?
+                        DELETE FROM post_interactions WHERE interaction_id = ?
                     ");
                     $deleteStmt->execute([$existing['interaction_id']]);
                     
-                    return ['action' => 'removed', 'type' => 'celberation'];
+                    return ['action' => 'removed', 'type' => 'celebration'];
                 } else {
                     $updateStmt = $this->db->prepare("
-                        UPDATE PostInteraction 
+                        UPDATE post_interactions 
                         SET type = ?, created_at = NOW() 
                         WHERE interaction_id = ?
                     ");
-                    $updateStmt->execute(['celberation', $existing['interaction_id']]);
+                    $updateStmt->execute(['CELEBRATE', $existing['interaction_id']]);
                     
-                    return ['action' => 'updated', 'type' => 'celberation', 'interaction_id' => $existing['interaction_id']];
+                    return ['action' => 'updated', 'type' => 'celebration', 'interaction_id' => $existing['interaction_id']];
                 }
             }
             
             $insertStmt = $this->db->prepare("
-                INSERT INTO PostInteraction (post_id, user_id, type, created_at)
-                VALUES (?, ?, 'celberation', NOW())
+                INSERT INTO post_interactions (post_id, user_id, type, created_at)
+                VALUES (?, ?, 'CELEBRATE', NOW())
             ");
             $insertStmt->execute([$postId, $userId]);
             
-            return ['action' => 'added', 'type' => 'celberation', 'interaction_id' => $this->db->lastInsertId()];
+            return ['action' => 'added', 'type' => 'celebration', 'interaction_id' => $this->db->lastInsertId()];
             
         } catch (\Exception $e) {
             throw new \Exception("Failed to celebrate: " . $e->getMessage());
@@ -61,7 +61,7 @@ class CelebrationStrategy implements PostInteractionStrategyInterface {
     }
     
     public function getType(): string {
-        return 'celberation';
+        return 'celebration';
     }
     
     public function canExecute(int $postId, int $userId): bool {
