@@ -86,7 +86,9 @@ export const deleteProfessor = async (user_id) => {
 export const getAllFaculties = async () => {
   const res = await apiRequest("getAllFaculties", "GET");
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch faculties");
-  return res.data ?? [];
+  if (res.data && Array.isArray(res.data)) return res.data;
+  if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+  return Array.isArray(res) ? res : [];
 };
 
 /**
@@ -95,7 +97,9 @@ export const getAllFaculties = async () => {
 export const getAllMajors = async () => {
   const res = await apiRequest("getAllMajors", "GET");
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch majors");
-  return res.data ?? [];
+  if (res.data && Array.isArray(res.data)) return res.data;
+  if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+  return Array.isArray(res) ? res : [];
 };
 
 /**
@@ -105,7 +109,9 @@ export const getAllMajors = async () => {
 export const getProfessorsByFaculty = async (facultyId) => {
   const res = await apiRequest(`api/professors/by-faculty?faculty_id=${facultyId}`, "GET");
   if (res.status !== "success") throw new Error(res.message || "Failed to fetch professors");
-  return res.data ?? [];
+  if (res.data && Array.isArray(res.data)) return res.data;
+  if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
+  return Array.isArray(res) ? res : [];
 };
 
 /* ============================================================

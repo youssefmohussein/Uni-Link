@@ -61,15 +61,16 @@ class ProfessorRepository extends BaseRepository
      */
     public function findByFaculty(int $facultyId): array
     {
-        $sql = "
-            SELECT p.professor_id, p.user_id, u.username, u.email, u.profile_picture as profile_image, 
-                   u.bio, f.name as faculty_name
-            FROM professors p
-            JOIN users u ON p.user_id = u.user_id
-            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
-            WHERE u.faculty_id = ?
-            ORDER BY u.username ASC
-        ";
+        $sql = "SELECT 
+                    u.user_id, u.username, u.email, u.profile_picture, u.role,
+                    p.*,
+                    f.name as faculty_name
+                FROM users u
+                INNER JOIN professors p ON u.user_id = p.user_id
+                LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+                WHERE u.faculty_id = ?
+                ORDER BY u.username ASC";
+
         return $this->query($sql, [$facultyId]);
     }
 

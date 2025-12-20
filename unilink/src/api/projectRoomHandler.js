@@ -26,8 +26,9 @@ export const createRoom = async (formData) => {
 export const getAllRooms = async () => {
     const res = await apiRequest("getAllRooms", "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch rooms");
-    // Handle both response formats
+    // Handle nested response formats
     if (res.data && Array.isArray(res.data)) return res.data;
+    if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
     if (Array.isArray(res)) return res;
     return [];
 };
@@ -35,8 +36,9 @@ export const getAllRooms = async () => {
 export const getUserRooms = async () => {
     const res = await apiRequest("getUserRooms", "GET");
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch your rooms");
-    // Handle both response formats
+    // Handle nested response formats
     if (res.data && Array.isArray(res.data)) return res.data;
+    if (res.data && res.data.data && Array.isArray(res.data.data)) return res.data.data;
     if (Array.isArray(res)) return res;
     return [];
 };
