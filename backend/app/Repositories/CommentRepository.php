@@ -18,7 +18,7 @@ class CommentRepository extends BaseRepository {
      */
     public function findByPost(int $postId): array {
         return $this->query("
-            SELECT c.*, u.username, u.profile_image
+            SELECT c.*, u.username, u.profile_picture as profile_image
             FROM {$this->table} c
             LEFT JOIN users u ON c.user_id = u.user_id
             WHERE c.post_id = ?

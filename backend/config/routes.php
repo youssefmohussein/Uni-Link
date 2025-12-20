@@ -91,11 +91,24 @@ return [
     'POST /api/post-interactions/counts' => ['PostInteractionController', 'getReactionCounts'],
     'DELETE /api/post-interactions' => ['PostInteractionController', 'delete'],
 
+    // Legacy interaction routes (for frontend)
+    'POST /addInteraction' => ['PostInteractionController', 'add'],
+    'POST /getInteractionsByPost' => ['PostInteractionController', 'getByPost'],
+    'POST /getUserReaction' => ['PostInteractionController', 'getUserReaction'],
+    'POST /getReactionCounts' => ['PostInteractionController', 'getReactionCounts'],
+    'POST /deleteInteraction' => ['PostInteractionController', 'delete'],
+
     // ============================================
     // Comment Routes (Legacy compatibility)
     // ============================================
     'POST /api/comments' => ['CommentController', 'create'],
-    'POST /api/comments/get' => ['CommentController', 'getByPost'],
+    'GET /api/comments' => ['CommentController', 'getByPost'],
+    
+    // Legacy comment routes
+    'POST /addComment' => ['CommentController', 'create'],
+    'GET /getComments' => ['CommentController', 'getByPost'],
+    'POST /updateComment' => ['CommentController', 'update'],
+    'POST /deleteComment' => ['CommentController', 'delete'],
 
     // ============================================
     // Project Routes (Legacy compatibility)

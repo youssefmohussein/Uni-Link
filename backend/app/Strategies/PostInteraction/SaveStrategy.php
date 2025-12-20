@@ -21,9 +21,9 @@ class SaveStrategy implements PostInteractionStrategyInterface {
         try {
             // Check if already saved
             $stmt = $this->db->prepare("
-                SELECT saved_id 
-                FROM saved_posts 
-                WHERE post_id = ? AND user_id = ?
+                SELECT interaction_id, type 
+                FROM post_interactions 
+                WHERE post_id = ? AND user_id = ? AND type = 'SAVE'
             ");
             $stmt->execute([$postId, $userId]);
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -31,28 +31,28 @@ class SaveStrategy implements PostInteractionStrategyInterface {
             if ($existing) {
                 // Unsave
                 $deleteStmt = $this->db->prepare("
-                    DELETE FROM saved_posts WHERE saved_id = ?
+                    DELETE FROM post_interactions WHERE interaction_id = ?
                 ");
-                $deleteStmt->execute([$existing['saved_id']]);
+                $deleteStmt->execute([$existing['interaction_id']]);
                 
                 return [
                     'action' => 'removed',
-                    'type' => 'Save',
+                    'type' => 'SAVE',
                     'message' => 'Post removed from saved'
                 ];
             }
             
             // Save post
             $insertStmt = $this->db->prepare("
-                INSERT INTO saved_posts (post_id, user_id, created_at)
-                VALUES (?, ?, NOW())
+                INSERT INTO post_interactions (post_id, user_id, type, created_at)
+                VALUES (?, ?, 'SAVE', NOW())
             ");
             $insertStmt->execute([$postId, $userId]);
             
             return [
                 'action' => 'added',
-                'type' => 'Save',
-                'saved_id' => $this->db->lastInsertId(),
+                'type' => 'SAVE',
+                'interaction_id' => $this->db->lastInsertId(),
                 'message' => 'Post saved successfully'
             ];
             

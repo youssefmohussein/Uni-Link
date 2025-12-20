@@ -232,7 +232,13 @@ function ProfilePageUser() {
                           <ProjectCard
                             {...proj}
                             userId={currentUserId}
-                            onDelete={(id) => setProjects(projects.filter(p => p.project_id !== id))}
+                            onDelete={async (id) => {
+                              setProjects(projects.filter(p => p.project_id !== id));
+                              // Refresh from backend to ensure consistency
+                              if (currentUserId) {
+                                await fetchProfileData(currentUserId);
+                              }
+                            }}
                             onEdit={handleEditProject}
                           />
                         </div>
@@ -242,7 +248,11 @@ function ProfilePageUser() {
                 </div>
 
                 {/* Posts */}
-                <PostsSection posts={posts} />
+                <PostsSection 
+                  posts={posts} 
+                  onRefresh={() => fetchProfileData(currentUserId)}
+                  userId={currentUserId}
+                />
               </section>
             </main>
 

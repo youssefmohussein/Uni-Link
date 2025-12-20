@@ -86,6 +86,34 @@ function CVSection({ userId }) {
     }
   };
 
+  const handleDeleteCV = async () => {
+    if (!confirm("Are you sure you want to delete your CV? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const response = await fetch('http://localhost/backend/deleteCV', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (data.status !== 'success') {
+        throw new Error(data.message || 'Failed to delete CV');
+      }
+
+      setCvFile(null);
+      alert("CV deleted successfully!");
+    } catch (err) {
+      console.error("Failed to delete CV:", err);
+      alert(err.message || "Failed to delete CV. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <section className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 relative overflow-hidden border border-white/20"
       style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
@@ -129,13 +157,23 @@ function CVSection({ userId }) {
                     Uploaded on {cvFile.uploadedOn}
                   </p>
                 </div>
-                <button
-                  onClick={handleDownloadCV}
-                  className="text-accent hover:text-accent/80 text-2xl transition"
-                  title="Download CV"
-                >
-                  ⬇
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleDownloadCV}
+                    className="text-accent hover:text-accent/80 text-2xl transition"
+                    title="Download CV"
+                  >
+                    ⬇
+                  </button>
+                  <button
+                    onClick={handleDeleteCV}
+                    disabled={uploading}
+                    className="text-red-400 hover:text-red-300 text-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete CV"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
             </div>
           )}

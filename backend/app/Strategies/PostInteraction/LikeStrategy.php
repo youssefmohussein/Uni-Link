@@ -30,37 +30,37 @@ class LikeStrategy implements PostInteractionStrategyInterface {
             // Check if already liked
             $stmt = $this->db->prepare("
                 SELECT interaction_id, type 
-                FROM PostInteraction 
+                FROM post_interactions 
                 WHERE post_id = ? AND user_id = ?
             ");
             $stmt->execute([$postId, $userId]);
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($existing) {
-                if ($existing['type'] === 'Like') {
+                if ($existing['type'] === 'LIKE') {
                     // Unlike (remove)
                     $deleteStmt = $this->db->prepare("
-                        DELETE FROM PostInteraction WHERE interaction_id = ?
+                        DELETE FROM post_interactions WHERE interaction_id = ?
                     ");
                     $deleteStmt->execute([$existing['interaction_id']]);
                     
                     return [
                         'action' => 'removed',
-                        'type' => 'Like',
+                        'type' => 'LIKE',
                         'message' => 'Like removed'
                     ];
                 } else {
                     // Update to Like
                     $updateStmt = $this->db->prepare("
-                        UPDATE PostInteraction 
+                        UPDATE post_interactions 
                         SET type = ?, created_at = NOW() 
                         WHERE interaction_id = ?
                     ");
-                    $updateStmt->execute(['Like', $existing['interaction_id']]);
+                    $updateStmt->execute(['LIKE', $existing['interaction_id']]);
                     
                     return [
                         'action' => 'updated',
-                        'type' => 'Like',
+                        'type' => 'LIKE',
                         'interaction_id' => $existing['interaction_id'],
                         'message' => 'Reaction updated to Like'
                     ];
@@ -69,14 +69,14 @@ class LikeStrategy implements PostInteractionStrategyInterface {
             
             // Create new like
             $insertStmt = $this->db->prepare("
-                INSERT INTO PostInteraction (post_id, user_id, type, created_at)
-                VALUES (?, ?, 'Like', NOW())
+                INSERT INTO post_interactions (post_id, user_id, type, created_at)
+                VALUES (?, ?, 'LIKE', NOW())
             ");
             $insertStmt->execute([$postId, $userId]);
             
             return [
                 'action' => 'added',
-                'type' => 'Like',
+                'type' => 'LIKE',
                 'interaction_id' => $this->db->lastInsertId(),
                 'message' => 'Post liked'
             ];
