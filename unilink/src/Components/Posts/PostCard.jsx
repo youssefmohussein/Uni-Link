@@ -240,7 +240,17 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
               const mediaType = (item.type || '').toUpperCase();
               const isImage = mediaType === 'IMAGE';
               const isVideo = mediaType === 'VIDEO';
-              
+
+              // Debug logging
+              console.log('Rendering media:', {
+                media_id: item.media_id,
+                type: item.type,
+                normalizedType: mediaType,
+                url: item.url,
+                isImage,
+                isVideo
+              });
+
               return (
                 <div key={item.media_id || index} className="relative group overflow-hidden bg-black/20 rounded-lg">
                   {isImage ? (
@@ -250,9 +260,23 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
                         alt={`Post media ${index + 1}`}
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 cursor-pointer"
                         onClick={() => window.open(item.url, '_blank')}
+                        onLoad={() => console.log('Image loaded successfully:', item.url)}
                         onError={(e) => {
-                          console.error('Failed to load image:', item.url);
+                          const errorInfo = {
+                            url: item.url,
+                            media_id: item.media_id,
+                            type: item.type,
+                            error: e.target.error ? e.target.error.message : 'Unknown error'
+                          };
+                          console.error('Failed to load image:', errorInfo);
+                          console.error('Attempted URL:', item.url);
+
+                          // Show error placeholder instead of hiding
                           e.target.style.display = 'none';
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'flex flex-col items-center justify-center w-full h-full bg-white/5 text-gray-400 p-8 text-center';
+                          errorDiv.innerHTML = '<i class="fas fa-image-slash text-3xl mb-2"></i><span class="text-xs">Image not found</span>';
+                          e.target.parentElement.appendChild(errorDiv);
                         }}
                       />
                     </div>
@@ -261,8 +285,13 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
                       src={item.url}
                       controls
                       className={`w-full ${post.media.length === 1 ? 'max-h-96' : 'h-48 md:h-64'} object-cover`}
+                      onLoadStart={() => console.log('Video loading:', item.url)}
                       onError={(e) => {
-                        console.error('Failed to load video:', item.url);
+                        console.error('Failed to load video:', {
+                          url: item.url,
+                          media_id: item.media_id,
+                          type: item.type
+                        });
                         e.target.style.display = 'none';
                       }}
                     >
@@ -270,7 +299,7 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
                     </video>
                   ) : (
                     <div className="p-4 text-gray-400 text-sm">
-                      Unknown media type: {item.type}
+                      Unknown media type: {item.type || 'undefined'} (normalized: {mediaType})
                     </div>
                   )}
                 </div>

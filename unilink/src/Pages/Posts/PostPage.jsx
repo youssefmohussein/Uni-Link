@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { API_BASE_URL } from "../../../config/api";
 import Header from "../../Components/Posts/Header";
 import LeftSidebar from "../../Components/Posts/LeftSidebar";
 import RightSidebar from "../../Components/Posts/RightSidebar";
@@ -54,6 +55,11 @@ const PostPage = () => {
       if (data.length > 0) {
         console.log("Sample post data:", data[0]);
         console.log("Media data:", data[0].media);
+        if (data[0].media && data[0].media.length > 0) {
+          console.log("First media item:", data[0].media[0]);
+          console.log("Media path:", data[0].media[0].media_path);
+          console.log("Constructed URL:", `${API_BASE_URL}${data[0].media[0].media_path || data[0].media[0].path}`);
+        }
       }
 
       // Transform backend data to match PostCard expected format
@@ -68,11 +74,24 @@ const PostPage = () => {
         category: post.category,
         content: post.content,
         media: post.media && Array.isArray(post.media) && post.media.length > 0
-          ? post.media.map(m => ({
-            media_id: m.media_id,
-            type: m.media_type || m.type, // Handle both formats
-            url: `http://localhost/backend/${m.media_path || m.path}`
-          }))
+          ? post.media.map(m => {
+            // Ensure path starts with / for URL construction
+            const mediaPath = m.media_path || m.path || '';
+            const normalizedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
+            const url = `${API_BASE_URL}${normalizedPath}`;
+
+            console.log('Media transformation:', {
+              original_path: mediaPath,
+              normalized_path: normalizedPath,
+              final_url: url
+            });
+
+            return {
+              media_id: m.media_id,
+              type: m.media_type || m.type, // Handle both formats
+              url: url
+            };
+          })
           : [],
         reactions: post.likes_count || 0,
         isReacted: false, // TODO: Check if current user has liked
@@ -213,11 +232,16 @@ const PostPage = () => {
           category: post.category,
           content: post.content,
           media: post.media && Array.isArray(post.media) && post.media.length > 0
-            ? post.media.map(m => ({
-              media_id: m.media_id,
-              type: m.media_type || m.type, // Handle both formats
-              url: `http://localhost/backend/${m.media_path || m.path}`
-            }))
+            ? post.media.map(m => {
+              // Ensure path starts with / for URL construction
+              const mediaPath = m.media_path || m.path || '';
+              const normalizedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
+              return {
+                media_id: m.media_id,
+                type: m.media_type || m.type, // Handle both formats
+                url: `${API_BASE_URL}${normalizedPath}`
+              };
+            })
             : [],
           reactions: post.likes_count || 0,
           isReacted: false,
