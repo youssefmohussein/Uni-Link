@@ -58,3 +58,8 @@ export const deleteRoom = async (room_id) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to delete room");
     return true;
 };
+export const joinRoom = async (roomId, password) => {
+    const res = await apiRequest("joinRoom", "POST", { room_id: roomId, password });
+    if (res.status !== "success") throw new Error(res.message || "Failed to join room");
+    return res;
+};

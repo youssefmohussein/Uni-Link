@@ -6,6 +6,8 @@ import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import * as facultyHandler from "../../../api/facultyandmajorHandler";
 import * as professorHandler from "../../../api/professorHandler";
 import { API_BASE_URL } from "../../../config/api";
+import PasswordModal from "../../Components/ProjectRoom/PasswordModal";
+import { toast } from "react-hot-toast";
 
 const CreateRoomModal = ({ onClose, onCreated, userId }) => {
     const [name, setName] = useState("");
@@ -270,6 +272,8 @@ const ProjectRoomsPage = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("my"); // 'my' or 'other'
+    const [selectedRoom, setSelectedRoom] = useState(null);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
     const navigate = useNavigate();
     const hasFetched = useRef(false);
 
@@ -287,7 +291,31 @@ const ProjectRoomsPage = () => {
             hasFetched.current = true;
             fetchRooms();
         }
-    }, []);
+    }, [user, navigate]);
+
+    const handleJoinRequest = (room) => {
+        const userId = user?.id || user?.user_id;
+        // If owner, enter directly
+        if (parseInt(room.owner_id) === parseInt(userId)) {
+            navigate(`/project-room/${room.room_id}`);
+            return;
+        }
+
+        // Show password modal for others
+        setSelectedRoom(room);
+        setShowPasswordModal(true);
+    };
+
+    const handleConfirmJoin = async (password) => {
+        try {
+            await projectRoomHandler.joinRoom(selectedRoom.room_id, password);
+            toast.success("Welcome to the room!");
+            setShowPasswordModal(false);
+            navigate(`/project-room/${selectedRoom.room_id}`);
+        } catch (err) {
+            throw err; // Let PasswordModal handle the error display
+        }
+    };
 
     const fetchRooms = async (isRefresh = false) => {
         try {
@@ -445,7 +473,7 @@ const ProjectRoomsPage = () => {
                                                     By <span className="text-white">{room.creator_name}</span>
                                                 </div>
                                                 <button
-                                                    onClick={() => navigate(`/project-room/${room.room_id}`)}
+                                                    onClick={() => handleJoinRequest(room)}
                                                     className="px-3 py-1.5 bg-white/10 hover:bg-accent text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm"
                                                 >
                                                     Enter
@@ -490,7 +518,7 @@ const ProjectRoomsPage = () => {
                                                     By <span className="text-white">{room.creator_name}</span>
                                                 </div>
                                                 <button
-                                                    onClick={() => navigate(`/project-room/${room.room_id}`)}
+                                                    onClick={() => handleJoinRequest(room)}
                                                     className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm"
                                                 >
                                                     Join
@@ -515,6 +543,13 @@ const ProjectRoomsPage = () => {
                     }}
                 />
             )}
+
+            <PasswordModal
+                room={selectedRoom}
+                isOpen={showPasswordModal}
+                onClose={() => setShowPasswordModal(false)}
+                onConfirm={handleConfirmJoin}
+            />
         </div>
     );
 };

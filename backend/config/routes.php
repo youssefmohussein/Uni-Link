@@ -146,6 +146,8 @@ return [
     'GET /getRoom' => ['ProjectRoomController', 'getRoom'],
     'POST /updateRoom' => ['ProjectRoomController', 'update'],
     'POST /deleteRoom' => ['ProjectRoomController', 'delete'],
+    'POST /joinRoom' => ['ProjectRoomController', 'join'],
+    'POST /api/project-rooms/join' => ['ProjectRoomController', 'join'],
 
     // ============================================
     // CV Routes (Legacy compatibility)
