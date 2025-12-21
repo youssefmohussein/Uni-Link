@@ -27,13 +27,12 @@ class UserSkillController extends BaseController {
             }
             
             $skills = $this->skillService->getUserSkills($userId);
-            $this->success([
-                'count' => count($skills),
-                'data' => $skills
-            ]);
+            $skills = $this->skillService->getUserSkills($userId);
+            // Return skills directly as array, as expected by SkillsSection.jsx
+            $this->success($skills);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -54,7 +53,7 @@ class UserSkillController extends BaseController {
             $this->success(null, 'Skill added successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -74,7 +73,7 @@ class UserSkillController extends BaseController {
             $this->success(null, 'Skill removed successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
 }
