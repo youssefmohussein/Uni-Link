@@ -4,6 +4,7 @@ import Header from "../../Components/Posts/Header";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import { API_BASE_URL } from "../../../config/api";
 import { toast } from "react-hot-toast";
+import DeleteRoomModal from "../../Components/ProjectRoom/DeleteRoomModal";
 
 const ProjectChatPage = () => {
     const { id: roomId } = useParams();
@@ -17,6 +18,8 @@ const ProjectChatPage = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filePreview, setFilePreview] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const fileInputRef = useRef(null);
 
     const messagesEndRef = useRef(null);
@@ -79,14 +82,16 @@ const ProjectChatPage = () => {
     };
 
     const handleDeleteRoom = async () => {
-        if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) return;
-
         try {
+            setDeleting(true);
             await projectRoomHandler.deleteRoom(roomId);
             toast.success("Room deleted successfully");
             navigate('/project-rooms');
         } catch (err) {
             toast.error("Failed to delete room: " + err.message);
+        } finally {
+            setDeleting(false);
+            setShowDeleteModal(false);
         }
     };
 
@@ -375,7 +380,7 @@ const ProjectChatPage = () => {
                                         <i className="fa-solid fa-triangle-exclamation"></i> Danger Zone
                                     </h3>
                                     <button
-                                        onClick={handleDeleteRoom}
+                                        onClick={() => setShowDeleteModal(true)}
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition border border-red-500/20 group font-bold text-sm"
                                     >
                                         <i className="fa-solid fa-trash-can group-hover:shake"></i>
@@ -390,6 +395,14 @@ const ProjectChatPage = () => {
                     </div>
                 )}
             </div>
+
+            <DeleteRoomModal
+                isOpen={showDeleteModal}
+                loading={deleting}
+                roomName={room?.name}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteRoom}
+            />
 
             <style jsx>{`
                 .animate-slide-in-right {

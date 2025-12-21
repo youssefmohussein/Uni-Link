@@ -188,7 +188,7 @@ class ChatController extends BaseController
         }
 
         $file = $_FILES['file'];
-        $uploadDir = __DIR__ . '/../../uploads/chat/';
+        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'chat' . DIRECTORY_SEPARATOR;
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);

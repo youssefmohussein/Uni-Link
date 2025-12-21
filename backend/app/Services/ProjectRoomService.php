@@ -167,10 +167,16 @@ class ProjectRoomService extends BaseService
      * @param int $roomId Room ID
      * @return bool Success status
      */
-    public function deleteRoom(int $roomId): bool
+    public function deleteRoom(int $roomId, int $userId): bool
     {
-        if (!$this->roomRepo->exists($roomId)) {
+        $room = $this->roomRepo->find($roomId);
+        if (!$room) {
             throw new \Exception('Room not found', 404);
+        }
+
+        // Validate ownership
+        if ((int) $room['owner_id'] !== $userId) {
+            throw new \Exception('Unauthorized: Only the room owner can delete this room', 403);
         }
 
         // Rely on DB-level ON DELETE CASCADE for room_members and chat_messages

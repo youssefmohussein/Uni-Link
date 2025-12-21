@@ -77,8 +77,8 @@ $requestUri = '/' . ltrim($requestUri, '/'); // Ensure it starts with /
 // Serve static files (uploads/media, etc.) before routing
 if (preg_match('#^/uploads/#', $requestUri)) {
     // Ensure requestUri starts with / for path construction
-    $normalizedUri = $requestUri[0] === '/' ? $requestUri : '/' . $requestUri;
-    $filePath = __DIR__ . $normalizedUri;
+    $normalizedUri = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, ltrim($requestUri, '/'));
+    $filePath = __DIR__ . DIRECTORY_SEPARATOR . $normalizedUri;
 
     // Debug logging
     $exists = file_exists($filePath);

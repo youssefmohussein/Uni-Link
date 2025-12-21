@@ -66,6 +66,15 @@ class ProjectRoomController extends BaseController
                 $data['name'] = $data['room_name'];
             }
 
+            // Handle optional fields that might be empty strings from forms
+            // Convert empty strings to NULL to avoid foreign key issues
+            if (isset($data['faculty_id']) && $data['faculty_id'] === '') {
+                $data['faculty_id'] = null;
+            }
+            if (isset($data['professor_id']) && $data['professor_id'] === '') {
+                $data['professor_id'] = null;
+            }
+
 
             // Filter only allowed fields for chat_rooms table to avoid SQL errors
             $allowedFields = [
@@ -76,7 +85,9 @@ class ProjectRoomController extends BaseController
                 'photo_url',
                 'is_private',
                 'password',
-                'room_name'
+                'room_name',
+                'faculty_id',
+                'professor_id'
             ];
             $insertData = array_intersect_key($data, array_flip($allowedFields));
 
@@ -189,7 +200,8 @@ class ProjectRoomController extends BaseController
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['room_id']);
 
-            $this->roomService->deleteRoom((int) $data['room_id']);
+            $userId = $this->getCurrentUserId();
+            $this->roomService->deleteRoom((int) $data['room_id'], $userId);
             $this->success(null, 'Room deleted successfully');
 
         } catch (\Exception $e) {
