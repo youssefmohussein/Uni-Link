@@ -41,6 +41,7 @@ use App\Services\CvService;
 use App\Services\ProjectRoomService;
 use App\Services\SubjectService;
 use App\Services\NotificationService;
+use App\Services\AiService;
 
 // Controllers
 use App\Controllers\AuthController;
@@ -242,6 +243,13 @@ $container->singleton('NotificationService', function ($c) {
     return new NotificationService();
 });
 
+$container->singleton('AiService', function ($c) {
+    return new AiService(
+        $c->get('ChatRepository'),
+        $c->get('UserRepository')
+    );
+});
+
 // ============================================
 // Register Facades
 // ============================================
@@ -329,7 +337,8 @@ $container->set('ChatController', function ($c) {
         $c->get('ChatRepository'),
         $c->get('ProjectRoomRepository'),
         $c->get('UserRepository'),
-        $c->get('NotificationService')
+        $c->get('NotificationService'),
+        $c->get('AiService')
     );
 });
 

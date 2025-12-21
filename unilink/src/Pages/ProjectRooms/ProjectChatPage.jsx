@@ -198,12 +198,14 @@ const ProjectChatPage = () => {
                                     <div className={`max-w-[85%] md:max-w-[70%] flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
                                         {/* Avatar - only show if first message in group */}
                                         {!isMe ? (
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/50 to-purple-500/50 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-1 shadow-lg overflow-hidden">
-                                                {msg.profile_image || msg.profile_picture ? (
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/50 to-purple-500/50 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-1 shadow-lg overflow-hidden bg-black">
+                                                {msg.username === 'unilink' ? (
+                                                    <img src="/Images/Logo_Png.png" alt="AI Bot" className="w-full h-full object-contain p-1" />
+                                                ) : (msg.profile_image || msg.profile_picture ? (
                                                     <img src={`${API_BASE_URL}/${msg.profile_image || msg.profile_picture}`} alt={msg.username} className="w-full h-full object-cover" />
                                                 ) : (
                                                     msg.username?.charAt(0).toUpperCase()
-                                                )}
+                                                ))}
                                             </div>
                                         ) : null}
 
@@ -289,14 +291,29 @@ const ProjectChatPage = () => {
                                 onChange={handleFileChange}
                                 className="hidden"
                             />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current.click()}
-                                className="p-4 text-gray-400 hover:text-white transition w-14 h-14 flex items-center justify-center"
-                                disabled={sending}
-                            >
-                                <i className="fa-solid fa-paperclip text-lg"></i>
-                            </button>
+                            <div className="flex gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="p-4 text-gray-400 hover:text-white transition w-12 h-14 flex items-center justify-center"
+                                    disabled={sending}
+                                    title="Attach File"
+                                >
+                                    <i className="fa-solid fa-paperclip text-lg"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setNewMessage(prev => (prev ? prev + " " : "") + "@unilink ")}
+                                    className="p-4 text-accent hover:text-accent/80 transition w-12 h-14 flex items-center justify-center relative group"
+                                    disabled={sending}
+                                    title="Ask AI (@unilink)"
+                                >
+                                    <i className="fa-solid fa-robot text-xl"></i>
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-accent text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
+                                        Ask AI
+                                    </span>
+                                </button>
+                            </div>
                             <input
                                 className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
                                 placeholder="Type your message..."

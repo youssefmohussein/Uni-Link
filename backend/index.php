@@ -7,6 +7,10 @@
 
 // Load autoloader
 require_once __DIR__ . '/config/autoload.php';
+require_once __DIR__ . '/config/env_loader.php';
+
+// Load .env
+loadEnv(__DIR__ . '/.env');
 
 // CORS Headers for React frontend - MUST be before any output
 // Note: Content-Type will be set per request (JSON for API, appropriate type for static files)
