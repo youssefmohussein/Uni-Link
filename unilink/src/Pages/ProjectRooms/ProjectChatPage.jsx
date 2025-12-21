@@ -15,6 +15,9 @@ const ProjectChatPage = () => {
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [filePreview, setFilePreview] = useState(null);
+    const fileInputRef = useRef(null);
 
     const messagesEndRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user'));
@@ -87,18 +90,42 @@ const ProjectChatPage = () => {
         }
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onloadend = () => setFilePreview(reader.result);
+                reader.readAsDataURL(file);
+            } else {
+                setFilePreview(null);
+            }
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() && !selectedFile) return;
 
         setSending(true);
         try {
+            let fileData = null;
+            if (selectedFile) {
+                fileData = await projectRoomHandler.uploadChatFile(selectedFile);
+            }
+
             await projectRoomHandler.sendMessage({
                 room_id: roomId,
                 sender_id: user.id || user.user_id,
-                content: newMessage
+                content: newMessage,
+                message_type: fileData ? (selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE') : 'TEXT',
+                file_path: fileData ? fileData.file_path : null
             });
+
             setNewMessage("");
+            setSelectedFile(null);
+            setFilePreview(null);
             fetchMessages(); // Immediate refresh
         } catch (err) {
             alert("Failed to send: " + err.message);
@@ -181,7 +208,39 @@ const ProjectChatPage = () => {
                                             : 'bg-white/10 text-gray-100 rounded-tl-sm border border-white/5'
                                             }`}>
                                             {!isMe && <div className="text-[11px] text-accent mb-1 font-bold">{msg.username}</div>}
-                                            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>
+
+                                            {msg.message_type === 'IMAGE' && msg.file_path && (
+                                                <div className="mb-2 max-w-sm rounded-lg overflow-hidden border border-white/10">
+                                                    <img
+                                                        src={`${API_BASE_URL}/${msg.file_path}`}
+                                                        alt="Attachment"
+                                                        className="w-full h-auto cursor-pointer hover:opacity-90 transition"
+                                                        onClick={() => window.open(`${API_BASE_URL}/${msg.file_path}`, '_blank')}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {msg.message_type === 'FILE' && msg.file_path && (
+                                                <div className="mb-2">
+                                                    <a
+                                                        href={`${API_BASE_URL}/${msg.file_path}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className={`flex items-center gap-3 p-3 rounded-xl border transition ${isMe ? 'bg-white/10 border-white/10 hover:bg-white/20' : 'bg-black/20 border-white/5 hover:bg-black/30'}`}
+                                                    >
+                                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isMe ? 'bg-white/10' : 'bg-accent/20'}`}>
+                                                            <i className={`fa-solid ${msg.file_path.endsWith('.zip') ? 'fa-file-zipper' : (msg.file_path.endsWith('.doc') || msg.file_path.endsWith('.docx')) ? 'fa-file-word' : 'fa-file-lines'} text-lg ${isMe ? 'text-white' : 'text-accent'}`}></i>
+                                                        </div>
+                                                        <div className="flex-grow min-w-0">
+                                                            <p className="text-xs font-medium truncate">Attachment</p>
+                                                            <p className="text-[10px] opacity-60">Click to Download</p>
+                                                        </div>
+                                                        <i className="fa-solid fa-download text-xs opacity-40"></i>
+                                                    </a>
+                                                </div>
+                                            )}
+
+                                            {msg.content && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>}
                                             <div className={`text-[9px] mt-1.5 ${isMe ? 'text-white/60' : 'text-gray-500'} text-right font-medium`}>
                                                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
@@ -194,22 +253,61 @@ const ProjectChatPage = () => {
                     </div>
 
                     {/* Input Area */}
-                    <form onSubmit={handleSend} className="bg-[#121212] rounded-2xl border border-white/10 p-2 flex items-center gap-2 mb-4 shadow-xl">
-                        <input
-                            className="flex-grow bg-transparent text-white placeholder-gray-500 px-5 py-4 focus:outline-none text-sm"
-                            placeholder="Type your message..."
-                            value={newMessage}
-                            onChange={e => setNewMessage(e.target.value)}
-                            disabled={sending}
-                        />
-                        <button
-                            type="submit"
-                            disabled={!newMessage.trim() || sending}
-                            className="p-4 bg-accent text-white rounded-xl hover:bg-accent/80 transition disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 flex items-center justify-center shadow-lg shadow-accent/20"
-                        >
-                            {sending ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane text-lg"></i>}
-                        </button>
-                    </form>
+                    <div className="flex flex-col gap-2 mb-4">
+                        {selectedFile && (
+                            <div className="bg-[#121212] rounded-xl border border-white/10 p-3 flex items-center justify-between animate-slide-in-right">
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    {filePreview ? (
+                                        <img src={filePreview} alt="Preview" className="w-12 h-12 rounded object-cover border border-white/10" />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded bg-white/5 flex items-center justify-center border border-white/10">
+                                            <i className="fa-solid fa-file-lines text-accent text-xl"></i>
+                                        </div>
+                                    )}
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm font-medium truncate">{selectedFile.name}</p>
+                                        <p className="text-[10px] text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => { setSelectedFile(null); setFilePreview(null); }}
+                                    className="p-2 text-gray-400 hover:text-red-500 transition"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        )}
+                        <form onSubmit={handleSend} className="bg-[#121212] rounded-2xl border border-white/10 p-2 flex items-center gap-2 shadow-xl">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current.click()}
+                                className="p-4 text-gray-400 hover:text-white transition w-14 h-14 flex items-center justify-center"
+                                disabled={sending}
+                            >
+                                <i className="fa-solid fa-paperclip text-lg"></i>
+                            </button>
+                            <input
+                                className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
+                                placeholder="Type your message..."
+                                value={newMessage}
+                                onChange={e => setNewMessage(e.target.value)}
+                                disabled={sending}
+                            />
+                            <button
+                                type="submit"
+                                disabled={(!newMessage.trim() && !selectedFile) || sending}
+                                className="p-4 bg-accent text-white rounded-xl hover:bg-accent/80 transition disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 flex items-center justify-center shadow-lg shadow-accent/20"
+                            >
+                                {sending ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane text-lg"></i>}
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 {/* Group Info Sidebar */}

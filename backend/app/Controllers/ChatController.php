@@ -22,13 +22,16 @@ class ChatController extends BaseController
     private UserRepository $userRepo;
     private NotificationService $notificationService;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->chatRepo = new ChatRepository();
-        $this->roomRepo = new ProjectRoomRepository();
-        $this->userRepo = new UserRepository();
-        $this->notificationService = new NotificationService();
+    public function __construct(
+        ChatRepository $chatRepo,
+        ProjectRoomRepository $roomRepo,
+        UserRepository $userRepo,
+        NotificationService $notificationService
+    ) {
+        $this->chatRepo = $chatRepo;
+        $this->roomRepo = $roomRepo;
+        $this->userRepo = $userRepo;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -40,13 +43,15 @@ class ChatController extends BaseController
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
 
+        $data = $this->getJsonInput();
+
         // Prepare message data
         $messageData = [
-            'room_id' => $_POST['room_id'] ?? null,
+            'room_id' => $data['room_id'] ?? null,
             'sender_id' => $userId,
-            'content' => $_POST['content'] ?? null,
-            'message_type' => $_POST['message_type'] ?? 'TEXT',
-            'file_path' => $_POST['file_path'] ?? null
+            'content' => $data['content'] ?? null,
+            'message_type' => $data['message_type'] ?? 'TEXT',
+            'file_path' => $data['file_path'] ?? null
         ];
 
         // Build the Chain of Responsibility
@@ -86,7 +91,7 @@ class ChatController extends BaseController
         }
 
         // Verify user is a member of the room
-        if (!$this->roomRepo->isUserMember($roomId, $userId)) {
+        if (!$this->roomRepo->isMember($roomId, $userId)) {
             ResponseHandler::error('You are not a member of this room', 403);
             return;
         }
@@ -96,11 +101,7 @@ class ChatController extends BaseController
 
         $messages = $this->chatRepo->getRoomMessages($roomId, $limit, $offset);
 
-        ResponseHandler::success([
-            'messages' => $messages,
-            'count' => count($messages),
-            'room_id' => $roomId
-        ]);
+        ResponseHandler::success($messages);
     }
 
     /**
@@ -120,17 +121,14 @@ class ChatController extends BaseController
         }
 
         // Verify user is a member of the room
-        if (!$this->roomRepo->isUserMember($roomId, $userId)) {
+        if (!$this->roomRepo->isMember($roomId, $userId)) {
             ResponseHandler::error('You are not a member of this room', 403);
             return;
         }
 
         $count = $this->chatRepo->getRoomMessageCount($roomId);
 
-        ResponseHandler::success([
-            'message_count' => $count,
-            'room_id' => $roomId
-        ]);
+        ResponseHandler::success($count);
     }
 
     /**
@@ -142,7 +140,8 @@ class ChatController extends BaseController
         AuthMiddleware::handle();
         $userId = AuthMiddleware::getCurrentUserId();
 
-        $messageId = $_POST['message_id'] ?? $_GET['id'] ?? null;
+        $data = $this->getJsonInput();
+        $messageId = $data['message_id'] ?? $_GET['id'] ?? null;
 
         if (!$messageId) {
             ResponseHandler::error('Message ID is required', 400);
@@ -150,7 +149,7 @@ class ChatController extends BaseController
         }
 
         // Get message to verify ownership
-        $message = $this->chatRepo->findById($messageId);
+        $message = $this->chatRepo->find($messageId);
         if (!$message) {
             ResponseHandler::error('Message not found', 404);
             return;
@@ -172,6 +171,41 @@ class ChatController extends BaseController
             ResponseHandler::success(['message' => 'Message deleted successfully']);
         } else {
             ResponseHandler::error('Failed to delete message', 500);
+        }
+    }
+
+    /**
+     * Upload a file for chat
+     * POST /api/chat/upload
+     */
+    public function uploadFile(): void
+    {
+        AuthMiddleware::handle();
+
+        if (!isset($_FILES['file'])) {
+            ResponseHandler::error('No file uploaded', 400);
+            return;
+        }
+
+        $file = $_FILES['file'];
+        $uploadDir = __DIR__ . '/../../uploads/chat/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = 'chat_' . uniqid() . '.' . $extension;
+        $targetPath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            ResponseHandler::success([
+                'file_path' => 'uploads/chat/' . $fileName,
+                'file_name' => $file['name'],
+                'file_type' => $file['type']
+            ]);
+        } else {
+            ResponseHandler::error('Failed to move uploaded file', 500);
         }
     }
 }

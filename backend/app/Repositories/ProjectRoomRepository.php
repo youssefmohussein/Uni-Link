@@ -142,4 +142,26 @@ class ProjectRoomRepository extends BaseRepository
         $stmt->execute([$roomId]);
         return $stmt->rowCount();
     }
+    /**
+     * Check if user is room admin or owner
+     * 
+     * @param int $roomId Room ID
+     * @param int $userId User ID
+     * @return bool
+     */
+    public function isUserRoomAdmin(int $roomId, int $userId): bool
+    {
+        // 1. Check if user is owner
+        $room = $this->queryOne("SELECT 1 FROM {$this->table} WHERE room_id = ? AND owner_id = ?", [$roomId, $userId]);
+        if ($room)
+            return true;
+
+        // 2. Check if user has Admin role in room_members
+        $member = $this->queryOne("
+            SELECT 1 FROM room_members 
+            WHERE room_id = ? AND user_id = ? AND role = 'Admin'
+        ", [$roomId, $userId]);
+
+        return $member !== null;
+    }
 }

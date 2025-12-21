@@ -242,5 +242,7 @@ return [
     'POST /api/chat/send' => ['ChatController', 'sendMessage'],
     'GET /api/chat/messages' => ['ChatController', 'getRoomMessages'],
     'GET /api/chat/message-count' => ['ChatController', 'getMessageCount'],
-    'DELETE /api/chat/messages/delete' => ['ChatController', 'deleteMessage'],
+    'POST /api/chat/messages/delete' => ['ChatController', 'deleteMessage'],
+    'POST /api/chat/upload' => ['ChatController', 'uploadFile'],
+    'POST /uploadChatFile' => ['ChatController', 'uploadFile'],
 ];
