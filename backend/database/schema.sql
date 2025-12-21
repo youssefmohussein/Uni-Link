@@ -321,7 +321,7 @@ CREATE TABLE `chat_messages` (
   `room_id` INT NOT NULL,
   `sender_id` INT NOT NULL,
   `content` TEXT NOT NULL,
-  `message_type` ENUM('TEXT', 'FILE', 'IMAGE', 'SYSTEM') DEFAULT 'TEXT',
+  `message_type` ENUM('TEXT', 'FILE', 'IMAGE', 'VOICE', 'SYSTEM') DEFAULT 'TEXT',
   `file_path` VARCHAR(500),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

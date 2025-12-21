@@ -6,6 +6,110 @@ import { API_BASE_URL } from "../../../config/api";
 import { toast } from "react-hot-toast";
 import DeleteRoomModal from "../../Components/ProjectRoom/DeleteRoomModal";
 
+// Voice Message Player Component
+const VoiceMessagePlayer = ({ audioUrl, isMe }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const audioRef = useRef(null);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+        };
+
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+        };
+
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+        };
+
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('ended', handleEnded);
+
+        return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('ended', handleEnded);
+        };
+    }, []);
+
+    const togglePlayPause = () => {
+        const audio = audioRef.current;
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleSliderChange = (e) => {
+        const audio = audioRef.current;
+        const newTime = parseFloat(e.target.value);
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
+    };
+
+    const formatTime = (time) => {
+        if (isNaN(time)) return '0:00';
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+    return (
+        <div className="mb-2">
+            <div className={`flex items-center gap-3 p-3 rounded-xl border min-w-[250px] ${isMe ? 'bg-white/10 border-white/10' : 'bg-black/20 border-white/5'
+                }`}>
+                <audio ref={audioRef} src={audioUrl} preload="metadata" />
+
+                {/* Play/Pause Button */}
+                <button
+                    onClick={togglePlayPause}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition ${isMe ? 'bg-white/20 hover:bg-white/30' : 'bg-accent/20 hover:bg-accent/30'
+                        }`}
+                >
+                    <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'} text-sm ${isMe ? 'text-white' : 'text-accent'
+                        } ${!isPlaying ? 'ml-0.5' : ''}`}></i>
+                </button>
+
+                {/* Waveform/Progress Bar */}
+                <div className="flex-grow flex flex-col gap-1">
+                    <div className="relative h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                            className={`absolute top-0 left-0 h-full rounded-full transition-all ${isMe ? 'bg-white/60' : 'bg-accent'
+                                }`}
+                            style={{ width: `${progress}%` }}
+                        />
+                        <input
+                            type="range"
+                            min="0"
+                            max={duration || 0}
+                            value={currentTime}
+                            onChange={handleSliderChange}
+                            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                    </div>
+                    <div className={`text-[10px] ${isMe ? 'text-white/60' : 'text-gray-400'}`}>
+                        {formatTime(currentTime)} / {formatTime(duration)}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 const ProjectChatPage = () => {
     const { id: roomId } = useParams();
     const navigate = useNavigate();
@@ -21,6 +125,13 @@ const ProjectChatPage = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const fileInputRef = useRef(null);
+
+    // Voice recording states
+    const [isRecording, setIsRecording] = useState(false);
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [recordingDuration, setRecordingDuration] = useState(0);
+    const mediaRecorderRef = useRef(null);
+    const recordingIntervalRef = useRef(null);
 
     const messagesEndRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user'));
@@ -122,28 +233,92 @@ const ProjectChatPage = () => {
         }
     };
 
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            const chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    chunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                setAudioBlob(blob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingDuration(0);
+
+            // Start duration timer
+            recordingIntervalRef.current = setInterval(() => {
+                setRecordingDuration(prev => prev + 1);
+            }, 1000);
+        } catch (err) {
+            toast.error("Failed to access microphone: " + err.message);
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (recordingIntervalRef.current) {
+                clearInterval(recordingIntervalRef.current);
+            }
+        }
+    };
+
+    const cancelRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            setAudioBlob(null);
+            setRecordingDuration(0);
+            if (recordingIntervalRef.current) {
+                clearInterval(recordingIntervalRef.current);
+            }
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() && !selectedFile) return;
+        if (!newMessage.trim() && !selectedFile && !audioBlob) return;
 
         setSending(true);
         try {
             let fileData = null;
-            if (selectedFile) {
+            let messageType = 'TEXT';
+
+            if (audioBlob) {
+                // Upload voice message
+                const audioFile = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+                fileData = await projectRoomHandler.uploadChatFile(audioFile);
+                messageType = 'VOICE';
+            } else if (selectedFile) {
                 fileData = await projectRoomHandler.uploadChatFile(selectedFile);
+                messageType = selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE';
             }
 
             await projectRoomHandler.sendMessage({
                 room_id: roomId,
                 sender_id: user.id || user.user_id,
                 content: newMessage,
-                message_type: fileData ? (selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE') : 'TEXT',
+                message_type: messageType,
                 file_path: fileData ? fileData.file_path : null
             });
 
             setNewMessage("");
             setSelectedFile(null);
             setFilePreview(null);
+            setAudioBlob(null);
+            setRecordingDuration(0);
             fetchMessages(); // Immediate refresh
         } catch (err) {
             alert("Failed to send: " + err.message);
@@ -260,6 +435,13 @@ const ProjectChatPage = () => {
                                                 </div>
                                             )}
 
+                                            {msg.message_type === 'VOICE' && msg.file_path && (
+                                                <VoiceMessagePlayer
+                                                    audioUrl={`${API_BASE_URL}/${msg.file_path}`}
+                                                    isMe={isMe}
+                                                />
+                                            )}
+
                                             {msg.content && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>}
                                             <div className="flex items-center justify-end gap-2 mt-1.5">
                                                 <div className={`text-[9px] ${isMe ? 'text-white/60' : 'text-gray-500'} font-medium`}>
@@ -308,6 +490,53 @@ const ProjectChatPage = () => {
                                 </button>
                             </div>
                         )}
+
+                        {/* Voice Recording Preview */}
+                        {audioBlob && !isRecording && (
+                            <div className="bg-[#121212] rounded-xl border border-white/10 p-3 flex items-center justify-between animate-slide-in-right">
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="w-12 h-12 rounded bg-accent/20 flex items-center justify-center border border-accent/30">
+                                        <i className="fa-solid fa-microphone text-accent text-xl"></i>
+                                    </div>
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm font-medium">Voice Message</p>
+                                        <p className="text-[10px] text-gray-500">{Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => { setAudioBlob(null); setRecordingDuration(0); }}
+                                    className="p-2 text-gray-400 hover:text-red-500 transition"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Recording Indicator */}
+                        {isRecording && (
+                            <div className="bg-red-500/10 rounded-xl border border-red-500/30 p-3 flex items-center justify-between animate-pulse">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                                    <p className="text-sm font-medium text-red-500">Recording...</p>
+                                    <p className="text-sm text-gray-400">{Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={cancelRecording}
+                                        className="px-3 py-1 text-xs text-gray-400 hover:text-white transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={stopRecording}
+                                        className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                    >
+                                        Stop
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSend} className="bg-[#121212] rounded-2xl border border-white/10 p-2 flex items-center gap-2 shadow-xl">
                             <input
                                 type="file"
@@ -329,12 +558,27 @@ const ProjectChatPage = () => {
                                     type="button"
                                     onClick={() => setNewMessage(prev => (prev ? prev + " " : "") + "@unilink ")}
                                     className="p-4 text-accent hover:text-accent/80 transition w-12 h-14 flex items-center justify-center relative group"
-                                    disabled={sending}
+                                    disabled={sending || isRecording}
                                     title="Ask AI (@unilink)"
                                 >
                                     <i className="fa-solid fa-robot text-xl"></i>
                                     <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-accent text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
                                         Ask AI
+                                    </span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={isRecording ? stopRecording : startRecording}
+                                    className={`p-4 transition w-12 h-14 flex items-center justify-center relative group ${isRecording
+                                        ? 'text-red-500 hover:text-red-400'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                    disabled={sending}
+                                    title={isRecording ? "Stop Recording" : "Voice Message"}
+                                >
+                                    <i className={`fa-solid fa-microphone text-lg ${isRecording ? 'animate-pulse' : ''}`}></i>
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-accent text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
+                                        {isRecording ? 'Stop' : 'Voice'}
                                     </span>
                                 </button>
                             </div>
@@ -343,11 +587,11 @@ const ProjectChatPage = () => {
                                 placeholder="Type your message..."
                                 value={newMessage}
                                 onChange={e => setNewMessage(e.target.value)}
-                                disabled={sending}
+                                disabled={sending || isRecording}
                             />
                             <button
                                 type="submit"
-                                disabled={(!newMessage.trim() && !selectedFile) || sending}
+                                disabled={(!newMessage.trim() && !selectedFile && !audioBlob) || sending || isRecording}
                                 className="p-4 bg-accent text-white rounded-xl hover:bg-accent/80 transition disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 flex items-center justify-center shadow-lg shadow-accent/20"
                             >
                                 {sending ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane text-lg"></i>}
