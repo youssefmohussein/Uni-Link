@@ -150,6 +150,7 @@ return [
     'POST /api/project-rooms/join' => ['ProjectRoomController', 'join'],
     'POST /sendMessage' => ['ChatController', 'sendMessage'],
     'GET /getMessages' => ['ChatController', 'getRoomMessages'],
+    'POST /deleteMessage' => ['ChatController', 'deleteMessage'],
     'GET /getRoomMembers' => ['ProjectRoomController', 'getRoomMembers'],
 
     // ============================================
@@ -246,4 +247,10 @@ return [
     'POST /api/chat/messages/delete' => ['ChatController', 'deleteMessage'],
     'POST /api/chat/upload' => ['ChatController', 'uploadFile'],
     'POST /uploadChatFile' => ['ChatController', 'uploadFile'],
+
+    // Counting Routes
+    'GET /api/posts/category-counts' => ['PostController', 'getCategoryCounts'],
+    'GET /getCategoryCounts' => ['PostController', 'getCategoryCounts'],
+    'GET /api/chat/rooms/total-count' => ['ProjectRoomController', 'getRoomCount'],
+    'GET /getRoomCount' => ['ProjectRoomController', 'getRoomCount'],
 ];

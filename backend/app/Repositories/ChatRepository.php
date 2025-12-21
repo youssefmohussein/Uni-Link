@@ -1,6 +1,8 @@
 <?php
 namespace App\Repositories;
 
+use App\Utils\Encryption;
+
 /**
  * ChatRepository
  * 
@@ -18,6 +20,9 @@ class ChatRepository extends BaseRepository
      */
     public function createMessage(array $data): int
     {
+        if (isset($data['content']) && !empty($data['content'])) {
+            $data['content'] = Encryption::encrypt($data['content']);
+        }
         return $this->create($data);
     }
 
@@ -39,7 +44,20 @@ class ChatRepository extends BaseRepository
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
 
-        return array_reverse($stmt->fetchAll(\PDO::FETCH_ASSOC));
+        $messages = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        // Decrypt messages
+        foreach ($messages as &$msg) {
+            if (!empty($msg['content'])) {
+                $decrypted = Encryption::decrypt($msg['content']);
+                // If decryption succeeds, use it. If fails (legacy message), use original.
+                if ($decrypted !== null) {
+                    $msg['content'] = $decrypted;
+                }
+            }
+        }
+
+        return array_reverse($messages);
     }
 
     /**

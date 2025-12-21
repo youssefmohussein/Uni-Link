@@ -81,9 +81,7 @@ const HomePage = () => {
                     <section className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 md:px-10 text-center py-10 md:py-0 relative z-40">
                         <GlassCard className="p-6 sm:p-8 md:p-12 max-w-3xl w-full">
                             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 md:mb-8">Ready to Dive In?</h2>
-                            <p className="text-lg sm:text-xl text-gray-300 mb-8 md:mb-10">
-                                Join thousands of students and professors using Uni-Link today.
-                            </p>
+                            <h3><i class="fa-solid fa-arrow-down"></i> Scroll Down To Find More About Each Faculty <i class="fa-solid fa-arrow-down"></i></h3>
                             <button className="cursor-pointer bg-accent hover:bg-accent-alt text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-lg sm:text-xl transition-all shadow-[0_0_20px_rgba(88,166,255,0.5)] hover:shadow-[0_0_40px_rgba(88,166,255,0.7)]">
                                 <a href="/login">Join Now</a>
                             </button>

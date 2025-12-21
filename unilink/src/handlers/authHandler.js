@@ -39,7 +39,8 @@ class AuthHandler {
                 id: loginData.id,
                 username: loginData.username,
                 email: loginData.email,
-                role: loginData.role
+                role: loginData.role,
+                profile_image: loginData.profile_image
             };
             localStorage.setItem('user', JSON.stringify(userData));
 

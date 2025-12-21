@@ -52,7 +52,7 @@ class AdminController extends BaseController
 
             $user = $this->userService->updateUser((int) $data['user_id'], $data);
 
-            unset($user['password']);
+            unset($user['password_hash']);
             $this->success($user, 'Admin updated successfully');
 
         } catch (\Exception $e) {

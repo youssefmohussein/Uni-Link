@@ -5,7 +5,11 @@ use App\Repositories\ChatRepository;
 use App\Repositories\ProjectRoomRepository;
 use App\Repositories\UserRepository;
 use App\Services\NotificationService;
-use App\Handlers\{ValidationHandler, PermissionHandler, MentionHandler, PersistenceHandler};
+use App\Handlers\ValidationHandler;
+use App\Handlers\PermissionHandler;
+use App\Handlers\MentionHandler;
+use App\Handlers\PersistenceHandler;
+use App\Services\AiService;
 use App\Middlewares\AuthMiddleware;
 use App\Utils\ResponseHandler;
 
@@ -21,17 +25,20 @@ class ChatController extends BaseController
     private ProjectRoomRepository $roomRepo;
     private UserRepository $userRepo;
     private NotificationService $notificationService;
+    private AiService $aiService;
 
     public function __construct(
         ChatRepository $chatRepo,
         ProjectRoomRepository $roomRepo,
         UserRepository $userRepo,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        AiService $aiService
     ) {
         $this->chatRepo = $chatRepo;
         $this->roomRepo = $roomRepo;
         $this->userRepo = $userRepo;
         $this->notificationService = $notificationService;
+        $this->aiService = $aiService;
     }
 
     /**
@@ -70,6 +77,10 @@ class ChatController extends BaseController
         if (isset($result['error'])) {
             ResponseHandler::error($result['error'], 400);
         } else {
+            // Trigger AI processing
+            $messageData['message_id'] = $result['message_id']; // assuming persistence adds this
+            $this->aiService->processMessage($messageData);
+
             ResponseHandler::success($result);
         }
     }
@@ -188,7 +199,7 @@ class ChatController extends BaseController
         }
 
         $file = $_FILES['file'];
-        $uploadDir = __DIR__ . '/../../uploads/chat/';
+        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'chat' . DIRECTORY_SEPARATOR;
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);

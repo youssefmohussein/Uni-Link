@@ -41,6 +41,7 @@ use App\Services\CvService;
 use App\Services\ProjectRoomService;
 use App\Services\SubjectService;
 use App\Services\NotificationService;
+use App\Services\AiService;
 
 // Controllers
 use App\Controllers\AuthController;
@@ -239,7 +240,21 @@ $container->singleton('SubjectService', function ($c) {
 });
 
 $container->singleton('NotificationService', function ($c) {
-    return new NotificationService();
+    $service = new NotificationService();
+
+    // Subscribe observers to the service
+    $service->subscribe(new \App\Observers\PostNotificationObserver($c->get('NotificationRepository')));
+    $service->subscribe(new \App\Observers\ProjectNotificationObserver($c->get('NotificationRepository')));
+    $service->subscribe(new \App\Observers\ChatNotificationObserver($c->get('NotificationRepository')));
+
+    return $service;
+});
+
+$container->singleton('AiService', function ($c) {
+    return new AiService(
+        $c->get('ChatRepository'),
+        $c->get('UserRepository')
+    );
 });
 
 // ============================================
@@ -329,7 +344,8 @@ $container->set('ChatController', function ($c) {
         $c->get('ChatRepository'),
         $c->get('ProjectRoomRepository'),
         $c->get('UserRepository'),
-        $c->get('NotificationService')
+        $c->get('NotificationService'),
+        $c->get('AiService')
     );
 });
 

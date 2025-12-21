@@ -75,6 +75,7 @@ class ProjectRoomController extends BaseController
                 $data['professor_id'] = null;
             }
 
+
             // Filter only allowed fields for chat_rooms table to avoid SQL errors
             $allowedFields = [
                 'name',
@@ -199,7 +200,8 @@ class ProjectRoomController extends BaseController
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['room_id']);
 
-            $this->roomService->deleteRoom((int) $data['room_id']);
+            $userId = $this->getCurrentUserId();
+            $this->roomService->deleteRoom((int) $data['room_id'], $userId);
             $this->success(null, 'Room deleted successfully');
 
         } catch (\Exception $e) {
@@ -250,6 +252,20 @@ class ProjectRoomController extends BaseController
         } catch (\Exception $e) {
             $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
             $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
+
+    /**
+     * Get total count of project rooms
+     * GET /api/chat/rooms/total-count
+     */
+    public function getRoomCount(): void
+    {
+        try {
+            $count = $this->roomService->getRoomCount();
+            $this->success(['count' => $count]);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
         }
     }
 }

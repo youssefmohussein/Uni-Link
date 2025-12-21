@@ -57,7 +57,7 @@ class StudentController extends BaseController
 
             $user = $this->userService->updateUser((int) $data['user_id'], $data);
 
-            unset($user['password']);
+            unset($user['password_hash']);
             $this->success($user, 'Student updated successfully');
 
         } catch (\Exception $e) {

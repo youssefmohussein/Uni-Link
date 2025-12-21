@@ -4,6 +4,111 @@ import Header from "../../Components/Posts/Header";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import { API_BASE_URL } from "../../../config/api";
 import { toast } from "react-hot-toast";
+import DeleteRoomModal from "../../Components/ProjectRoom/DeleteRoomModal";
+
+// Voice Message Player Component
+const VoiceMessagePlayer = ({ audioUrl, isMe }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const audioRef = useRef(null);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+        };
+
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+        };
+
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+        };
+
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('ended', handleEnded);
+
+        return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('ended', handleEnded);
+        };
+    }, []);
+
+    const togglePlayPause = () => {
+        const audio = audioRef.current;
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleSliderChange = (e) => {
+        const audio = audioRef.current;
+        const newTime = parseFloat(e.target.value);
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
+    };
+
+    const formatTime = (time) => {
+        if (isNaN(time)) return '0:00';
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+    return (
+        <div className="mb-2">
+            <div className={`flex items-center gap-3 p-3 rounded-xl border min-w-[250px] ${isMe ? 'bg-white/10 border-white/10' : 'bg-black/20 border-white/5'
+                }`}>
+                <audio ref={audioRef} src={audioUrl} preload="metadata" />
+
+                {/* Play/Pause Button */}
+                <button
+                    onClick={togglePlayPause}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition ${isMe ? 'bg-white/20 hover:bg-white/30' : 'bg-accent/20 hover:bg-accent/30'
+                        }`}
+                >
+                    <i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'} text-sm ${isMe ? 'text-white' : 'text-accent'
+                        } ${!isPlaying ? 'ml-0.5' : ''}`}></i>
+                </button>
+
+                {/* Waveform/Progress Bar */}
+                <div className="flex-grow flex flex-col gap-1">
+                    <div className="relative h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                            className={`absolute top-0 left-0 h-full rounded-full transition-all ${isMe ? 'bg-white/60' : 'bg-accent'
+                                }`}
+                            style={{ width: `${progress}%` }}
+                        />
+                        <input
+                            type="range"
+                            min="0"
+                            max={duration || 0}
+                            value={currentTime}
+                            onChange={handleSliderChange}
+                            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                    </div>
+                    <div className={`text-[10px] ${isMe ? 'text-white/60' : 'text-gray-400'}`}>
+                        {formatTime(currentTime)} / {formatTime(duration)}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 const ProjectChatPage = () => {
     const { id: roomId } = useParams();
@@ -17,7 +122,19 @@ const ProjectChatPage = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filePreview, setFilePreview] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [mentionSearch, setMentionSearch] = useState("");
+    const [showMentionList, setShowMentionList] = useState(false);
+    const [mentionIndex, setMentionIndex] = useState(0);
     const fileInputRef = useRef(null);
+
+    // Voice recording states
+    const [isRecording, setIsRecording] = useState(false);
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [recordingDuration, setRecordingDuration] = useState(0);
+    const mediaRecorderRef = useRef(null);
+    const recordingIntervalRef = useRef(null);
 
     const messagesEndRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user'));
@@ -79,14 +196,16 @@ const ProjectChatPage = () => {
     };
 
     const handleDeleteRoom = async () => {
-        if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) return;
-
         try {
+            setDeleting(true);
             await projectRoomHandler.deleteRoom(roomId);
             toast.success("Room deleted successfully");
             navigate('/project-rooms');
         } catch (err) {
             toast.error("Failed to delete room: " + err.message);
+        } finally {
+            setDeleting(false);
+            setShowDeleteModal(false);
         }
     };
 
@@ -104,28 +223,166 @@ const ProjectChatPage = () => {
         }
     };
 
+    const handleDeleteMessage = async (messageId) => {
+        if (!window.confirm("Are you sure you want to delete this message?")) return;
+
+        try {
+            console.log("Deleting message:", messageId);
+            await projectRoomHandler.removeChatMessage(messageId);
+            setMessages(prev => prev.filter(m => m.message_id !== messageId));
+            toast.success("Message deleted");
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
+
+<<<<<<< Updated upstream
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            const chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    chunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                setAudioBlob(blob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingDuration(0);
+
+            // Start duration timer
+            recordingIntervalRef.current = setInterval(() => {
+                setRecordingDuration(prev => prev + 1);
+            }, 1000);
+        } catch (err) {
+            toast.error("Failed to access microphone: " + err.message);
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (recordingIntervalRef.current) {
+                clearInterval(recordingIntervalRef.current);
+=======
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        const cursorPosition = e.target.selectionStart;
+        setNewMessage(value);
+
+        // Check for mention trigger (@)
+        const lastPart = value.slice(0, cursorPosition).split(/\s/).pop();
+        if (lastPart.startsWith('@')) {
+            const query = lastPart.slice(1).toLowerCase();
+            setMentionSearch(query);
+            setShowMentionList(true);
+            setMentionIndex(0);
+        } else {
+            setShowMentionList(false);
+        }
+    };
+
+    const insertMention = (username) => {
+        const cursorPosition = inputRef.current.selectionStart;
+        const prefix = newMessage.slice(0, cursorPosition);
+        const suffix = newMessage.slice(cursorPosition);
+
+        const lastAtIndex = prefix.lastIndexOf('@');
+        const updatedPrefix = prefix.slice(0, lastAtIndex) + '@' + username + ' ';
+
+        setNewMessage(updatedPrefix + suffix);
+        setShowMentionList(false);
+
+        // Focus back on input
+        setTimeout(() => {
+            inputRef.current.focus();
+            const newPos = updatedPrefix.length;
+            inputRef.current.setSelectionRange(newPos, newPos);
+        }, 0);
+    };
+
+    const filteredMembers = members.filter(m =>
+        m.user_id !== (user.id || user.user_id) &&
+        m.username.toLowerCase().includes(mentionSearch)
+    );
+
+    const handleKeyDown = (e) => {
+        if (showMentionList && filteredMembers.length > 0) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev + 1) % filteredMembers.length);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev - 1 + filteredMembers.length) % filteredMembers.length);
+            } else if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                insertMention(filteredMembers[mentionIndex].username);
+            } else if (e.key === 'Escape') {
+                setShowMentionList(false);
+>>>>>>> Stashed changes
+            }
+        }
+    };
+
+<<<<<<< Updated upstream
+    const cancelRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            setAudioBlob(null);
+            setRecordingDuration(0);
+            if (recordingIntervalRef.current) {
+                clearInterval(recordingIntervalRef.current);
+            }
+        }
+    };
+=======
+    const inputRef = useRef(null);
+>>>>>>> Stashed changes
+
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() && !selectedFile) return;
+        if (!newMessage.trim() && !selectedFile && !audioBlob) return;
 
         setSending(true);
         try {
             let fileData = null;
-            if (selectedFile) {
+            let messageType = 'TEXT';
+
+            if (audioBlob) {
+                // Upload voice message
+                const audioFile = new File([audioBlob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+                fileData = await projectRoomHandler.uploadChatFile(audioFile);
+                messageType = 'VOICE';
+            } else if (selectedFile) {
                 fileData = await projectRoomHandler.uploadChatFile(selectedFile);
+                messageType = selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE';
             }
 
             await projectRoomHandler.sendMessage({
                 room_id: roomId,
                 sender_id: user.id || user.user_id,
                 content: newMessage,
-                message_type: fileData ? (selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE') : 'TEXT',
+                message_type: messageType,
                 file_path: fileData ? fileData.file_path : null
             });
 
             setNewMessage("");
             setSelectedFile(null);
             setFilePreview(null);
+            setAudioBlob(null);
+            setRecordingDuration(0);
             fetchMessages(); // Immediate refresh
         } catch (err) {
             alert("Failed to send: " + err.message);
@@ -193,12 +450,14 @@ const ProjectChatPage = () => {
                                     <div className={`max-w-[85%] md:max-w-[70%] flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
                                         {/* Avatar - only show if first message in group */}
                                         {!isMe ? (
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/50 to-purple-500/50 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-1 shadow-lg overflow-hidden">
-                                                {msg.profile_image || msg.profile_picture ? (
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/50 to-purple-500/50 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-1 shadow-lg overflow-hidden bg-black">
+                                                {msg.username === 'unilink' ? (
+                                                    <img src="/Images/Logo_Png.png" alt="AI Bot" className="w-full h-full object-contain p-1" />
+                                                ) : (msg.profile_image || msg.profile_picture ? (
                                                     <img src={`${API_BASE_URL}/${msg.profile_image || msg.profile_picture}`} alt={msg.username} className="w-full h-full object-cover" />
                                                 ) : (
                                                     msg.username?.charAt(0).toUpperCase()
-                                                )}
+                                                ))}
                                             </div>
                                         ) : null}
 
@@ -240,9 +499,27 @@ const ProjectChatPage = () => {
                                                 </div>
                                             )}
 
+                                            {msg.message_type === 'VOICE' && msg.file_path && (
+                                                <VoiceMessagePlayer
+                                                    audioUrl={`${API_BASE_URL}/${msg.file_path}`}
+                                                    isMe={isMe}
+                                                />
+                                            )}
+
                                             {msg.content && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>}
-                                            <div className={`text-[9px] mt-1.5 ${isMe ? 'text-white/60' : 'text-gray-500'} text-right font-medium`}>
-                                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            <div className="flex items-center justify-end gap-2 mt-1.5">
+                                                <div className={`text-[9px] ${isMe ? 'text-white/60' : 'text-gray-500'} font-medium`}>
+                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                                {isMe && (new Date() - new Date(msg.created_at) < 60000) && (
+                                                    <button
+                                                        onClick={() => handleDeleteMessage(msg.message_id)}
+                                                        className="text-[9px] text-white/40 hover:text-white transition"
+                                                        title="Delete (Available for 1 min)"
+                                                    >
+                                                        <i className="fa-solid fa-trash-can"></i>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -277,6 +554,53 @@ const ProjectChatPage = () => {
                                 </button>
                             </div>
                         )}
+
+                        {/* Voice Recording Preview */}
+                        {audioBlob && !isRecording && (
+                            <div className="bg-[#121212] rounded-xl border border-white/10 p-3 flex items-center justify-between animate-slide-in-right">
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="w-12 h-12 rounded bg-accent/20 flex items-center justify-center border border-accent/30">
+                                        <i className="fa-solid fa-microphone text-accent text-xl"></i>
+                                    </div>
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm font-medium">Voice Message</p>
+                                        <p className="text-[10px] text-gray-500">{Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => { setAudioBlob(null); setRecordingDuration(0); }}
+                                    className="p-2 text-gray-400 hover:text-red-500 transition"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Recording Indicator */}
+                        {isRecording && (
+                            <div className="bg-red-500/10 rounded-xl border border-red-500/30 p-3 flex items-center justify-between animate-pulse">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                                    <p className="text-sm font-medium text-red-500">Recording...</p>
+                                    <p className="text-sm text-gray-400">{Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={cancelRecording}
+                                        className="px-3 py-1 text-xs text-gray-400 hover:text-white transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={stopRecording}
+                                        className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                    >
+                                        Stop
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSend} className="bg-[#121212] rounded-2xl border border-white/10 p-2 flex items-center gap-2 shadow-xl">
                             <input
                                 type="file"
@@ -284,24 +608,94 @@ const ProjectChatPage = () => {
                                 onChange={handleFileChange}
                                 className="hidden"
                             />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current.click()}
-                                className="p-4 text-gray-400 hover:text-white transition w-14 h-14 flex items-center justify-center"
-                                disabled={sending}
-                            >
-                                <i className="fa-solid fa-paperclip text-lg"></i>
-                            </button>
+                            <div className="flex gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="p-4 text-gray-400 hover:text-white transition w-12 h-14 flex items-center justify-center"
+                                    disabled={sending}
+                                    title="Attach File"
+                                >
+                                    <i className="fa-solid fa-paperclip text-lg"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setNewMessage(prev => (prev ? prev + " " : "") + "@unilink ")}
+                                    className="p-4 text-accent hover:text-accent/80 transition w-12 h-14 flex items-center justify-center relative group"
+                                    disabled={sending || isRecording}
+                                    title="Ask AI (@unilink)"
+                                >
+                                    <i className="fa-solid fa-robot text-xl"></i>
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-accent text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
+                                        Ask AI
+                                    </span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={isRecording ? stopRecording : startRecording}
+                                    className={`p-4 transition w-12 h-14 flex items-center justify-center relative group ${isRecording
+                                        ? 'text-red-500 hover:text-red-400'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                    disabled={sending}
+                                    title={isRecording ? "Stop Recording" : "Voice Message"}
+                                >
+                                    <i className={`fa-solid fa-microphone text-lg ${isRecording ? 'animate-pulse' : ''}`}></i>
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-accent text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
+                                        {isRecording ? 'Stop' : 'Voice'}
+                                    </span>
+                                </button>
+                            </div>
+<<<<<<< Updated upstream
                             <input
                                 className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
                                 placeholder="Type your message..."
                                 value={newMessage}
                                 onChange={e => setNewMessage(e.target.value)}
-                                disabled={sending}
+                                disabled={sending || isRecording}
                             />
+=======
+
+                            <div className="flex-grow relative">
+                                {showMentionList && filteredMembers.length > 0 && (
+                                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-slide-in-up z-[60]">
+                                        <div className="p-2 border-b border-white/5 bg-white/5 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+                                            Mention Member
+                                        </div>
+                                        <div className="max-h-48 overflow-y-auto custom-scrollbar">
+                                            {filteredMembers.map((member, idx) => (
+                                                <div
+                                                    key={member.user_id}
+                                                    onClick={() => insertMention(member.username)}
+                                                    className={`flex items-center gap-3 p-3 cursor-pointer transition ${mentionIndex === idx ? 'bg-accent text-white' : 'hover:bg-white/5 text-gray-300'}`}
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-xs font-bold overflow-hidden border border-white/10">
+                                                        {member.profile_image || member.profile_picture ? (
+                                                            <img src={`${API_BASE_URL}/${member.profile_image || member.profile_picture}`} alt="" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            member.username?.charAt(0).toUpperCase()
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm font-medium">{member.username}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                <input
+                                    ref={inputRef}
+                                    className="w-full bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
+                                    placeholder="Type your message..."
+                                    value={newMessage}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={sending}
+                                />
+                            </div>
+>>>>>>> Stashed changes
                             <button
                                 type="submit"
-                                disabled={(!newMessage.trim() && !selectedFile) || sending}
+                                disabled={(!newMessage.trim() && !selectedFile && !audioBlob) || sending || isRecording}
                                 className="p-4 bg-accent text-white rounded-xl hover:bg-accent/80 transition disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 flex items-center justify-center shadow-lg shadow-accent/20"
                             >
                                 {sending ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane text-lg"></i>}
@@ -375,7 +769,7 @@ const ProjectChatPage = () => {
                                         <i className="fa-solid fa-triangle-exclamation"></i> Danger Zone
                                     </h3>
                                     <button
-                                        onClick={handleDeleteRoom}
+                                        onClick={() => setShowDeleteModal(true)}
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition border border-red-500/20 group font-bold text-sm"
                                     >
                                         <i className="fa-solid fa-trash-can group-hover:shake"></i>
@@ -390,6 +784,14 @@ const ProjectChatPage = () => {
                     </div>
                 )}
             </div>
+
+            <DeleteRoomModal
+                isOpen={showDeleteModal}
+                loading={deleting}
+                roomName={room?.name}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteRoom}
+            />
 
             <style jsx>{`
                 .animate-slide-in-right {

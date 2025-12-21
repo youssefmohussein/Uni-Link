@@ -16,7 +16,9 @@ class ProjectRoomRepository extends BaseRepository
      */
     public function find(int $id, bool $includeSoftDeleted = false): ?array
     {
-        $sql = "SELECT pr.*, pr.name as room_name, u.username as owner_name 
+        $sql = "SELECT pr.room_id, pr.name, pr.description, pr.password_hash, pr.owner_id, 
+                       pr.photo_url, pr.is_private, pr.faculty_id, pr.professor_id,
+                       pr.name as room_name, u.username as owner_name 
                 FROM {$this->table} pr 
                 LEFT JOIN users u ON pr.owner_id = u.user_id 
                 WHERE pr.{$this->primaryKey} = ?";
@@ -28,7 +30,9 @@ class ProjectRoomRepository extends BaseRepository
      */
     public function findAll(?int $limit = null, int $offset = 0, string $orderBy = ''): array
     {
-        $sql = "SELECT pr.*, pr.name as room_name, u.username as owner_name 
+        $sql = "SELECT pr.room_id, pr.name, pr.description, pr.password_hash, pr.owner_id,
+                       pr.photo_url, pr.is_private, pr.faculty_id, pr.professor_id,
+                       pr.name as room_name, u.username as owner_name 
                 FROM {$this->table} pr
                 LEFT JOIN users u ON pr.owner_id = u.user_id";
 
@@ -52,7 +56,9 @@ class ProjectRoomRepository extends BaseRepository
     public function findUserRooms(int $userId): array
     {
         return $this->query("
-            SELECT pr.*, pr.name as room_name, rm.role as user_role, u.username as owner_name
+            SELECT pr.room_id, pr.name, pr.description, pr.password_hash, pr.owner_id,
+                   pr.photo_url, pr.is_private, pr.faculty_id, pr.professor_id,
+                   pr.name as room_name, rm.role as user_role, u.username as owner_name
             FROM {$this->table} pr
             JOIN room_members rm ON pr.room_id = rm.room_id
             LEFT JOIN users u ON pr.owner_id = u.user_id
@@ -163,5 +169,15 @@ class ProjectRoomRepository extends BaseRepository
         ", [$roomId, $userId]);
 
         return $member !== null;
+    }
+
+    /**
+     * Get total count of project rooms
+     * 
+     * @return int
+     */
+    public function getTotalCount(): int
+    {
+        return $this->count();
     }
 }

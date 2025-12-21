@@ -30,7 +30,7 @@ class SkillRepository extends BaseRepository {
      */
     public function findUserSkills(int $userId): array {
         return $this->query("
-            SELECT s.*, sc.name as category_name, us.proficiency_level
+            SELECT s.*, s.name as skill_name, sc.name as category_name, us.proficiency_level
             FROM user_skills us
             JOIN {$this->table} s ON us.skill_id = s.skill_id
             JOIN skill_categories sc ON s.category_id = sc.category_id
