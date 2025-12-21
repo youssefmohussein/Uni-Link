@@ -344,47 +344,49 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
             </button>
           </div>
 
-          {/* Bookmark/Save Button */}
-          <button
-            onClick={toggleSave}
-            disabled={loadingSave}
-            className={`
-              p-2 rounded-full transition-all duration-200
-              ${isSaved
-                ? "text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-              }
-              ${loadingSave ? "opacity-50 cursor-not-allowed" : "active:scale-95"}
-            `}
-            title={isSaved ? "Unsave post" : "Save post"}
-          >
-            <i className={`${isSaved ? "fas" : "far"} fa-bookmark`}></i>
-          </button>
-
-          {/* Share Button */}
-          <button
-            onClick={async () => {
-              const shareUrl = `${window.location.origin}/posts?id=${post.post_id}`;
-              if (navigator.share) {
-                try {
-                  await navigator.share({
-                    title: `Check out this post by ${post.user.name}`,
-                    text: post.content.substring(0, 100) + '...',
-                    url: shareUrl,
-                  });
-                } catch (err) {
-                  console.log('Error sharing:', err);
+          <div className="flex items-center space-x-1">
+            {/* Bookmark/Save Button */}
+            <button
+              onClick={toggleSave}
+              disabled={loadingSave}
+              className={`
+                p-2 rounded-full transition-all duration-200
+                ${isSaved
+                  ? "text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
                 }
-              } else {
-                navigator.clipboard.writeText(shareUrl);
-                alert('Link copied to clipboard!');
-              }
-            }}
-            className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 active:scale-95"
-            title="Share post"
-          >
-            <i className="fas fa-share-alt"></i>
-          </button>
+                ${loadingSave ? "opacity-50 cursor-not-allowed" : "active:scale-95"}
+              `}
+              title={isSaved ? "Unsave post" : "Save post"}
+            >
+              <i className={`${isSaved ? "fas" : "far"} fa-bookmark`}></i>
+            </button>
+
+            {/* Share Button */}
+            <button
+              onClick={async () => {
+                const shareUrl = `${window.location.origin}/posts?id=${post.post_id}`;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: `Check out this post by ${post.user.name}`,
+                      text: post.content.substring(0, 100) + '...',
+                      url: shareUrl,
+                    });
+                  } catch (err) {
+                    console.log('Error sharing:', err);
+                  }
+                } else {
+                  navigator.clipboard.writeText(shareUrl);
+                  alert('Link copied to clipboard!');
+                }
+              }}
+              className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 active:scale-95"
+              title="Share post"
+            >
+              <i className="fas fa-share-alt"></i>
+            </button>
+          </div>
         </div>
 
         {/* 🗨️ Comments Section */}

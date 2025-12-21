@@ -169,7 +169,7 @@ class UserService extends BaseService
             'username' => $sanitized['username'] ?? $existingUser['username'],
             'email' => $sanitized['email'] ?? $existingUser['email'],
             'phone' => $data['phone'] ?? $existingUser['phone'],
-            'profile_image' => $data['profile_image'] ?? $existingUser['profile_image'],
+            'profile_picture' => $data['profile_image'] ?? $existingUser['profile_picture'],
             'bio' => $sanitized['bio'] ?? $existingUser['bio'],
             'job_title' => $sanitized['job_title'] ?? $existingUser['job_title'],
             'role' => $newRole,
@@ -179,9 +179,9 @@ class UserService extends BaseService
 
         // Update password if provided
         if (!empty($data['password'])) {
-            $updateData['password'] = $this->hashPassword($data['password']);
+            $updateData['password_hash'] = $this->hashPassword($data['password']);
         } else {
-            $updateData['password'] = $existingUser['password'];
+            $updateData['password_hash'] = $existingUser['password_hash'];
         }
 
         // Update within transaction
@@ -212,52 +212,40 @@ class UserService extends BaseService
     {
         switch ($role) {
             case 'STUDENT':
-                // Find student record
-                $student = $this->studentRepo->findOneBy('user_id', $userId);
-                if ($student) {
-                    $updateData = [];
-                    if (isset($data['year']))
-                        $updateData['year'] = (int) $data['year'];
-                    if (isset($data['gpa']))
-                        $updateData['gpa'] = $data['gpa'];
-                    if (isset($data['enrollment_date']))
-                        $updateData['enrollment_date'] = $data['enrollment_date'];
+                $updateData = [];
+                if (isset($data['year']))
+                    $updateData['year'] = (int) $data['year'];
+                if (isset($data['gpa']))
+                    $updateData['gpa'] = $data['gpa'];
+                if (isset($data['enrollment_date']))
+                    $updateData['enrollment_date'] = $data['enrollment_date'];
 
-                    if (!empty($updateData)) {
-                        $this->studentRepo->update($student['student_id'], $updateData);
-                    }
+                if (!empty($updateData)) {
+                    $this->studentRepo->updateWhere(['user_id' => $userId], $updateData);
                 }
                 break;
 
             case 'PROFESSOR':
-                // Find professor record
-                $professor = $this->professorRepo->findOneBy('user_id', $userId);
-                if ($professor) {
-                    $updateData = [];
-                    if (isset($data['academic_rank']))
-                        $updateData['academic_rank'] = $data['academic_rank'];
-                    if (isset($data['department']))
-                        $updateData['department'] = $data['department'];
-                    if (isset($data['office_location']))
-                        $updateData['office_location'] = $data['office_location'];
-                    if (isset($data['office_hours']))
-                        $updateData['office_hours'] = $data['office_hours'];
+                $updateData = [];
+                if (isset($data['academic_rank']))
+                    $updateData['academic_rank'] = $data['academic_rank'];
+                if (isset($data['department']))
+                    $updateData['department'] = $data['department'];
+                if (isset($data['office_location']))
+                    $updateData['office_location'] = $data['office_location'];
+                if (isset($data['office_hours']))
+                    $updateData['office_hours'] = $data['office_hours'];
 
-                    if (!empty($updateData)) {
-                        $this->professorRepo->update($professor['professor_id'], $updateData);
-                    }
+                if (!empty($updateData)) {
+                    $this->professorRepo->updateWhere(['user_id' => $userId], $updateData);
                 }
                 break;
 
             case 'ADMIN':
-                // Find admin record
-                $admin = $this->adminRepo->findOneBy('user_id', $userId);
-                if ($admin) {
-                    if (isset($data['permissions'])) {
-                        $this->adminRepo->update($admin['admin_id'], [
-                            'permissions' => $data['permissions']
-                        ]);
-                    }
+                if (isset($data['permissions'])) {
+                    $this->adminRepo->updateWhere(['user_id' => $userId], [
+                        'permissions' => $data['permissions']
+                    ]);
                 }
                 break;
         }
@@ -397,7 +385,7 @@ class UserService extends BaseService
 
         // Remove passwords
         foreach ($users as &$user) {
-            unset($user['password']);
+            unset($user['password_hash']);
         }
 
         return $users;
@@ -417,7 +405,7 @@ class UserService extends BaseService
 
         // Remove passwords
         foreach ($users as &$user) {
-            unset($user['password']);
+            unset($user['password_hash']);
         }
 
         return $users;

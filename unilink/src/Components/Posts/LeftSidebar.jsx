@@ -31,7 +31,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
       isRoute: true,
       route: "/project-rooms"
     },
-    { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: 5, countColor: "bg-red-500" },
+    { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: null },
     { label: "My Profile", icon: "fas fa-user-circle", category: "profile", isRoute: true, route: "/profile" },
     { label: "Settings", icon: "fas fa-cog", category: "Settings", count: null },
   ];
@@ -66,7 +66,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
             >
               <i className={`${item.icon} text-lg`}></i>
               <span>{item.label}</span>
-              {item.count && (
+              {item.count !== null && item.count !== undefined && (
                 <span
                   className={`ml-auto text-white text-xs font-bold px-2 py-0.5 rounded-full ${item.countColor || "bg-accent"
                     }`}
