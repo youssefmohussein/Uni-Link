@@ -12,10 +12,12 @@ use App\Repositories\PostRepository;
 class CommentService extends BaseService {
     private CommentRepository $commentRepo;
     private PostRepository $postRepo;
+    private ContentModerationService $moderationService;
     
     public function __construct(CommentRepository $commentRepo, PostRepository $postRepo) {
         $this->commentRepo = $commentRepo;
         $this->postRepo = $postRepo;
+        $this->moderationService = new ContentModerationService();
     }
     
     /**
@@ -39,6 +41,17 @@ class CommentService extends BaseService {
         // Verify post exists
         if (!$this->postRepo->exists((int)$data['post_id'])) {
             throw new \Exception('Post not found', 404);
+        }
+        
+        // Content Moderation - Check for toxicity/negative sentiment
+        try {
+            $this->moderationService->validateContent($data['content']);
+        } catch (ContentBlockedException $e) {
+            throw new \Exception(
+                'Comment blocked: ' . $e->getMessage() . 
+                ' (Toxicity score: ' . round($e->getToxicityScore() * 100) . '%)',
+                400
+            );
         }
         
         // Sanitize

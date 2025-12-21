@@ -12,10 +12,12 @@ use App\Repositories\CommentRepository;
 class PostService extends BaseService {
     private PostRepository $postRepo;
     private CommentRepository $commentRepo;
+    private ContentModerationService $moderationService;
     
     public function __construct(PostRepository $postRepo, CommentRepository $commentRepo) {
         $this->postRepo = $postRepo;
         $this->commentRepo = $commentRepo;
+        $this->moderationService = new ContentModerationService();
     }
     
     /**
@@ -45,6 +47,17 @@ class PostService extends BaseService {
         
         if (!empty($errors)) {
             throw new \Exception('Validation failed: ' . json_encode($errors), 400);
+        }
+        
+        // Content Moderation - Check for toxicity/negative sentiment
+        try {
+            $this->moderationService->validateContent($data['content']);
+        } catch (ContentBlockedException $e) {
+            throw new \Exception(
+                'Content blocked: ' . $e->getMessage() . 
+                ' (Toxicity score: ' . round($e->getToxicityScore() * 100) . '%)',
+                400
+            );
         }
         
         // Sanitize
