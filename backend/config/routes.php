@@ -246,4 +246,10 @@ return [
     'POST /api/chat/messages/delete' => ['ChatController', 'deleteMessage'],
     'POST /api/chat/upload' => ['ChatController', 'uploadFile'],
     'POST /uploadChatFile' => ['ChatController', 'uploadFile'],
+
+    // Counting Routes
+    'GET /api/posts/category-counts' => ['PostController', 'getCategoryCounts'],
+    'GET /getCategoryCounts' => ['PostController', 'getCategoryCounts'],
+    'GET /api/chat/rooms/total-count' => ['ProjectRoomController', 'getRoomCount'],
+    'GET /getRoomCount' => ['ProjectRoomController', 'getRoomCount'],
 ];

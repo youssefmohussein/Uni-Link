@@ -79,12 +79,12 @@ if (preg_match('#^/uploads/#', $requestUri)) {
     // Ensure requestUri starts with / for path construction
     $normalizedUri = $requestUri[0] === '/' ? $requestUri : '/' . $requestUri;
     $filePath = __DIR__ . $normalizedUri;
-    
+
     // Debug logging
     $exists = file_exists($filePath);
     $isFile = $exists && is_file($filePath);
     error_log("Static file request - URI: $requestUri, Normalized: $normalizedUri, Path: $filePath, Exists: " . ($exists ? 'yes' : 'no') . ", IsFile: " . ($isFile ? 'yes' : 'no'));
-    
+
     if ($exists && $isFile) {
         // Check if file is readable
         if (!is_readable($filePath)) {
@@ -97,7 +97,7 @@ if (preg_match('#^/uploads/#', $requestUri)) {
             ]);
             exit;
         }
-        
+
         // Determine MIME type
         $mimeType = mime_content_type($filePath);
         if (!$mimeType) {
@@ -114,16 +114,16 @@ if (preg_match('#^/uploads/#', $requestUri)) {
             ];
             $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
         }
-        
+
         // Clear any previous output
         if (ob_get_level()) {
             ob_clean();
         }
-        
+
         header('Content-Type: ' . $mimeType);
         header('Content-Length: ' . filesize($filePath));
         header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
-        
+
         // Output the file
         readfile($filePath);
         exit;
@@ -139,7 +139,7 @@ if (preg_match('#^/uploads/#', $requestUri)) {
             'parent_dir_exists' => file_exists(dirname($filePath))
         ];
         error_log("Static file not found: " . json_encode($debugInfo));
-        
+
         http_response_code(404);
         header("Content-Type: application/json");
         echo json_encode([

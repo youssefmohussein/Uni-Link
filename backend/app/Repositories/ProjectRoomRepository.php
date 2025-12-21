@@ -164,4 +164,14 @@ class ProjectRoomRepository extends BaseRepository
 
         return $member !== null;
     }
+
+    /**
+     * Get total count of project rooms
+     * 
+     * @return int
+     */
+    public function getTotalCount(): int
+    {
+        return $this->count();
+    }
 }

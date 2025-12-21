@@ -252,4 +252,18 @@ class ProjectRoomController extends BaseController
             $this->error($e->getMessage(), $code ?: 400);
         }
     }
+
+    /**
+     * Get total count of project rooms
+     * GET /api/chat/rooms/total-count
+     */
+    public function getRoomCount(): void
+    {
+        try {
+            $count = $this->roomService->getRoomCount();
+            $this->success(['count' => $count]);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
+        }
+    }
 }

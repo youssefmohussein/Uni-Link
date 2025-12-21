@@ -204,4 +204,14 @@ class ProjectRoomService extends BaseService
     {
         return $this->roomRepo->findMembers($roomId);
     }
+
+    /**
+     * Get total count of project rooms
+     * 
+     * @return int
+     */
+    public function getRoomCount(): int
+    {
+        return $this->roomRepo->getTotalCount();
+    }
 }

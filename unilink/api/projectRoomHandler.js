@@ -79,3 +79,12 @@ export const uploadChatFile = async (file) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to upload file");
     return res.data;
 };
+
+/**
+ * Get total count of project rooms
+ */
+export const getRoomCount = async () => {
+    const res = await apiRequest("api/chat/rooms/total-count", "GET");
+    if (res.status !== "success") throw new Error(res.message || "Failed to fetch room count");
+    return res.data.count;
+};
