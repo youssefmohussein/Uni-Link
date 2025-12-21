@@ -161,6 +161,7 @@ return [
     'POST /api/cv/upload' => ['CvController', 'upload'],
     'GET /api/cv/download' => ['CvController', 'download'],
     'GET /getCV' => ['CvController', 'getCV'], // New endpoint for metadata
+    'GET /downloadCV' => ['CvController', 'download'], // Added missing legacy route
     'POST /deleteCV' => ['CvController', 'delete'],
 
     // ============================================

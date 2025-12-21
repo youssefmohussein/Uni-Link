@@ -30,10 +30,10 @@ class SkillRepository extends BaseRepository {
      */
     public function findUserSkills(int $userId): array {
         return $this->query("
-            SELECT s.*, sc.category_name, us.proficiency_level
-            FROM userskill us
+            SELECT s.*, sc.name as category_name, us.proficiency_level
+            FROM user_skills us
             JOIN {$this->table} s ON us.skill_id = s.skill_id
-            JOIN skillcategory sc ON s.category_id = sc.category_id
+            JOIN skill_categories sc ON s.category_id = sc.category_id
             WHERE us.user_id = ?
         ", [$userId]);
     }
@@ -48,7 +48,7 @@ class SkillRepository extends BaseRepository {
      */
     public function addUserSkill(int $userId, int $skillId, ?string $proficiency = null): int {
         $stmt = $this->db->prepare("
-            INSERT INTO userskill (user_id, skill_id, proficiency_level)
+            INSERT INTO user_skills (user_id, skill_id, proficiency_level)
             VALUES (?, ?, ?)
         ");
         $stmt->execute([$userId, $skillId, $proficiency]);
@@ -64,7 +64,7 @@ class SkillRepository extends BaseRepository {
      */
     public function removeUserSkill(int $userId, int $skillId): bool {
         $stmt = $this->db->prepare("
-            DELETE FROM userskill WHERE user_id = ? AND skill_id = ?
+            DELETE FROM user_skills WHERE user_id = ? AND skill_id = ?
         ");
         return $stmt->execute([$userId, $skillId]);
     }
@@ -75,7 +75,7 @@ class SkillRepository extends BaseRepository {
      * @return array Array of categories
      */
     public function getAllCategories(): array {
-        return $this->query("SELECT * FROM skill_categories ORDER BY category_name");
+        return $this->query("SELECT * FROM skill_categories ORDER BY name");
     }
 
     /**
@@ -86,9 +86,9 @@ class SkillRepository extends BaseRepository {
      * @return int New skill ID
      */
     public function createSkill(string $skillName, int $categoryId): int {
-        $sql = "INSERT INTO Skill (skill_name, category_id) VALUES (?, ?)";
+        $sql = "INSERT INTO skills (name, category_id) VALUES (?, ?)";
         $this->execute($sql, [$skillName, $categoryId]);
-        return (int)$this->lastInsertId();
+        return (int)$this->db->lastInsertId();
     }
     
     /**
@@ -99,13 +99,13 @@ class SkillRepository extends BaseRepository {
      */
     public function createCategory(string $categoryName): int {
         // Check if exists first
-        $existing = $this->queryOne("SELECT category_id FROM SkillCategory WHERE category_name = ?", [$categoryName]);
+        $existing = $this->queryOne("SELECT category_id FROM skill_categories WHERE name = ?", [$categoryName]);
         if ($existing) {
             return $existing['category_id'];
         }
         
-        $sql = "INSERT INTO SkillCategory (category_name) VALUES (?)";
+        $sql = "INSERT INTO skill_categories (name) VALUES (?)";
         $this->execute($sql, [$categoryName]);
-        return (int)$this->lastInsertId();
+        return (int)$this->db->lastInsertId();
     }
 }

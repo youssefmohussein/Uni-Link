@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Utils\Database;
 
 class CvController extends BaseController {
     
@@ -52,8 +53,9 @@ class CvController extends BaseController {
             // Update user record with CV path
             // For now using direct query since we don't have a specialized CvService yet
             // In a full refactor, this logic belongs in UserService or CvService
-            $db = new \PDO("mysql:host={$this->dbConfig['host']};dbname={$this->dbConfig['dbname']}", $this->dbConfig['username'], $this->dbConfig['password']);
-            $stmt = $db->prepare("INSERT INTO cv (user_id, file_path, created_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE file_path = ?, created_at = NOW()");
+            // In a full refactor, this logic belongs in UserService or CvService
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("INSERT INTO cvs (user_id, file_path, uploaded_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE file_path = ?, uploaded_at = NOW()");
             $stmt->execute([$userId, $relativePath, $relativePath]);
             
             $this->success([
@@ -72,8 +74,8 @@ class CvController extends BaseController {
     public function download(int $userId): void {
         try {
             // Logic to get CV path from DB
-            $db = new \PDO("mysql:host={$this->dbConfig['host']};dbname={$this->dbConfig['dbname']}", $this->dbConfig['username'], $this->dbConfig['password']);
-            $stmt = $db->prepare("SELECT file_path FROM cv WHERE user_id = ?");
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT file_path FROM cvs WHERE user_id = ?");
             $stmt->execute([$userId]);
             $cv = $stmt->fetch(\PDO::FETCH_ASSOC);
             
@@ -103,8 +105,8 @@ class CvController extends BaseController {
         try {
             $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : $this->getCurrentUserId();
             
-            $db = new \PDO("mysql:host={$this->dbConfig['host']};dbname={$this->dbConfig['dbname']}", $this->dbConfig['username'], $this->dbConfig['password']);
-            $stmt = $db->prepare("SELECT file_path, created_at FROM cv WHERE user_id = ?");
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT file_path, uploaded_at as created_at FROM cvs WHERE user_id = ?");
             $stmt->execute([$userId]);
             $cv = $stmt->fetch(\PDO::FETCH_ASSOC);
             
@@ -129,8 +131,8 @@ class CvController extends BaseController {
             $userId = $this->getCurrentUserId();
             
             // Get file path first
-            $db = new \PDO("mysql:host={$this->dbConfig['host']};dbname={$this->dbConfig['dbname']}", $this->dbConfig['username'], $this->dbConfig['password']);
-            $stmt = $db->prepare("SELECT file_path FROM cv WHERE user_id = ?");
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT file_path FROM cvs WHERE user_id = ?");
             $stmt->execute([$userId]);
             $cv = $stmt->fetch(\PDO::FETCH_ASSOC);
             
@@ -139,7 +141,7 @@ class CvController extends BaseController {
             }
             
             // Delete from DB
-            $stmt = $db->prepare("DELETE FROM cv WHERE user_id = ?");
+            $stmt = $db->prepare("DELETE FROM cvs WHERE user_id = ?");
             $stmt->execute([$userId]);
             
             $this->success(null, 'CV deleted successfully');
