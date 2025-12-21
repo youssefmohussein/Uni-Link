@@ -109,6 +109,19 @@ const ProjectChatPage = () => {
         }
     };
 
+    const handleDeleteMessage = async (messageId) => {
+        if (!window.confirm("Are you sure you want to delete this message?")) return;
+
+        try {
+            console.log("Deleting message:", messageId);
+            await projectRoomHandler.removeChatMessage(messageId);
+            setMessages(prev => prev.filter(m => m.message_id !== messageId));
+            toast.success("Message deleted");
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() && !selectedFile) return;
@@ -248,8 +261,19 @@ const ProjectChatPage = () => {
                                             )}
 
                                             {msg.content && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>}
-                                            <div className={`text-[9px] mt-1.5 ${isMe ? 'text-white/60' : 'text-gray-500'} text-right font-medium`}>
-                                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            <div className="flex items-center justify-end gap-2 mt-1.5">
+                                                <div className={`text-[9px] ${isMe ? 'text-white/60' : 'text-gray-500'} font-medium`}>
+                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                                {isMe && (new Date() - new Date(msg.created_at) < 60000) && (
+                                                    <button
+                                                        onClick={() => handleDeleteMessage(msg.message_id)}
+                                                        className="text-[9px] text-white/40 hover:text-white transition"
+                                                        title="Delete (Available for 1 min)"
+                                                    >
+                                                        <i className="fa-solid fa-trash-can"></i>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

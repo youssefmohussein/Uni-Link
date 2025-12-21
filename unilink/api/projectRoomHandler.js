@@ -81,6 +81,15 @@ export const uploadChatFile = async (file) => {
 };
 
 /**
+ * Delete a chat message
+ */
+export const removeChatMessage = async (message_id) => {
+    const res = await apiRequest("deleteMessage", "POST", { message_id });
+    if (res.status !== "success") throw new Error(res.message || "Failed to delete message");
+    return true;
+};
+
+/**
  * Get total count of project rooms
  */
 export const getRoomCount = async () => {

@@ -150,6 +150,7 @@ return [
     'POST /api/project-rooms/join' => ['ProjectRoomController', 'join'],
     'POST /sendMessage' => ['ChatController', 'sendMessage'],
     'GET /getMessages' => ['ChatController', 'getRoomMessages'],
+    'POST /deleteMessage' => ['ChatController', 'deleteMessage'],
     'GET /getRoomMembers' => ['ProjectRoomController', 'getRoomMembers'],
 
     // ============================================
