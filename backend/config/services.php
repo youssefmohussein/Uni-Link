@@ -243,8 +243,26 @@ $container->singleton('NotificationService', function ($c) {
 });
 
 // ============================================
+// Register Facades
+// ============================================
+
+$container->singleton('ProfileFacade', function ($c) {
+    return new \App\Facades\ProfileFacade(
+        $c->get('UserRepository'),
+        $c->get('PostRepository'),
+        $c->get('ProjectRepository'),
+        $c->get('SkillRepository'),
+        $c->get('CvRepository')
+    );
+});
+
+// ============================================
 // Register Controllers
 // ============================================
+
+$container->set('ProfileController', function ($c) {
+    return new \App\Controllers\ProfileController($c->get('ProfileFacade'));
+});
 
 $container->set('AuthController', function ($c) {
     return new AuthController($c->get('AuthService'));

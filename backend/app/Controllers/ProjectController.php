@@ -46,7 +46,7 @@ class ProjectController extends BaseController {
             $this->success($project, 'Project uploaded successfully', 201);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -62,7 +62,8 @@ class ProjectController extends BaseController {
             }
             
             $projects = $this->projectService->getUserProjects($userId);
-            $this->success(['data' => $projects]);
+            // Return projects directly as array, as expected by ProfilePage.jsx
+            $this->success($projects);
             
         } catch (\Exception $e) {
             $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
@@ -83,7 +84,7 @@ class ProjectController extends BaseController {
             $this->success(null, 'Project deleted successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -124,7 +125,7 @@ class ProjectController extends BaseController {
             $this->success($project, 'Project updated successfully');
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -144,7 +145,7 @@ class ProjectController extends BaseController {
             ]);
             
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
     
@@ -169,7 +170,7 @@ class ProjectController extends BaseController {
             $this->success($project, 'Project approved successfully');
 
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
 
@@ -193,7 +194,7 @@ class ProjectController extends BaseController {
             $this->success($project, 'Project rejected successfully');
 
         } catch (\Exception $e) {
-            $this->error($e->getMessage(), $e->getCode() ?: 400);
+            $this->error($e->getMessage(), (int)($e->getCode() ?: 400));
         }
     }
 }

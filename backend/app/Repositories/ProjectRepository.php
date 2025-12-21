@@ -61,7 +61,7 @@ class ProjectRepository extends BaseRepository {
         }
         
         $sql = "
-            SELECT s.skill_id, s.skill_name, sc.category_name
+            SELECT s.skill_id, s.name as skill_name, sc.name as category_name
             FROM project_skills ps
             JOIN skills s ON ps.skill_id = s.skill_id
             LEFT JOIN skill_categories sc ON s.category_id = sc.category_id
