@@ -69,3 +69,13 @@ export const getRoomMembers = async (room_id) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to fetch room members");
     return res.data;
 };
+
+export const uploadChatFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // apiRequest handles API_BASE_URL and FormData (it deletes Content-Type for FormData)
+    const res = await apiRequest("api/chat/upload", "POST", formData);
+    if (res.status !== "success") throw new Error(res.message || "Failed to upload file");
+    return res.data;
+};

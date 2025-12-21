@@ -22,6 +22,8 @@ use App\Repositories\AnnouncementRepository;
 use App\Repositories\CvRepository;
 use App\Repositories\ProjectRoomRepository;
 use App\Repositories\SubjectRepository;
+use App\Repositories\ChatRepository;
+use App\Repositories\NotificationRepository;
 
 // Services
 use App\Services\AuthService;
@@ -38,6 +40,7 @@ use App\Services\DashboardService;
 use App\Services\CvService;
 use App\Services\ProjectRoomService;
 use App\Services\SubjectService;
+use App\Services\NotificationService;
 
 // Controllers
 use App\Controllers\AuthController;
@@ -55,6 +58,8 @@ use App\Controllers\SkillController;
 use App\Controllers\UserSkillController;
 use App\Controllers\AnnouncementController;
 use App\Controllers\ProjectRoomController;
+use App\Controllers\ChatController;
+use App\Controllers\NotificationController;
 use App\Controllers\SavedPostController;
 use App\Controllers\DashboardController;
 use App\Controllers\CvController;
@@ -124,8 +129,16 @@ $container->singleton('ProjectRoomRepository', function ($c) {
     return new ProjectRoomRepository();
 });
 
-$container->singleton('SubjectRepository', function($c) {
+$container->singleton('SubjectRepository', function ($c) {
     return new SubjectRepository();
+});
+
+$container->singleton('ChatRepository', function ($c) {
+    return new ChatRepository();
+});
+
+$container->singleton('NotificationRepository', function ($c) {
+    return new NotificationRepository();
 });
 
 // ============================================
@@ -221,8 +234,12 @@ $container->singleton('ProjectRoomService', function ($c) {
     return new ProjectRoomService($c->get('ProjectRoomRepository'));
 });
 
-$container->singleton('SubjectService', function($c) {
+$container->singleton('SubjectService', function ($c) {
     return new SubjectService($c->get('SubjectRepository'));
+});
+
+$container->singleton('NotificationService', function ($c) {
+    return new NotificationService();
 });
 
 // ============================================
@@ -305,6 +322,19 @@ $container->set('AnnouncementController', function ($c) {
 
 $container->set('ProjectRoomController', function ($c) {
     return new ProjectRoomController($c->get('ProjectRoomService'));
+});
+
+$container->set('ChatController', function ($c) {
+    return new ChatController(
+        $c->get('ChatRepository'),
+        $c->get('ProjectRoomRepository'),
+        $c->get('UserRepository'),
+        $c->get('NotificationService')
+    );
+});
+
+$container->set('NotificationController', function ($c) {
+    return new NotificationController($c->get('NotificationRepository'));
 });
 
 $container->set('SavedPostController', function ($c) {
