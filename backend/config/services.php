@@ -240,7 +240,14 @@ $container->singleton('SubjectService', function ($c) {
 });
 
 $container->singleton('NotificationService', function ($c) {
-    return new NotificationService();
+    $service = new NotificationService();
+
+    // Subscribe observers to the service
+    $service->subscribe(new \App\Observers\PostNotificationObserver($c->get('NotificationRepository')));
+    $service->subscribe(new \App\Observers\ProjectNotificationObserver($c->get('NotificationRepository')));
+    $service->subscribe(new \App\Observers\ChatNotificationObserver($c->get('NotificationRepository')));
+
+    return $service;
 });
 
 $container->singleton('AiService', function ($c) {

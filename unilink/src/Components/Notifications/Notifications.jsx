@@ -22,7 +22,7 @@ const Notifications = ({ isOpen, onClose }) => {
             setLoading(true);
             const data = await getNotifications(50, 0);
             if (data.status === 'success') {
-                setNotifications(data.notifications || []);
+                setNotifications(data.data.notifications || []);
             }
         } catch (error) {
             console.error('Error fetching notifications:', error);
@@ -36,7 +36,7 @@ const Notifications = ({ isOpen, onClose }) => {
         try {
             const data = await getUnreadCount();
             if (data.status === 'success') {
-                setUnreadCount(data.unread_count || 0);
+                setUnreadCount(data.data.unread_count || 0);
             }
         } catch (error) {
             console.error('Error fetching unread count:', error);
@@ -99,52 +99,82 @@ const Notifications = ({ isOpen, onClose }) => {
         return () => clearInterval(interval);
     }, []);
 
+    // Navigate to notification target
+    const handleNotificationClick = (e, notification) => {
+        e.stopPropagation();
+
+        // Mark as read first
+        if (!notification.is_read) {
+            handleMarkAsRead(notification.notification_id);
+        }
+
+        // Navigate based on type
+        if (notification.type === 'CHAT_MENTION' || notification.related_entity_type === 'CHAT_ROOM') {
+            window.location.href = `/project-room/${notification.related_entity_id}`;
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
-        <div className="notifications-panel">
+        <div className="notifications-panel" onClick={e => e.stopPropagation()}>
             <div className="notifications-header">
                 <h3>Notifications</h3>
                 <div className="notifications-actions">
                     {unreadCount > 0 && (
                         <button onClick={handleMarkAllAsRead} className="mark-all-read">
-                            Mark all as read
+                            Mark Read
                         </button>
                     )}
-                    <button onClick={onClose} className="close-btn">×</button>
+                    <button onClick={onClose} className="close-btn">
+                        <i className="fa-solid fa-xmark text-sm"></i>
+                    </button>
                 </div>
             </div>
 
-            <div className="notifications-list">
-                {loading ? (
-                    <div className="loading">Loading notifications...</div>
+            <div className="notifications-list custom-scrollbar">
+                {loading && notifications.length === 0 ? (
+                    <div className="loading">
+                        <i className="fa-solid fa-circle-notch fa-spin mb-2 text-xl"></i>
+                        <p>Updating...</p>
+                    </div>
                 ) : notifications.length === 0 ? (
-                    <div className="empty-state">No notifications yet</div>
+                    <div className="empty-state">
+                        <i className="fa-solid fa-bell-slash mb-3 text-3xl opacity-20"></i>
+                        <p>No notifications yet</p>
+                    </div>
                 ) : (
-                    notifications.map(notification => (
-                        <div
-                            key={notification.notification_id}
-                            className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
-                            onClick={() => !notification.is_read && handleMarkAsRead(notification.notification_id)}
-                        >
-                            <div className="notification-content">
-                                <div className="notification-title">{notification.title}</div>
-                                <div className="notification-message">{notification.message}</div>
-                                <div className="notification-time">
-                                    {new Date(notification.created_at).toLocaleString()}
-                                </div>
-                            </div>
-                            <button
-                                className="delete-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDelete(notification.notification_id);
-                                }}
+                    notifications
+                        .filter(n => n.message !== 'You were mentioned in a chat message')
+                        .map(notification => (
+                            <div
+                                key={notification.notification_id}
+                                className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
+                                onClick={(e) => handleNotificationClick(e, notification)}
                             >
-                                ×
-                            </button>
-                        </div>
-                    ))
+                                <div className="notification-content">
+                                    {/* Only show title if it's NOT the generic "You were mentioned" */}
+                                    {notification.title !== 'You were mentioned' && (
+                                        <div className="notification-title">{notification.title}</div>
+                                    )}
+                                    <div className="notification-message">{notification.message}</div>
+                                    <div className="notification-time">
+                                        <i className="fa-regular fa-clock mr-1"></i>
+                                        {new Date(notification.created_at).toLocaleDateString()} at {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </div>
+                                <button
+                                    className="delete-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(notification.notification_id);
+                                    }}
+                                    title="Delete Notification"
+                                >
+                                    <i className="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        ))
                 )}
             </div>
         </div>

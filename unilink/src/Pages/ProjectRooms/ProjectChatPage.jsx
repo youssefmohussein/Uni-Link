@@ -124,6 +124,9 @@ const ProjectChatPage = () => {
     const [filePreview, setFilePreview] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [mentionSearch, setMentionSearch] = useState("");
+    const [showMentionList, setShowMentionList] = useState(false);
+    const [mentionIndex, setMentionIndex] = useState(0);
     const fileInputRef = useRef(null);
 
     // Voice recording states
@@ -233,6 +236,7 @@ const ProjectChatPage = () => {
         }
     };
 
+<<<<<<< Updated upstream
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -271,10 +275,67 @@ const ProjectChatPage = () => {
             setIsRecording(false);
             if (recordingIntervalRef.current) {
                 clearInterval(recordingIntervalRef.current);
+=======
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        const cursorPosition = e.target.selectionStart;
+        setNewMessage(value);
+
+        // Check for mention trigger (@)
+        const lastPart = value.slice(0, cursorPosition).split(/\s/).pop();
+        if (lastPart.startsWith('@')) {
+            const query = lastPart.slice(1).toLowerCase();
+            setMentionSearch(query);
+            setShowMentionList(true);
+            setMentionIndex(0);
+        } else {
+            setShowMentionList(false);
+        }
+    };
+
+    const insertMention = (username) => {
+        const cursorPosition = inputRef.current.selectionStart;
+        const prefix = newMessage.slice(0, cursorPosition);
+        const suffix = newMessage.slice(cursorPosition);
+
+        const lastAtIndex = prefix.lastIndexOf('@');
+        const updatedPrefix = prefix.slice(0, lastAtIndex) + '@' + username + ' ';
+
+        setNewMessage(updatedPrefix + suffix);
+        setShowMentionList(false);
+
+        // Focus back on input
+        setTimeout(() => {
+            inputRef.current.focus();
+            const newPos = updatedPrefix.length;
+            inputRef.current.setSelectionRange(newPos, newPos);
+        }, 0);
+    };
+
+    const filteredMembers = members.filter(m =>
+        m.user_id !== (user.id || user.user_id) &&
+        m.username.toLowerCase().includes(mentionSearch)
+    );
+
+    const handleKeyDown = (e) => {
+        if (showMentionList && filteredMembers.length > 0) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev + 1) % filteredMembers.length);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev - 1 + filteredMembers.length) % filteredMembers.length);
+            } else if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                insertMention(filteredMembers[mentionIndex].username);
+            } else if (e.key === 'Escape') {
+                setShowMentionList(false);
+>>>>>>> Stashed changes
             }
         }
     };
 
+<<<<<<< Updated upstream
     const cancelRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
@@ -286,6 +347,9 @@ const ProjectChatPage = () => {
             }
         }
     };
+=======
+    const inputRef = useRef(null);
+>>>>>>> Stashed changes
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -582,6 +646,7 @@ const ProjectChatPage = () => {
                                     </span>
                                 </button>
                             </div>
+<<<<<<< Updated upstream
                             <input
                                 className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
                                 placeholder="Type your message..."
@@ -589,6 +654,45 @@ const ProjectChatPage = () => {
                                 onChange={e => setNewMessage(e.target.value)}
                                 disabled={sending || isRecording}
                             />
+=======
+
+                            <div className="flex-grow relative">
+                                {showMentionList && filteredMembers.length > 0 && (
+                                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-slide-in-up z-[60]">
+                                        <div className="p-2 border-b border-white/5 bg-white/5 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+                                            Mention Member
+                                        </div>
+                                        <div className="max-h-48 overflow-y-auto custom-scrollbar">
+                                            {filteredMembers.map((member, idx) => (
+                                                <div
+                                                    key={member.user_id}
+                                                    onClick={() => insertMention(member.username)}
+                                                    className={`flex items-center gap-3 p-3 cursor-pointer transition ${mentionIndex === idx ? 'bg-accent text-white' : 'hover:bg-white/5 text-gray-300'}`}
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-xs font-bold overflow-hidden border border-white/10">
+                                                        {member.profile_image || member.profile_picture ? (
+                                                            <img src={`${API_BASE_URL}/${member.profile_image || member.profile_picture}`} alt="" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            member.username?.charAt(0).toUpperCase()
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm font-medium">{member.username}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                <input
+                                    ref={inputRef}
+                                    className="w-full bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
+                                    placeholder="Type your message..."
+                                    value={newMessage}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={sending}
+                                />
+                            </div>
+>>>>>>> Stashed changes
                             <button
                                 type="submit"
                                 disabled={(!newMessage.trim() && !selectedFile && !audioBlob) || sending || isRecording}

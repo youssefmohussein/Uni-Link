@@ -32,6 +32,9 @@ class NotificationController extends BaseController
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
         $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
 
+        // Temporary fix for duplicates
+        $this->notificationRepo->fixDuplicateMentions();
+
         $notifications = $this->notificationRepo->getUserNotifications($userId, $limit, $offset);
 
         ResponseHandler::success([

@@ -80,7 +80,7 @@ class ChatController extends BaseController
             // Trigger AI processing
             $messageData['message_id'] = $result['message_id']; // assuming persistence adds this
             $this->aiService->processMessage($messageData);
-            
+
             ResponseHandler::success($result);
         }
     }
