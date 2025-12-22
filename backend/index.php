@@ -177,13 +177,12 @@ $matched = false;
 foreach ($routes as $route => $handler) {
     list($method, $pathPattern) = explode(' ', $route, 2);
 
+    // 1. Exact match
     if ($method === $requestMethod && $pathPattern === $requestUri) {
         list($controllerName, $methodName) = $handler;
 
         try {
-            // Get controller from DI container
             $controller = $container->get($controllerName);
-
             if (method_exists($controller, $methodName)) {
                 $controller->$methodName();
                 $matched = true;
@@ -193,11 +192,34 @@ foreach ($routes as $route => $handler) {
             }
         } catch (Exception $e) {
             http_response_code($e->getCode() ?: 500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             exit;
+        }
+    }
+
+    // 2. Regex match
+    // Only attempt if method matches.
+    // Wrap pattern in delimiters allowed in PHP regex (e.g., #)
+    if ($method === $requestMethod) {
+        $pattern = "#^" . $pathPattern . "$#";
+        // Suppress warnings for invalid regex patterns (normal routes)
+        if (@preg_match($pattern, $requestUri)) {
+            list($controllerName, $methodName) = $handler;
+
+            try {
+                $controller = $container->get($controllerName);
+                if (method_exists($controller, $methodName)) {
+                    $controller->$methodName();
+                    $matched = true;
+                    break;
+                } else {
+                    throw new Exception("Method {$methodName} not found in {$controllerName}");
+                }
+            } catch (Exception $e) {
+                http_response_code($e->getCode() ?: 500);
+                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                exit;
+            }
         }
     }
 }

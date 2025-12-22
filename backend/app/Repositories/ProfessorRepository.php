@@ -9,15 +9,15 @@ namespace App\Repositories;
 class ProfessorRepository extends BaseRepository
 {
     protected string $table = 'professors';
-    protected string $primaryKey = 'professor_id';
+    protected string $primaryKey = 'user_id';
 
     /**
      * Get professor with user information
      * 
-     * @param int $professorId Professor ID
+     * @param int $userId User/Professor ID
      * @return array|null Professor with user data
      */
-    public function getWithUserInfo(int $professorId): ?array
+    public function getWithUserInfo(int $userId): ?array
     {
         $sql = "
             SELECT p.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.bio,
@@ -26,9 +26,9 @@ class ProfessorRepository extends BaseRepository
             JOIN users u ON p.user_id = u.user_id
             LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
             LEFT JOIN majors m ON u.major_id = m.major_id
-            WHERE p.professor_id = ?
+            WHERE p.user_id = ?
         ";
-        return $this->queryOne($sql, [$professorId]);
+        return $this->queryOne($sql, [$userId]);
     }
 
     /**
@@ -77,7 +77,7 @@ class ProfessorRepository extends BaseRepository
     /**
      * Get supervised projects count
      * 
-     * @param int $professorId Professor ID
+     * @param int $professorId Professor ID (which is User ID)
      * @return int Number of supervised projects
      */
     public function getSupervisedProjectsCount(int $professorId): int

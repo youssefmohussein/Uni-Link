@@ -292,7 +292,10 @@ $container->set('StudentController', function ($c) {
 });
 
 $container->set('ProfessorController', function ($c) {
-    return new ProfessorController($c->get('UserService'));
+    return new ProfessorController(
+        $c->get('UserService'),
+        $c->get('DashboardService')
+    );
 });
 
 $container->set('AdminController', function ($c) {

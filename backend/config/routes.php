@@ -51,6 +51,10 @@ return [
     'GET /api/professors/by-faculty' => ['ProfessorController', 'getByFaculty'],
     'PUT /api/professors' => ['ProfessorController', 'update'],
 
+    // Legacy professor routes
+    'GET /getProfessorById/\d+' => ['ProfessorController', 'getById'],
+    'GET /getDashboardStats' => ['ProfessorController', 'getDashboardStats'],
+
     // ============================================
     // Admin Routes (Legacy compatibility)
     // ============================================

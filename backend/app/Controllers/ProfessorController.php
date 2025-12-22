@@ -14,10 +14,12 @@ class ProfessorController extends BaseController
 {
     private UserService $userService;
     private ProfessorRepository $professorRepo;
+    private \App\Services\DashboardService $dashboardService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, \App\Services\DashboardService $dashboardService)
     {
         $this->userService = $userService;
+        $this->dashboardService = $dashboardService;
         $this->professorRepo = new ProfessorRepository();
     }
 
@@ -131,6 +133,74 @@ class ProfessorController extends BaseController
             }
 
             $this->success(null, 'Professor updated successfully');
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
+
+    /**
+     * Get professor by ID
+     * GET /getProfessorById/3
+     */
+    public function getById(): void
+    {
+        try {
+            // Parse ID from URL path (e.g. /getProfessorById/3)
+            $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            if (preg_match('#/getProfessorById/(\d+)#', $path, $matches)) {
+                $professorId = (int)$matches[1];
+            } else {
+                // Fallback for query param ?id=3 (legacy support)
+                $professorId = isset($_GET['id']) ? (int)$_GET['id'] : null;
+            }
+
+            if (!$professorId) {
+                throw new \Exception('Professor ID is required', 400);
+            }
+
+            // Since there is no professor_id column, the ID provided IS the user_id
+            $professor = $this->professorRepo->getWithUserInfo($professorId);
+            
+            if (!$professor) {
+                throw new \Exception('Professor not found', 404);
+            }
+
+            $this->success($professor);
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
+
+    /**
+     * Get dashboard statistics for professors
+     * GET /getDashboardStats
+     */
+    public function getDashboardStats(): void
+    {
+        try {
+            $this->requireAuth();
+            $userId = $this->getCurrentUserId();
+
+            // Use DashboardService for global stats
+            $globalStats = $this->dashboardService->getStats();
+            
+            // Get supervised projects count using user_id
+            $supervisedProjectsCount = $this->professorRepo->getSupervisedProjectsCount($userId);
+            
+            // Combine stats
+            // We want to return the structure expected by frontend (global stats)
+            // But we can also add professor specific stats if needed
+            $stats = $globalStats;
+            
+            // Override or add professor specific counts if the frontend expects them mixed
+            // Based on ProfessorPage.jsx: 
+            // stats.stats.students, stats.stats.totalUsers are used.
+            
+            $this->success($stats);
 
         } catch (\Exception $e) {
             $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
