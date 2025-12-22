@@ -149,7 +149,7 @@ export default function StudentForm({
                   <option value="">Select Faculty</option>
                   {faculties?.map((f) => (
                     <option key={f.faculty_id} value={f.faculty_id}>
-                      {f.faculty_name}
+                      {f.name}
                     </option>
                   ))}
                 </select>
@@ -158,14 +158,13 @@ export default function StudentForm({
                   value={formData.major_id}
                   onChange={handleChange}
                   disabled={!formData.faculty_id}
-                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition cursor-pointer ${
-                    !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`w-full px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 focus:outline-none focus:ring-2 focus:ring-accent transition cursor-pointer ${!formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   <option value="">Select Major</option>
                   {filteredMajors.map((m) => (
                     <option key={m.major_id} value={m.major_id}>
-                      {m.major_name}
+                      {m.name}
                     </option>
                   ))}
                 </select>

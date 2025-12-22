@@ -424,7 +424,7 @@ export const updateStudent = async (userData) => {
  * @returns {Promise<boolean>} Success status
  */
 export const deleteStudent = async (userId) => {
-  const res = await apiRequest('/api/user', 'DELETE', { user_id: userId }); // Updated to DELETE /api/user
+  const res = await apiRequest(`/api/user?user_id=${userId}`, 'DELETE', { user_id: userId }); // Updated to DELETE /api/user with query param
   if (res.status !== 'success') {
     throw new Error(res.message || 'Delete failed');
   }

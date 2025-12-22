@@ -71,7 +71,7 @@ export const updateProfessor = async (professorData) => {
  * @param {number} user_id
  */
 export const deleteProfessor = async (user_id) => {
-  const res = await apiRequest("/api/user", "DELETE", { user_id }); // Updated to DELETE /api/user
+  const res = await apiRequest(`/api/user?user_id=${user_id}`, "DELETE", { user_id }); // Updated to DELETE /api/user with query param
   if (res.status !== "success") throw new Error(res.message || "Failed to delete professor");
   return true;
 };

@@ -154,6 +154,11 @@ class ProjectRoomService extends BaseService
             $updateData['name'] = $data['room_name'];
         }
 
+        // Remove room_name from updateData to prevent "unknown column" SQL error
+        if (isset($updateData['room_name'])) {
+            unset($updateData['room_name']);
+        }
+
         if (!empty($updateData)) {
             $this->roomRepo->update($roomId, $updateData);
         }
@@ -179,7 +184,15 @@ class ProjectRoomService extends BaseService
             throw new \Exception('Unauthorized: Only the room owner can delete this room', 403);
         }
 
-        // Rely on DB-level ON DELETE CASCADE for room_members and chat_messages
+        // Manually delete related data (Cascade)
+        $db = \App\Utils\Database::getInstance()->getConnection();
+
+        // Delete room members
+        $db->prepare("DELETE FROM room_members WHERE room_id = ?")->execute([$roomId]);
+
+        // Delete chat messages
+        $db->prepare("DELETE FROM chat_messages WHERE room_id = ?")->execute([$roomId]);
+
         return $this->roomRepo->delete($roomId);
     }
 

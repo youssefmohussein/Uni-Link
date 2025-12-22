@@ -132,11 +132,20 @@ class FacultyService extends BaseService
      */
     public function deleteFaculty(int $facultyId): bool
     {
-        // Check if faculty has associated majors
+        // Check if faculty has associated majors and delete them (Cascade)
         $majors = $this->majorRepo->findByFaculty($facultyId);
         if (!empty($majors)) {
-            throw new \Exception('Cannot delete faculty with existing majors. Delete majors first.', 409);
+            foreach ($majors as $major) {
+                $this->deleteMajor($major['major_id']);
+            }
         }
+
+        // Unlink users from this faculty (set faculty_id to NULL)
+        // We use raw query here as we don't have userRepo injected, but we have database access via BaseRepository
+        // Actually BaseService doesn't expose database directly, but we can use Database singleton or inject UserRepo.
+        // For simplicity and robustness, we'll try to use Database singleton.
+        $db = \App\Utils\Database::getInstance()->getConnection();
+        $db->prepare("UPDATE users SET faculty_id = NULL WHERE faculty_id = ?")->execute([$facultyId]);
 
         return $this->facultyRepo->delete($facultyId);
     }
@@ -189,6 +198,10 @@ class FacultyService extends BaseService
      */
     public function deleteMajor(int $majorId): bool
     {
+        // Unlink users from this major
+        $db = \App\Utils\Database::getInstance()->getConnection();
+        $db->prepare("UPDATE users SET major_id = NULL WHERE major_id = ?")->execute([$majorId]);
+
         return $this->majorRepo->delete($majorId);
     }
 

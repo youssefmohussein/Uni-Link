@@ -119,7 +119,7 @@ export default function ProfessorForm({
               </h3>
 
               <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                
+
                 {/* User ID - auto-filled, not editable */}
                 <input
                   name="user_id"
@@ -180,7 +180,7 @@ export default function ProfessorForm({
                   <option value="">Select Faculty</option>
                   {faculties.map((f) => (
                     <option key={f.faculty_id} value={String(f.faculty_id)}>
-                      {f.faculty_name}
+                      {f.name}
                     </option>
                   ))}
                 </select>
@@ -190,14 +190,13 @@ export default function ProfessorForm({
                   disabled={!formData.faculty_id}
                   value={formData.major_id || ""}
                   onChange={handleChange}
-                  className={`px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 ${
-                    !formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`px-3 py-2 rounded-custom border border-white/20 bg-panel text-white/50 ${!formData.faculty_id ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   <option value="">Select Major</option>
                   {filteredMajors.map((m) => (
                     <option key={m.major_id} value={String(m.major_id)}>
-                      {m.major_name}
+                      {m.name}
                     </option>
                   ))}
                 </select>
