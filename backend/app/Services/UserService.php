@@ -470,4 +470,14 @@ class UserService extends BaseService
         
         return $users;
     }
+    /**
+     * Get leaderboard (top students by points)
+     * 
+     * @param int $limit Number of students to return
+     * @return array
+     */
+    public function getLeaderboard(int $limit = 10): array
+    {
+        return $this->studentRepo->getTopByPoints($limit);
+    }
 }

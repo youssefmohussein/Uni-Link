@@ -45,6 +45,7 @@ return [
 
     // Legacy student routes (for frontend compatibility)
     'GET /getStudents' => ['StudentController', 'getAll'],
+    'GET /api/leaderboard' => ['StudentController', 'getLeaderboard'], // Added leaderboard route
 
     // ============================================
     // Professor Routes (Legacy compatibility)

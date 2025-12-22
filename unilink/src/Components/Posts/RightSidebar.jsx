@@ -1,17 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
 const RightSidebar = ({ currentFilter, onFilterChange }) => {
-  const categories = [
-    { tag: '#StudyGroup', posts: 30, filter: 'Study Group' },
-    { tag: '#CampusEvents', posts: 22, filter: 'Events' },
-    { tag: '#Announcements', posts: 15, filter: 'Announcement' },
-    { tag: '#Projects', posts: 35, filter: 'Projects' },
-  ];
+  const [categoryCounts, setCategoryCounts] = useState({
+    'Questions': 0,
+    'Events': 0,
+    'Announcements': 0,
+    'Projects': 0
+  });
+  const [totalCount, setTotalCount] = useState(0);
 
-  const connections = [
-    { name: 'Emma Thompson', major: 'Psychology', mutual: 12, profilePic: "https://placehold.co/40x40/E5E7EB/6B7280?text=E" },
-    { name: 'James Wilson', major: 'Engineering', mutual: 8, profilePic: "https://placehold.co/40x40/E5E7EB/6B7280?text=J" },
+  useEffect(() => {
+    // Fetch category counts from the backend
+    const fetchCategoryCounts = async () => {
+      try {
+        const response = await fetch('http://localhost/backend/api/posts/category-counts', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (data.status === 'success' && Array.isArray(data.data)) {
+          const counts = {};
+          let total = 0;
+
+          data.data.forEach(item => {
+            counts[item.category] = parseInt(item.count);
+            total += parseInt(item.count);
+          });
+
+          setCategoryCounts(counts);
+          setTotalCount(total);
+        }
+      } catch (error) {
+        console.error('Failed to fetch category counts:', error);
+      }
+    };
+
+    fetchCategoryCounts();
+    // Refresh counts every 30 seconds
+    const interval = setInterval(fetchCategoryCounts, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const categories = [
+    { tag: '#Questions', posts: categoryCounts['Questions'] || 0, filter: 'Questions' },
+    { tag: '#CampusEvents', posts: categoryCounts['Events'] || 0, filter: 'Events' },
+    { tag: '#Announcements', posts: categoryCounts['Announcements'] || 0, filter: 'Announcements' },
+    { tag: '#Projects', posts: categoryCounts['Projects'] || 0, filter: 'Projects' },
   ];
 
   return (
@@ -59,47 +94,11 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
               >
                 #AllPosts
               </button>
+              <span className="text-gray-500 text-xs bg-black/30 px-2 py-0.5 rounded-full">
+                {totalCount}
+              </span>
             </div>
           </nav>
-        </div>
-      </GlassSurface>
-
-      {/* Connections */}
-      <GlassSurface
-        width="100%"
-        height="auto"
-        borderRadius={20}
-        opacity={0.5}
-        blur={10}
-        borderWidth={0.05}
-        className="!items-start !justify-start"
-      >
-        <div className="w-full relative z-10">
-          <h3 className="font-bold text-white mb-4 border-b border-white/10 pb-2">
-            Suggested Connections
-          </h3>
-          <div className="space-y-4">
-            {connections.map((person, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={person.profilePic}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full border-2 border-gray-600"
-                  />
-                  <div>
-                    <span className="block font-medium text-white text-sm">{person.name}</span>
-                    <span className="block text-gray-400 text-xs">
-                      {person.major} • {person.mutual} mutual
-                    </span>
-                  </div>
-                </div>
-                <button className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full hover:bg-blue-500 transition-all shadow-sm">
-                  Connect
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       </GlassSurface>
     </aside>

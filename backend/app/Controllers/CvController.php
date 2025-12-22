@@ -32,7 +32,7 @@ class CvController extends BaseController {
             }
             
             // Create upload directory if exists
-            $uploadDir = __DIR__ . '/../../uploads/cvs/';
+            $uploadDir = __DIR__ . '/../../public/uploads/cvs/';
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
@@ -48,7 +48,7 @@ class CvController extends BaseController {
             }
             
             // Save path to database (relative path)
-            $relativePath = 'uploads/cvs/' . $filename;
+            $relativePath = 'public/uploads/cvs/' . $filename;
             
             // Update user record with CV path
             // For now using direct query since we don't have a specialized CvService yet

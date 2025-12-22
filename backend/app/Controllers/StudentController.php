@@ -64,4 +64,22 @@ class StudentController extends BaseController
             $this->error($e->getMessage(), $e->getCode() ?: 400);
         }
     }
+    /**
+     * Get leaderboard
+     */
+    public function getLeaderboard(): void
+    {
+        try {
+            $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+            $students = $this->userService->getLeaderboard($limit);
+
+            $this->success([
+                'count' => count($students),
+                'data' => $students
+            ]);
+
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
 }

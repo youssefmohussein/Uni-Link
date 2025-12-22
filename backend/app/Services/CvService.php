@@ -49,7 +49,7 @@ class CvService extends BaseService {
         }
         
         // Upload new file
-        $uploadDir = __DIR__ . '/../../uploads/cvs/';
+        $uploadDir = __DIR__ . '/../../public/uploads/cvs/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
@@ -61,7 +61,7 @@ class CvService extends BaseService {
             throw new \Exception('Failed to upload file', 500);
         }
         
-        $filePath = 'uploads/cvs/' . $filename;
+        $filePath = 'public/uploads/cvs/' . $filename;
         
         // Save to database
         $this->cvRepo->upload($userId, $filePath);

@@ -180,7 +180,7 @@ class PostController extends BaseController
             }
 
             $uploadedFiles = [];
-            $uploadDir = __DIR__ . '/../../uploads/media';
+            $uploadDir = __DIR__ . '/../../public/uploads/media';
 
             // Create upload directory if it doesn't exist
             if (!is_dir($uploadDir)) {
@@ -209,7 +209,7 @@ class PostController extends BaseController
                 // Move uploaded file
                 if (move_uploaded_file($fileTmpName, $targetPath)) {
                     // Save to database using repository
-                    $relativePath = 'uploads/media/' . $uniqueFileName;
+                    $relativePath = 'public/uploads/media/' . $uniqueFileName;
 
                     $db = $this->postService->getPostRepo()->getDb();
                     $stmt = $db->prepare("

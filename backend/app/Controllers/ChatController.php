@@ -199,7 +199,7 @@ class ChatController extends BaseController
         }
 
         $file = $_FILES['file'];
-        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'chat' . DIRECTORY_SEPARATOR;
+        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'chat' . DIRECTORY_SEPARATOR;
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
@@ -211,7 +211,7 @@ class ChatController extends BaseController
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             ResponseHandler::success([
-                'file_path' => 'uploads/chat/' . $fileName,
+                'file_path' => 'public/uploads/chat/' . $fileName,
                 'file_name' => $file['name'],
                 'file_type' => $file['type']
             ]);

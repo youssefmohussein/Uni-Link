@@ -27,7 +27,7 @@ class ProjectController extends BaseController {
             if (isset($_FILES['project_file'])) {
                 $filePath = $this->handleFileUpload(
                     'project_file',
-                    __DIR__ . '/../../uploads/projects',
+                    __DIR__ . '/../../public/uploads/projects',
                     [],
                     10485760 // 10MB
                 );
@@ -106,7 +106,7 @@ class ProjectController extends BaseController {
             if (isset($_FILES['project_file'])) {
                 $filePath = $this->handleFileUpload(
                     'project_file',
-                    __DIR__ . '/../../uploads/projects',
+                    __DIR__ . '/../../public/uploads/projects',
                     [],
                     10485760 // 10MB
                 );

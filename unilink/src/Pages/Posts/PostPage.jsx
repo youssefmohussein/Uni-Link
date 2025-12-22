@@ -58,7 +58,10 @@ const PostPage = () => {
         if (data[0].media && data[0].media.length > 0) {
           console.log("First media item:", data[0].media[0]);
           console.log("Media path:", data[0].media[0].media_path);
-          console.log("Constructed URL:", `${API_BASE_URL}${data[0].media[0].media_path || data[0].media[0].path}`);
+          // Ensure media path has a leading slash
+          const debugMediaPath = data[0].media[0].media_path || data[0].media[0].path;
+          const debugNormalizedPath = debugMediaPath.startsWith('/') ? debugMediaPath : `/${debugMediaPath}`;
+          console.log("Constructed URL:", `${API_BASE_URL}${debugNormalizedPath}`);
         }
       }
 
@@ -76,7 +79,13 @@ const PostPage = () => {
         media: post.media && Array.isArray(post.media) && post.media.length > 0
           ? post.media.map(m => {
             // Ensure path starts with / for URL construction
-            const mediaPath = m.media_path || m.path || '';
+            let mediaPath = m.media_path || m.path || '';
+
+            // Fix for moved uploads folder: map uploads/ to public/uploads/
+            if (mediaPath && !mediaPath.includes('public/') && (mediaPath.startsWith('uploads/') || mediaPath.startsWith('/uploads/'))) {
+              mediaPath = mediaPath.replace(/^\/?uploads\//, '/public/uploads/');
+            }
+
             const normalizedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
             const url = `${API_BASE_URL}${normalizedPath}`;
 

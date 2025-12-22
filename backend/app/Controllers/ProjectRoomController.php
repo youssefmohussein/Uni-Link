@@ -39,7 +39,7 @@ class ProjectRoomController extends BaseController
 
             // Handle File Upload
             if (isset($_FILES['room_photo']) && $_FILES['room_photo']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = 'uploads/room_photos';
+                $uploadDir = 'public/uploads/room_photos';
                 try {
                     $photoPath = $this->handleFileUpload('room_photo', $uploadDir, ['image/jpeg', 'image/png', 'image/webp']);
                     $data['photo_url'] = $photoPath;

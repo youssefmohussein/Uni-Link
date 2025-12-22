@@ -344,23 +344,6 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
             </button>
           </div>
 
-          {/* Bookmark/Save Button */}
-          <button
-            onClick={toggleSave}
-            disabled={loadingSave}
-            className={`
-              p-2 rounded-full transition-all duration-200
-              ${isSaved
-                ? "text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-              }
-              ${loadingSave ? "opacity-50 cursor-not-allowed" : "active:scale-95"}
-            `}
-            title={isSaved ? "Unsave post" : "Save post"}
-          >
-            <i className={`${isSaved ? "fas" : "far"} fa-bookmark`}></i>
-          </button>
-
           {/* Share Button */}
           <button
             onClick={async () => {
