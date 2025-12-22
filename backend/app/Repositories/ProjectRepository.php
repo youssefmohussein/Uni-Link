@@ -262,7 +262,7 @@ class ProjectRepository extends BaseRepository {
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $sql .= " ORDER BY p.submitted_at DESC";
+        $sql .= " ORDER BY p.created_at DESC";
 
         return $this->query($sql, $params);
     }

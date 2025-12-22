@@ -66,6 +66,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\CvController;
 use App\Controllers\SkillCategoryController;
 use App\Controllers\HealthController;
+use App\Controllers\GradingController;
 
 
 // Mediators
@@ -374,6 +375,10 @@ $container->set('SkillCategoryController', function ($c) {
 
 $container->set('HealthController', function ($c) {
     return new HealthController();
+});
+
+$container->set('GradingController', function ($c) {
+    return new GradingController();
 });
 
 return $container;

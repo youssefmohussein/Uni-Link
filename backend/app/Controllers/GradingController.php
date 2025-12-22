@@ -12,7 +12,6 @@ class GradingController extends BaseController {
     private ProjectRepository $projectRepo;
 
     public function __construct() {
-        parent::__construct();
         $this->projectRepo = new ProjectRepository();
     }
 
@@ -49,7 +48,7 @@ class GradingController extends BaseController {
             // Require authentication
             $this->requireAuth();
 
-            $data = $this->getRequestBody();
+            $data = $this->getJsonInput();
 
             // Validate required fields
             if (!isset($data['project_id']) || !isset($data['grade'])) {

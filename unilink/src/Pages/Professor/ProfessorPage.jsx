@@ -66,8 +66,9 @@ const ProfessorPage = () => {
     // Fetch projects for grading
     const fetchProjects = async () => {
         try {
-            if (!currentUser?.faculty_id) return;
-            const projectsData = await gradingHandler.getProjects(currentUser.faculty_id, gradeFilter);
+            // Pass faculty_id if it exists, otherwise pass null to fetch all/accessible projects
+            const facultyId = currentUser?.faculty_id || null;
+            const projectsData = await gradingHandler.getProjects(facultyId, gradeFilter);
             setProjects(projectsData);
         } catch (err) {
             console.error("Failed to fetch projects:", err);
@@ -330,8 +331,8 @@ const ProfessorPage = () => {
                                                         {/* Status Badge */}
                                                         {project.status && (
                                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === 'APPROVED' ? 'bg-green-500/20 text-green-500' :
-                                                                    project.status === 'REJECTED' ? 'bg-red-500/20 text-red-500' :
-                                                                        'bg-gray-500/20 text-gray-400'
+                                                                project.status === 'REJECTED' ? 'bg-red-500/20 text-red-500' :
+                                                                    'bg-gray-500/20 text-gray-400'
                                                                 }`}>
                                                                 {project.status === 'APPROVED' ? '✅ Approved' :
                                                                     project.status === 'REJECTED' ? '❌ Rejected' :
