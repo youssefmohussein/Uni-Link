@@ -52,9 +52,3 @@ export const getRoom = async (roomId) => {
     return data.data || data;
 };
 
-export const deleteRoom = async (roomId) => {
-    const res = await apiRequest(`deleteRoom?room_id=${roomId}`, "POST");
-    if (res.status !== "success") throw new Error(res.message || "Failed to delete room");
-    return res.data || res;
-};
-

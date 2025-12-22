@@ -7,7 +7,6 @@ import * as facultyHandler from "../../../api/facultyandmajorHandler";
 import * as professorHandler from "../../../api/professorHandler";
 import { API_BASE_URL } from "../../../config/api";
 import PasswordModal from "../../Components/ProjectRoom/PasswordModal";
-import DeleteRoomModal from "../../Components/ProjectRoom/DeleteRoomModal";
 import { toast } from "react-hot-toast";
 
 const CreateRoomModal = ({ onClose, onCreated, userId }) => {
@@ -275,8 +274,6 @@ const ProjectRoomsPage = () => {
     const [activeTab, setActiveTab] = useState("my"); // 'my' or 'other'
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [loadingDelete, setLoadingDelete] = useState(false);
     const navigate = useNavigate();
     const hasFetched = useRef(false);
 
@@ -357,26 +354,16 @@ const ProjectRoomsPage = () => {
         }
     };
 
-    const handleDeleteClick = (e, room) => {
+    const handleDeleteRoom = async (e, roomId) => {
         e.stopPropagation();
-        setSelectedRoom(room);
-        setShowDeleteModal(true);
-    };
-
-    const confirmDeleteRoom = async () => {
-        if (!selectedRoom) return;
+        if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
 
         try {
-            setLoadingDelete(true);
-            await projectRoomHandler.deleteRoom(selectedRoom.room_id);
+            await projectRoomHandler.deleteRoom(roomId);
             toast.success("Project deleted successfully");
-            setShowDeleteModal(false);
-            setSelectedRoom(null);
             fetchRooms();
         } catch (err) {
             toast.error("Failed to delete project: " + err.message);
-        } finally {
-            setLoadingDelete(false);
         }
     };
 
@@ -617,7 +604,7 @@ const ProjectRoomsPage = () => {
                                                 <div className="flex gap-2">
                                                     {parseInt(room.owner_id) === parseInt(user?.id || user?.user_id) && (
                                                         <button
-                                                            onClick={(e) => handleDeleteClick(e, room)}
+                                                            onClick={(e) => handleDeleteRoom(e, room.room_id)}
                                                             className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition"
                                                             title="Delete Room"
                                                         >
@@ -721,17 +708,6 @@ const ProjectRoomsPage = () => {
                 isOpen={showPasswordModal}
                 onClose={() => setShowPasswordModal(false)}
                 onConfirm={handleConfirmJoin}
-            />
-
-            <DeleteRoomModal
-                isOpen={showDeleteModal}
-                loading={loadingDelete}
-                roomName={selectedRoom?.name}
-                onClose={() => {
-                    setShowDeleteModal(false);
-                    setSelectedRoom(null);
-                }}
-                onConfirm={confirmDeleteRoom}
             />
         </div>
     );

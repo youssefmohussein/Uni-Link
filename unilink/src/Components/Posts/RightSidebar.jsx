@@ -1,34 +1,13 @@
 import React from 'react';
 import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
-import { getCategoryCounts } from "../../../api/postHandler";
 
 const RightSidebar = ({ currentFilter, onFilterChange }) => {
-  const [categories, setCategories] = React.useState([
-    { tag: '#StudyGroup', posts: 0, filter: 'Study Group' },
-    { tag: '#CampusEvents', posts: 0, filter: 'Events' },
-    { tag: '#Announcements', posts: 0, filter: 'Announcement' },
-    { tag: '#Projects', posts: 0, filter: 'Projects' },
-  ]);
-
-  React.useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const counts = await getCategoryCounts();
-        // counts is: [{ category: 'Study Group', count: 5 }, ...]
-
-        setCategories(prev => prev.map(cat => {
-          const match = counts.find(c => c.category === cat.filter);
-          return {
-            ...cat,
-            posts: match ? parseInt(match.count) : 0
-          };
-        }));
-      } catch (err) {
-        console.error("Error fetching category counts:", err);
-      }
-    };
-    fetchCounts();
-  }, []);
+  const categories = [
+    { tag: '#StudyGroup', posts: 30, filter: 'Study Group' },
+    { tag: '#CampusEvents', posts: 22, filter: 'Events' },
+    { tag: '#Announcements', posts: 15, filter: 'Announcement' },
+    { tag: '#Projects', posts: 35, filter: 'Projects' },
+  ];
 
   const connections = [
     { name: 'Emma Thompson', major: 'Psychology', mutual: 12, profilePic: "https://placehold.co/40x40/E5E7EB/6B7280?text=E" },

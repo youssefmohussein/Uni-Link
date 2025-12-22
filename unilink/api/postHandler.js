@@ -307,12 +307,3 @@ export const checkIfPostSaved = async (user_id, post_id) => {
     };
 };
 
-/**
- * Get counts of posts grouped by category
- */
-export const getCategoryCounts = async () => {
-    const res = await apiRequest("api/posts/category-counts", "GET");
-    if (res.status !== "success") throw new Error(res.message || "Failed to fetch category counts");
-    return res.data;
-};
-

@@ -79,21 +79,3 @@ export const uploadChatFile = async (file) => {
     if (res.status !== "success") throw new Error(res.message || "Failed to upload file");
     return res.data;
 };
-
-/**
- * Delete a chat message
- */
-export const removeChatMessage = async (message_id) => {
-    const res = await apiRequest("deleteMessage", "POST", { message_id });
-    if (res.status !== "success") throw new Error(res.message || "Failed to delete message");
-    return true;
-};
-
-/**
- * Get total count of project rooms
- */
-export const getRoomCount = async () => {
-    const res = await apiRequest("api/chat/rooms/total-count", "GET");
-    if (res.status !== "success") throw new Error(res.message || "Failed to fetch room count");
-    return res.data.count;
-};

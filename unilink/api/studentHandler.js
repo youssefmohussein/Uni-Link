@@ -131,17 +131,10 @@ export const getStudentSkills = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const addStudentSkills = async (userId, skills) => {
-  // Backend UserSkillController::add expects { skill_id: 123 }
-  // We extract the first skill from the array since the backend only supports adding one at a time
-  const skillToAdd = skills[0];
-  if (!skillToAdd || !skillToAdd.skill_id) {
-    throw new Error('Invalid skill data');
-  }
-
-  const data = await apiRequest('api/user-skills', 'POST', {
-    skill_id: skillToAdd.skill_id
+  const data = await apiRequest('api/user-skills', 'POST', { // Updated to match 'POST /api/user-skills'
+    user_id: userId,
+    skills: skills
   });
-
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to add skills');
   }
@@ -157,8 +150,7 @@ export const getSkillCategories = async () => {
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to fetch skill categories');
   }
-  // API returns { status: 'success', data: { count: N, data: [...] } }
-  return data.data?.data ?? data.data ?? [];
+  return data.data ?? [];
 };
 
 /**
@@ -179,7 +171,7 @@ export const addSkillCategory = async (userId, categoryName) => {
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to add skill category');
   }
-  return data.data ? data.data.category_id : data.category_id;
+  return data.category_id;
 };
 
 /**
@@ -198,7 +190,7 @@ export const addSkill = async (skillName, categoryId) => {
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to add skill');
   }
-  return data.data ? data.data.skill_id : data.skill_id;
+  return data.skill_id;
 };
 
 /**
@@ -223,9 +215,11 @@ export const removeStudentSkill = async (userId, skillId) => {
  * @returns {Promise<Array>} Array of all skills
  */
 export const getAllSkills = async () => {
-  const data = await apiRequest('/api/skills', 'GET');
-  // API returns { status: 'success', data: { count: N, data: [...] } }
-  return data.data?.data ?? data.data ?? [];
+  const data = await apiRequest('getAllSkills', 'GET');
+  if (data.status !== 'success') {
+    throw new Error(data.message || 'Failed to fetch all skills');
+  }
+  return data.data ?? [];
 };
 
 
