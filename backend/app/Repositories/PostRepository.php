@@ -152,38 +152,21 @@ class PostRepository extends BaseRepository
     public function getTrending(?int $limit = null, int $offset = 0): array
     {
         $sql = "
-            SELECT p.*, 
-                   u.username as author_name,
-                   u.profile_picture,
-                   f.name as faculty_name,
-                   (SELECT COUNT(*) FROM post_interactions pi WHERE pi.post_id = p.post_id AND pi.type IN ('Like', 'like', 'LIKE', 'Love', 'love', 'LOVE', 'celebration', 'Celebration', 'CELEBRATION', 'Save', 'save', 'SAVE', 'Share', 'share', 'SHARE')) as real_likes_count,
-                   (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.post_id) as real_comments_count,
-                   ((SELECT COUNT(*) FROM post_interactions pi WHERE pi.post_id = p.post_id AND pi.type IN ('Like', 'like', 'LIKE', 'Love', 'love', 'LOVE', 'celebration', 'Celebration', 'CELEBRATION', 'Save', 'save', 'SAVE', 'Share', 'share', 'SHARE')) + 
-                    (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.post_id)) as real_total_engagement
+            SELECT p.*, u.username, u.profile_picture,
+                   COUNT(DISTINCT c.comment_id) as comment_count,
+                   (p.likes_count + COUNT(DISTINCT c.comment_id)) as total_engagement
             FROM {$this->table} p
             LEFT JOIN users u ON p.author_id = u.user_id
-            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
-            ORDER BY real_total_engagement DESC, real_likes_count DESC, real_comments_count DESC, p.created_at DESC
+            LEFT JOIN comments c ON p.post_id = c.post_id
+            GROUP BY p.post_id
+            ORDER BY total_engagement DESC, p.created_at DESC
         ";
 
         if ($limit !== null) {
             $sql .= " LIMIT {$limit} OFFSET {$offset}";
         }
 
-        $posts = $this->query($sql);
-
-        // Get media for each post (consistent with getAllWithDetails)
-        foreach ($posts as &$post) {
-            $media = $this->query("
-                SELECT media_id, type as media_type, path as media_path 
-                FROM post_media 
-                WHERE post_id = ?
-            ", [$post['post_id']]);
-
-            $post['media'] = $media;
-        }
-
-        return $posts;
+        return $this->query($sql);
     }
 
     /**

@@ -120,7 +120,6 @@ export default function AdminDashboardPage() {
       value: dashboardData.stats.professors,
       icon: FiUserCheck,
       color: "admin-accent",
-      path: "/admin/manage-professors",
       sparklineData: {
         labels: dashboardData.weeklyActivity.map(d => d.day),
         datasets: [{
@@ -134,15 +133,13 @@ export default function AdminDashboardPage() {
       label: "Admins",
       value: dashboardData.stats.admins,
       icon: FiShield,
-      color: "admin-accent",
-      path: "/admin/admin"
+      color: "admin-accent"
     },
     {
       label: "Total Users",
       value: dashboardData.stats.totalUsers,
       icon: FiUser,
       color: "admin-accent",
-      path: "/admin/users",
       sparklineData: {
         labels: dashboardData.weeklyActivity.map(d => d.day),
         datasets: [{
@@ -206,8 +203,8 @@ export default function AdminDashboardPage() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <ChartCard title="Weekly Active Users"><Line data={lineData} /></ChartCard>
-          <ChartCard title="Students per Faculty" path="/admin/university"><Bar data={barData} /></ChartCard>
-          <ChartCard title="User Status Distribution" path="/admin/users"><Doughnut data={doughnutData} /></ChartCard>
+          <ChartCard title="Students per Faculty"><Bar data={barData} /></ChartCard>
+          <ChartCard title="User Status Distribution"><Doughnut data={doughnutData} /></ChartCard>
         </div>
       </div>
     </div>

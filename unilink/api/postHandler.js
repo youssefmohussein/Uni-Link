@@ -15,15 +15,6 @@ export const getAllPosts = async () => {
 };
 
 /**
- * Fetch trending posts
- */
-export const getTrendingPosts = async () => {
-    const data = await apiRequest("api/posts/trending", "GET");
-    if (data.status !== "success") throw new Error(data.message || "Failed to fetch trending posts");
-    return data.data ?? [];
-};
-
-/**
  * Fetch a single post by ID with media, comments, and likes
  */
 export const getPostById = async (post_id) => {

@@ -14,12 +14,6 @@ const Navbar = () => {
                 <a href="/" className="text-white/80 hover:text-accent font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(88,166,255,0.5)]">
                     Home
                 </a>
-                <a href="/posts" className="text-white/80 hover:text-accent font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(88,166,255,0.5)]">
-                    Posts
-                </a>
-                <a href="/project-rooms" className="text-white/80 hover:text-accent font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(88,166,255,0.5)]">
-                    Rooms
-                </a>
                 <a href="/faculties" className="text-white/80 hover:text-accent font-medium text-lg transition-all duration-300 hover:[text-shadow:0_0_10px_rgba(88,166,255,0.5)]">
                     Faculties
                 </a>
