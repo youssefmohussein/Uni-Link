@@ -38,7 +38,7 @@ const PostPage = () => {
   const hasInitializedRef = useRef(false);
 
   // Check auth and fetch posts
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(async (filterType = 'all') => {
     // Prevent multiple simultaneous fetches
     if (isFetchingRef.current) {
       console.log('⏳ Already fetching, skipping...');
@@ -49,7 +49,13 @@ const PostPage = () => {
       isFetchingRef.current = true;
       setLoading(true);
       setError(null);
-      const data = await postHandler.getAllPosts();
+
+      let data;
+      if (filterType === 'trending') {
+        data = await postHandler.getTrendingPosts();
+      } else {
+        data = await postHandler.getAllPosts();
+      }
 
       // Debug: Log first post to check media structure
       if (data.length > 0) {
@@ -133,9 +139,10 @@ const PostPage = () => {
     }
 
     hasInitializedRef.current = true;
-    fetchPosts();
+    hasInitializedRef.current = true;
+    fetchPosts(filter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, [filter]); // Refetch when filter changes
 
   // Helper function to format timestamps
   const formatTimeAgo = (timestamp) => {
@@ -308,8 +315,9 @@ const PostPage = () => {
   const filteredPosts = displayPosts.filter((post) => {
     if (sharedPostId) return true;
     if (filter === "all") return true;
-    if (filter === "trending") return post.isTrending;
-    return post.category === filter;
+    if (filter === "trending") return true; // Data is already fetched for trending
+    // Case-insensitive comparison for categories
+    return post.category && post.category.toLowerCase() === filter.toLowerCase();
   });
 
   if (!user) return null; // Prevent rendering while redirecting

@@ -106,6 +106,25 @@ class PostController extends BaseController
     }
 
     /**
+     * Get trending posts
+     */
+    public function getTrending(): void
+    {
+        try {
+            $pagination = $this->getPagination();
+            $posts = $this->postService->getTrendingPosts($pagination['limit'], $pagination['offset']);
+
+            $this->success([
+                'count' => count($posts),
+                'data' => $posts
+            ]);
+
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Get user posts
      */
     public function getUserPosts(): void

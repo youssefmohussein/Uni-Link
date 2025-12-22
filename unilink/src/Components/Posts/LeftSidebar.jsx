@@ -47,7 +47,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
   }, []);
 
   const navItems = [
-    { label: "Home Feed", icon: "fas fa-home", category: "all", count: null },
+    { label: "Home", icon: "fas fa-home", category: "all", count: null },
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
     { label: "Project Rooms", icon: "fas fa-users", category: "project-rooms", count: counts.projectRooms || null, isRoute: true, route: "/project-rooms" },
     { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: counts.questions || null, countColor: "bg-red-500" },

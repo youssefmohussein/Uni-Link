@@ -73,6 +73,7 @@ return [
     // ============================================
     'GET /api/posts' => ['PostController', 'getAll'],
     'POST /api/posts' => ['PostController', 'create'],
+    'GET /api/posts/trending' => ['PostController', 'getTrending'], // Added trending route
     'GET /api/posts/search' => ['PostController', 'search'],
     'GET /api/posts/user' => ['PostController', 'getUserPosts'],
     'PUT /api/posts' => ['PostController', 'update'],

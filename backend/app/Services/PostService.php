@@ -150,6 +150,39 @@ class PostService extends BaseService
     }
 
     /**
+     * Get trending posts
+     * 
+     * @param int|null $limit Limit
+     * @param int $offset Offset
+     * @return array
+     */
+    public function getTrendingPosts(?int $limit = null, int $offset = 0): array
+    {
+        // Use getAllWithDetails style logic but with trending sort
+        // Since we added getTrending to repo, we need to manually fetch media for them 
+        // OR update getTrending to include media? 
+        // For now, let's get the raw trending posts and then attach media if needed.
+        // Actually, getAllWithDetails in Repo does a lot. 
+        // Let's stick to getTrending returning the list, and if media is needed, we fetch it?
+        // Wait, getAllWithUserInfo only returns base info. 
+        // We really want getTrendingWithDetails. 
+        // For simplicity, let's just use getTrending and if we need media, 
+        // we can fetch it or trust the client to fetch details?
+        // No, the feed needs media.
+        // Let's iterate and add media.
+        
+        $posts = $this->postRepo->getTrending($limit, $offset);
+        
+        // Attach media (N+1 problem but acceptable for small limit)
+        foreach ($posts as &$post) {
+            $media = $this->postRepo->query("SELECT media_id, type as media_type, path as media_path FROM post_media WHERE post_id = ?", [$post['post_id']]);
+            $post['media'] = $media;
+        }
+        
+        return $posts;
+    }
+
+    /**
      * Get post repository
      * 
      * @return PostRepository

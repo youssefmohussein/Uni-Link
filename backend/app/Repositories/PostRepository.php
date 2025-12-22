@@ -143,6 +143,33 @@ class PostRepository extends BaseRepository
     }
 
     /**
+     * Get trending posts (ordered by likes + comments)
+     * 
+     * @param int|null $limit Limit
+     * @param int $offset Offset
+     * @return array Array of posts
+     */
+    public function getTrending(?int $limit = null, int $offset = 0): array
+    {
+        $sql = "
+            SELECT p.*, u.username, u.profile_picture,
+                   COUNT(DISTINCT c.comment_id) as comment_count,
+                   (p.likes_count + COUNT(DISTINCT c.comment_id)) as total_engagement
+            FROM {$this->table} p
+            LEFT JOIN users u ON p.author_id = u.user_id
+            LEFT JOIN comments c ON p.post_id = c.post_id
+            GROUP BY p.post_id
+            ORDER BY total_engagement DESC, p.created_at DESC
+        ";
+
+        if ($limit !== null) {
+            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+        }
+
+        return $this->query($sql);
+    }
+
+    /**
      * Get all posts with complete details (author, faculty, media)
      * 
      * @param int|null $limit Limit number of posts
