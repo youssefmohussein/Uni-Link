@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../Components/Posts/Header";
+import VoiceMessage from "../../Components/ProjectRoom/VoiceMessage";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import { API_BASE_URL } from "../../../config/api";
 import { toast } from "react-hot-toast";
@@ -361,55 +362,86 @@ const ProjectChatPage = () => {
                                             </div>
                                         ) : null}
 
-                                        {/* Bubble */}
-                                        <div className={`relative px-4 py-2.5 rounded-2xl ${isMe
-                                            ? 'bg-accent text-white rounded-tr-sm shadow-[0_4px_15px_rgba(88,166,255,0.2)]'
-                                            : 'bg-white/10 text-gray-100 rounded-tl-sm border border-white/5'
+                                        {/* Bubble Container */}
+                                        <div className={`relative max-w-full ${
+                                            // Only apply bubble background for TEXT messages
+                                            msg.message_type === 'TEXT'
+                                                ? (isMe
+                                                    ? 'px-4 py-2.5 rounded-2xl bg-accent text-white rounded-tr-sm shadow-[0_4px_15px_rgba(88,166,255,0.2)]'
+                                                    : 'px-4 py-2.5 rounded-2xl bg-white/10 text-gray-100 rounded-tl-sm border border-white/5')
+                                                : '' // No background for media
                                             }`}>
-                                            {!isMe && <div className="text-[11px] text-accent mb-1 font-bold">{msg.username}</div>}
 
+                                            {/* Username for text messages in group chat */}
+                                            {!isMe && msg.message_type === 'TEXT' && (
+                                                <div className="text-[11px] text-accent mb-1 font-bold">{msg.username}</div>
+                                            )}
+
+                                            {/* --- IMAGE MESSAGE --- */}
                                             {msg.message_type === 'IMAGE' && msg.file_path && (
-                                                <div className="mb-2 max-w-sm rounded-lg overflow-hidden border border-white/10">
+                                                <div className="mb-1 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
                                                     <img
                                                         src={`${API_BASE_URL}/${msg.file_path}`}
                                                         alt="Attachment"
-                                                        className="w-full h-auto cursor-pointer hover:opacity-90 transition"
+                                                        className="w-full h-auto max-h-[300px] object-cover cursor-pointer hover:opacity-95 transition"
                                                         onClick={() => window.open(`${API_BASE_URL}/${msg.file_path}`, '_blank')}
                                                     />
                                                 </div>
                                             )}
 
+                                            {/* --- VOICE MESSAGE --- */}
                                             {msg.message_type === 'VOICE' && msg.file_path && (
-                                                <div className="mb-2">
-                                                    <audio controls className="w-full max-w-xs">
-                                                        <source src={`${API_BASE_URL}/${msg.file_path}`} type="audio/webm" />
-                                                        Your browser does not support the audio element.
-                                                    </audio>
-                                                </div>
+                                                <VoiceMessage
+                                                    filePath={msg.file_path}
+                                                    isMe={isMe}
+                                                />
                                             )}
 
+                                            {/* --- FILE ATTACHMENT --- */}
                                             {msg.message_type === 'FILE' && msg.file_path && (
-                                                <div className="mb-2">
+                                                <div className="mb-1">
                                                     <a
                                                         href={`${API_BASE_URL}/${msg.file_path}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className={`flex items-center gap-3 p-3 rounded-xl border transition ${isMe ? 'bg-white/10 border-white/10 hover:bg-white/20' : 'bg-black/20 border-white/5 hover:bg-black/30'}`}
+                                                        className={`flex items-center gap-4 p-4 rounded-xl border transition shadow-lg w-[280px] ${isMe
+                                                            ? 'bg-[#1a1a1a] border-accent/30 hover:border-accent'
+                                                            : 'bg-[#1a1a1a] border-white/10 hover:border-white/20'
+                                                            }`}
                                                     >
-                                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isMe ? 'bg-white/10' : 'bg-accent/20'}`}>
-                                                            <i className={`fa-solid ${msg.file_path.endsWith('.zip') ? 'fa-file-zipper' : (msg.file_path.endsWith('.doc') || msg.file_path.endsWith('.docx')) ? 'fa-file-word' : 'fa-file-lines'} text-lg ${isMe ? 'text-white' : 'text-accent'}`}></i>
+                                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isMe ? 'bg-accent/10' : 'bg-white/5'
+                                                            }`}>
+                                                            <i className={`fa-solid ${msg.file_path.endsWith('.zip') ? 'fa-file-zipper' :
+                                                                (msg.file_path.endsWith('.doc') || msg.file_path.endsWith('.docx')) ? 'fa-file-word' :
+                                                                    'fa-file-lines'
+                                                                } text-2xl ${isMe ? 'text-accent' : 'text-gray-400'}`}></i>
                                                         </div>
                                                         <div className="flex-grow min-w-0">
-                                                            <p className="text-xs font-medium truncate">Attachment</p>
-                                                            <p className="text-[10px] opacity-60">Click to Download</p>
+                                                            <p className={`text-sm font-bold truncate ${isMe ? 'text-accent' : 'text-white'}`}>
+                                                                File Attachment
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">Click to Download</p>
                                                         </div>
-                                                        <i className="fa-solid fa-download text-xs opacity-40"></i>
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isMe ? 'bg-accent text-white' : 'bg-white/10 text-gray-400'
+                                                            }`}>
+                                                            <i className="fa-solid fa-download text-xs"></i>
+                                                        </div>
                                                     </a>
                                                 </div>
                                             )}
 
-                                            {msg.content && <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.content}</p>}
-                                            <div className={`text-[9px] mt-1.5 ${isMe ? 'text-white/60' : 'text-gray-500'} text-right font-medium`}>
+                                            {/* Message Content & Timestamp */}
+                                            {msg.content && msg.message_type !== 'VOICE' && (
+                                                <p className={`whitespace-pre-wrap break-words text-sm leading-relaxed ${msg.message_type !== 'TEXT' ? (isMe ? 'text-white/80 mt-2 text-right' : 'text-gray-400 mt-2') : ''
+                                                    }`}>
+                                                    {msg.content}
+                                                </p>
+                                            )}
+
+                                            <div className={`text-[9px] mt-1.5 font-medium ${msg.message_type === 'TEXT'
+                                                ? (isMe ? 'text-white/60' : 'text-gray-500')
+                                                : (isMe ? 'text-white/40' : 'text-gray-600')
+                                                } ${isMe ? 'text-right' : 'text-left'}`}>
                                                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </div>

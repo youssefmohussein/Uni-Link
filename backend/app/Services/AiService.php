@@ -90,7 +90,10 @@ class AiService extends BaseService
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'You are Uni-Link AI, a helpful assistant for university students and professors. Keep answers concise and helpful.'
+                    'content' => "You are Uni-Link AI, a helpful coding assistant for the Uni-Link platform.\n\n" .
+                               "CONTEXT: You have access to the following Uni-Link API Endpoints:\n" . 
+                               $this->getApiDocs() . 
+                               "\n\nWhen answering questions about the project, use this API documentation."
                 ],
                 [
                     'role' => 'user',
@@ -150,5 +153,41 @@ class AiService extends BaseService
         
         // Default response
         return "That's an interesting question! As an AI, I'm still learning. Please configure my API key to unlock my full potential!";
+    }
+
+    /**
+     * Get API Documentation for the AI Context
+     */
+    private function getApiDocs(): string
+    {
+        return "
+AUTH:
+POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
+
+USERS:
+GET /api/user, POST /api/user, GET /api/user/profile
+
+PROJECTS:
+GET /api/projects (Params: faculty_id, status)
+POST /api/projects (Body: title, description, file, etc)
+POST /api/projects/upload (Multipart)
+POST /api/projects/grade (Body: project_id, grade, status)
+GET /api/grading/projects (Params: status=graded|not_graded)
+
+ROOMS & CHAT:
+GET /api/project-rooms (List all)
+POST /api/project-rooms (Create)
+GET /api/chat/messages?room_id={id}
+POST /api/chat/send (Body: room_id, content, message_type)
+POST /api/chat/upload (Multipart)
+
+POSTS:
+GET /api/posts, POST /api/posts
+POST /api/post-interactions (Like/Love)
+GET /api/comments?post_id={id}, POST /api/comments
+
+NOTIFICATIONS:
+GET /api/notifications
+";
     }
 }

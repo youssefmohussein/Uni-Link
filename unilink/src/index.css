@@ -189,3 +189,29 @@ select option:checked {
   background-color: var(--hover-bg);
   color: var(--text);
 }
+
+/* ============================= */
+/* 🎵 Custom Audio Player */
+/* ============================= */
+.custom-audio-player {
+  height: 32px;
+  outline: none;
+}
+
+.custom-audio-player::-webkit-media-controls-panel {
+  background-color: transparent !important;
+}
+
+.custom-audio-player::-webkit-media-controls-enclosure {
+  background-color: transparent !important;
+  border-radius: 9999px;
+}
+
+.custom-audio-player::-webkit-media-controls-play-button,
+.custom-audio-player::-webkit-media-controls-current-time-display,
+.custom-audio-player::-webkit-media-controls-time-remaining-display,
+.custom-audio-player::-webkit-media-controls-timeline,
+.custom-audio-player::-webkit-media-controls-volume-slider,
+.custom-audio-player::-webkit-media-controls-mute-button {
+  filter: invert(1); /* Invert colors to make them visible on dark/accent backgrounds if needed */
+}
