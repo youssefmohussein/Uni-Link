@@ -3,12 +3,16 @@ import React from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { Line } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 
-export default function StatsCard({ label, value, icon: Icon, color, sparklineData }) {
+export default function StatsCard({ label, value, icon: Icon, color, sparklineData, path }) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       className="bg-panel rounded-custom p-5 border border-border shadow-md cursor-pointer hover:shadow-xl transition-smooth"
       whileHover={{ y: -5, scale: 1.02 }}
+      onClick={() => path && navigate(path)}
     >
       <div className="flex items-center justify-between mb-3">
         <div>

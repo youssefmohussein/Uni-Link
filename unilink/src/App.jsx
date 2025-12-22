@@ -21,7 +21,6 @@ import CollectionsPage from "./Pages/Collections/Collections";
 import ProfessorPage from "./Pages/Professor/ProfessorPage";
 import ProjectRoomsPage from "./Pages/ProjectRooms/ProjectRoomsPage";
 import ProjectChatPage from "./Pages/ProjectRooms/ProjectChatPage";
-import LeaderboardPage from "./Pages/Leaderboard/LeaderboardPage";
 import { Toaster } from "react-hot-toast";
 import "./index.css"; // Must be at the top
 
@@ -114,8 +113,7 @@ export default function App() {
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/professor" element={<ProfessorPage />} />
           <Route path="/project-rooms" element={<ProjectRoomsPage />} />
-          <Route path="/project-room/:id" element={<ProjectChatPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
+
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Router>

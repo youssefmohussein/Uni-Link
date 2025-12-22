@@ -9,6 +9,7 @@ import PostForm from "../../Components/Posts/PostForm";
 import Galaxy from "../../Animations/Galaxy/Galaxy";
 import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
+import LeaderboardModal from "../../Components/Leaderboard/LeaderboardModal";
 
 const PostPage = () => {
   const [posts, setPosts] = useState([]);
@@ -22,6 +23,7 @@ const PostPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const postFormRef = useRef(null);
   const searchTimeoutRef = useRef(null);
   const navigate = useNavigate();
@@ -50,11 +52,22 @@ const PostPage = () => {
       setLoading(true);
       setError(null);
 
+      console.log('🔍 FETCHING POSTS. Filter:', filterType);
+
       let data;
       if (filterType === 'trending') {
+        console.log('🚀 Calling getTrendingPosts()...');
         data = await postHandler.getTrendingPosts();
       } else {
+        console.log('📋 Calling getAllPosts()...');
         data = await postHandler.getAllPosts();
+      }
+
+      if (filterType === 'trending' && data.length > 0) {
+        console.log("🔥 TRENDING POSTS ORDER:");
+        data.forEach((p, index) => {
+          console.log(`#${index + 1} ID: ${p.post_id} | Likes: ${p.likes_count} | Comments: ${p.comments_count} | Total: ${p.total_engagement}`);
+        });
       }
 
       // Debug: Log first post to check media structure
@@ -72,49 +85,65 @@ const PostPage = () => {
       }
 
       // Transform backend data to match PostCard expected format
-      const transformedPosts = data.map((post) => ({
-        id: post.post_id,
-        user: {
-          name: post.author_name || "Unknown User",
-          major: post.faculty_name || "Unknown Faculty",
-          profilePic: `https://placehold.co/40x40/E5E7EB/6B7280?text=${(post.author_name || "U")[0]}`,
-        },
-        timeAgo: formatTimeAgo(post.created_at),
-        category: post.category,
-        content: post.content,
-        media: post.media && Array.isArray(post.media) && post.media.length > 0
-          ? post.media.map(m => {
-            // Ensure path starts with / for URL construction
-            let mediaPath = m.media_path || m.path || '';
+      let transformedPosts = data.map((post) => {
+        // Use real_ counts if available (from trending endpoint), otherwise fallback
+        const likes = parseInt(post.real_likes_count !== undefined ? post.real_likes_count : (post.likes_count || 0), 10);
+        const comments = parseInt(post.real_comments_count !== undefined ? post.real_comments_count : (post.comments_count || 0), 10);
 
-            // Fix for moved uploads folder: map uploads/ to public/uploads/
-            if (mediaPath && !mediaPath.includes('public/') && (mediaPath.startsWith('uploads/') || mediaPath.startsWith('/uploads/'))) {
-              mediaPath = mediaPath.replace(/^\/?uploads\//, '/public/uploads/');
-            }
+        return {
+          id: post.post_id,
+          user: {
+            name: post.author_name || "Unknown User",
+            major: post.faculty_name || "Unknown Faculty",
+            profilePic: `https://placehold.co/40x40/E5E7EB/6B7280?text=${(post.author_name || "U")[0]}`,
+          },
+          timeAgo: formatTimeAgo(post.created_at),
+          category: post.category,
+          content: post.content,
+          media: post.media && Array.isArray(post.media) && post.media.length > 0
+            ? post.media.map(m => {
+              // Ensure path starts with / for URL construction
+              let mediaPath = m.media_path || m.path || '';
 
-            const normalizedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
-            const url = `${API_BASE_URL}${normalizedPath}`;
+              // Fix for moved uploads folder: map uploads/ to public/uploads/
+              if (mediaPath && !mediaPath.includes('public/') && (mediaPath.startsWith('uploads/') || mediaPath.startsWith('/uploads/'))) {
+                mediaPath = mediaPath.replace(/^\/?uploads\//, '/public/uploads/');
+              }
 
-            console.log('Media transformation:', {
-              original_path: mediaPath,
-              normalized_path: normalizedPath,
-              final_url: url
-            });
+              const normalizedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
+              const url = `${API_BASE_URL}${normalizedPath}`;
 
-            return {
-              media_id: m.media_id,
-              type: m.media_type || m.type, // Handle both formats
-              url: url
-            };
-          })
-          : [],
-        reactions: post.likes_count || 0,
-        isReacted: false, // TODO: Check if current user has liked
-        isTrending: false, // TODO: Add trending logic
-        comments: [], // Array for storing comment objects when fetched
-        commentsCount: post.comments_count || 0, // Initial count from backend
-        post_id: post.post_id, // Keep original ID for API calls
-      }));
+              return {
+                media_id: m.media_id,
+                type: m.media_type || m.type, // Handle both formats
+                url: url
+              };
+            })
+            : [],
+          reactions: likes,
+          isReacted: false, // TODO: Check if current user has liked
+          isTrending: false,
+          comments: [], // Array for storing comment objects when fetched
+          commentsCount: comments,
+          post_id: post.post_id, // Keep original ID for API calls
+          totalEngagement: likes + comments // Helper for sorting
+        };
+      });
+
+      // Explicitly sort trending posts by engagement (Frontend Failsafe)
+      if (filterType === 'trending') {
+        transformedPosts.sort((a, b) => {
+          const engagementDiff = b.totalEngagement - a.totalEngagement;
+          if (engagementDiff !== 0) return engagementDiff;
+
+          // Secondary sort: Likes
+          const likesDiff = b.reactions - a.reactions;
+          if (likesDiff !== 0) return likesDiff;
+
+          // Tertiary sort: Comments
+          return b.commentsCount - a.commentsCount;
+        });
+      }
 
       setPosts(transformedPosts);
     } catch (err) {
@@ -143,6 +172,15 @@ const PostPage = () => {
     fetchPosts(filter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]); // Refetch when filter changes
+
+  // Intercept filter changes
+  const handleFilterChange = (newFilter) => {
+    if (newFilter === 'Leaderboard') {
+      setIsLeaderboardOpen(true);
+      return;
+    }
+    setFilter(newFilter);
+  };
 
   // Helper function to format timestamps
   const formatTimeAgo = (timestamp) => {
@@ -364,7 +402,7 @@ const PostPage = () => {
 
         <div className="container mx-auto flex flex-grow pt-24 pb-12 px-4 md:px-6 xl:px-8 max-w-8xl gap-6">
           {/* 📁 Left Sidebar */}
-          <LeftSidebar currentFilter={filter} onFilterChange={setFilter} />
+          <LeftSidebar currentFilter={filter} onFilterChange={handleFilterChange} />
 
           {/* 📰 Main Feed */}
           <main className="flex-grow space-y-8">
@@ -431,6 +469,7 @@ const PostPage = () => {
                     initialPost={post}
                     onRefresh={fetchPosts}
                     currentUserId={currentUserId}
+                    showTrendingScore={filter === 'trending'}
                   />
                 ))}
               </div>
@@ -470,6 +509,11 @@ const PostPage = () => {
           </div>
         )
       }
+
+      {/* 🏆 Leaderboard Modal */}
+      {isLeaderboardOpen && (
+        <LeaderboardModal onClose={() => setIsLeaderboardOpen(false)} />
+      )}
     </div >
   );
 };

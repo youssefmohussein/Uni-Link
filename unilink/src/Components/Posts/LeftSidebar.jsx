@@ -51,7 +51,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
     { label: "Project Rooms", icon: "fas fa-users", category: "project-rooms", count: counts.projectRooms || null, isRoute: true, route: "/project-rooms" },
     { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: counts.questions || null, countColor: "bg-red-500" },
-    { label: "Leaderboard", icon: "fas fa-trophy", category: "Leaderboard", count: null, isRoute: true, route: "/leaderboard" },
+    { label: "Leaderboard", icon: "fas fa-trophy", category: "Leaderboard", count: null },
   ];
 
   return (

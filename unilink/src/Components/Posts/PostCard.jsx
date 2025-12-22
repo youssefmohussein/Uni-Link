@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as postHandler from "../../../api/postHandler";
 import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
-const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBadge }) => {
+const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBadge, showTrendingScore }) => {
   const [post, setPost] = useState(initialPost);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
@@ -189,8 +189,14 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
               />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg leading-tight hover:text-blue-400 transition-colors cursor-pointer">
+              <h3 className="font-bold text-white text-lg leading-tight hover:text-blue-400 transition-colors cursor-pointer flex items-center gap-2">
                 {post.user.name}
+                {showTrendingScore && (
+                  <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/30">
+                    <i className="fas fa-fire mr-1"></i>
+                    Score: {post.totalEngagement}
+                  </span>
+                )}
               </h3>
               <div className="flex items-center text-gray-400 text-xs mt-0.5 space-x-2">
                 <span>{post.user.major}</span>
