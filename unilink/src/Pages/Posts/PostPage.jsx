@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../../../config/api";
 import Header from "../../Components/Posts/Header";
 import LeftSidebar from "../../Components/Posts/LeftSidebar";
@@ -275,7 +275,8 @@ const PostPage = () => {
 
   // Determine which posts to display
   const [searchParams, setSearchParams] = useSearchParams();
-  const sharedPostId = searchParams.get('id');
+  const { id: routePostId } = useParams(); // Get ID from route /post/:id
+  const sharedPostId = searchParams.get('id') || routePostId; // Support both ?id=1 and /post/1
 
   let displayPosts = searchQuery ? searchResults : posts;
 

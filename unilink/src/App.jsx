@@ -109,6 +109,7 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/posts" element={<PostPage />} />
+          <Route path="/post/:id" element={<PostPage />} />
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/professor" element={<ProfessorPage />} />
           <Route path="/project-rooms" element={<ProjectRoomsPage />} />
