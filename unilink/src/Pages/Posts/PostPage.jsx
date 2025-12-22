@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../../../config/api";
 import Header from "../../Components/Posts/Header";
 import LeftSidebar from "../../Components/Posts/LeftSidebar";
@@ -218,10 +218,14 @@ const PostPage = () => {
     // Debounce search with 300ms delay
     searchTimeoutRef.current = setTimeout(async () => {
       try {
-        const results = await postHandler.searchPosts(query);
+        const [postResults, userResults] = await Promise.all([
+          postHandler.searchPosts(query),
+          // Safe import of userHandler (assuming it is imported as userHandler)
+          import("../../../api/userHandler").then(mod => mod.searchUsers(query)).catch(() => [])
+        ]);
 
         // Transform search results to match PostCard expected format
-        const transformedResults = results.map((post) => ({
+        const transformedPosts = postResults.map((post) => ({
           id: post.post_id,
           user: {
             name: post.author_name || "Unknown User",
@@ -251,12 +255,12 @@ const PostPage = () => {
           post_id: post.post_id,
         }));
 
-        setSearchResults(transformedResults);
+        setSearchResults({ posts: transformedPosts, users: userResults || [] });
         setError(null); // Clear error on successful search
       } catch (err) {
         console.error("Search failed:", err);
         // Only show error for actual failures, not empty results
-        setSearchResults([]);
+        setSearchResults({ posts: [], users: [] });
       } finally {
         setIsSearching(false);
       }
@@ -275,9 +279,18 @@ const PostPage = () => {
 
   // Determine which posts to display
   const [searchParams, setSearchParams] = useSearchParams();
-  const sharedPostId = searchParams.get('id');
+  const { id: routePostId } = useParams(); // Get ID from route /post/:id
+  const sharedPostId = searchParams.get('id') || routePostId; // Support both ?id=1 and /post/1
 
-  let displayPosts = searchQuery ? searchResults : posts;
+
+
+  let displayPosts = posts;
+  let displayUsers = [];
+
+  if (searchQuery) {
+    displayPosts = searchResults.posts || [];
+    displayUsers = searchResults.users || [];
+  }
 
   if (sharedPostId) {
     displayPosts = displayPosts.filter(p => p.post_id == sharedPostId);
@@ -338,8 +351,36 @@ const PostPage = () => {
 
           {/* 📰 Main Feed */}
           <main className="flex-grow space-y-8">
-            {/* ✏️ Post Form - Removed from inline flow */}
-            {/* <PostForm ... /> */}
+            {/* 👥 User Search Results */}
+            {searchQuery && displayUsers.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white px-2">People</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {displayUsers.map(u => (
+                    <div
+                      key={u.user_id}
+                      onClick={() => navigate(`/profile?user_id=${u.user_id}`)}
+                      className="bg-[#161b22] border border-[#30363d] p-4 rounded-xl flex items-center gap-4 hover:border-accent cursor-pointer transition-colors"
+                    >
+                      <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 shrink-0">
+                        {u.profile_picture ? (
+                          <img src={`${API_BASE_URL}/${u.profile_picture}`} alt={u.username} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg">
+                            {u.username.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-white truncate">{u.username}</h3>
+                        <p className="text-sm text-gray-400 truncate">{u.major_name || u.faculty_name || u.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-b border-white/10 my-6"></div>
+              </div>
+            )}
 
             {/* 📜 Feed */}
             {loading ? (
@@ -357,11 +398,11 @@ const PostPage = () => {
                   Retry
                 </button>
               </div>
-            ) : filteredPosts.length === 0 ? (
+            ) : filteredPosts.length === 0 && (!searchQuery || displayUsers.length === 0) ? (
               <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
                 <p className="text-muted">
                   {searchQuery
-                    ? `No posts found matching "${searchQuery}". Try a different search term.`
+                    ? `No posts or people found matching "${searchQuery}".`
                     : "No posts found. Be the first to share something!"}
                 </p>
               </div>

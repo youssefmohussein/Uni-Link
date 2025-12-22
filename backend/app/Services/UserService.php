@@ -452,4 +452,22 @@ class UserService extends BaseService
 
         return $users;
     }
+    /**
+     * Search users by username
+     * 
+     * @param string $query Query
+     * @return array Array of users
+     */
+    public function searchUsers(string $query): array
+    {
+        $users = $this->userRepo->searchByUsername($query);
+        
+        // Ensure format matches expected frontend user object
+        foreach ($users as &$user) {
+            unset($user['password_hash']);
+            // Add derived fields if needed
+        }
+        
+        return $users;
+    }
 }

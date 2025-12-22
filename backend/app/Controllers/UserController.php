@@ -126,4 +126,34 @@ class UserController extends BaseController
             $this->error($e->getMessage(), $code ?: 400);
         }
     }
+    /**
+     * Search users
+     */
+    public function search(): void
+    {
+        try {
+            // Allow public search for adding friends/etc? Or restrict?
+            // Assuming authenticated users can search
+            $userId = $this->getCurrentUserId(); 
+            if (!$userId) {
+               // Allow search without auth for now if needed, or enforce auth. 
+               // PostPage usually requires auth.
+               // $this->error('Unauthorized', 401);
+            }
+
+            $query = $_GET['q'] ?? '';
+            
+            if (empty($query)) {
+                $this->success([]);
+                return;
+            }
+
+            $users = $this->userService->searchUsers($query);
+            $this->success($users);
+
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            $this->error($e->getMessage(), $code ?: 400);
+        }
+    }
 }

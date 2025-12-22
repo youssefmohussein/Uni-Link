@@ -64,5 +64,15 @@ export const getAllMajors = async () => {
   return res.data ?? [];
 };
 
+/**
+ * Search users by username
+ * @param {string} query
+ */
+export const searchUsers = async (query) => {
+  const res = await apiRequest(`/api/users/search?q=${encodeURIComponent(query)}`, "GET");
+  if (res.status !== "success") throw new Error(res.message || "Search failed");
+  return res.data;
+};
+
 
 

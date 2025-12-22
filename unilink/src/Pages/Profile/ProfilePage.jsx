@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ProjectCard from "../../Components/Student/ProjectCard.jsx";
 import ProjectModal from "../../Components/Student/ProjectModal.jsx";
 import EditProjectModal from "../../Components/Student/EditProjectModal.jsx";
@@ -22,11 +22,42 @@ function ProfilePageUser() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [sessionUserId, setSessionUserId] = useState(null); // Logged-in user ID
+
+  // URL params for viewing other profiles
+  const [searchParams] = useSearchParams();
+  const queryUserId = searchParams.get('user_id');
 
   useEffect(() => {
     // Fetch current user from backend session
     const loadUserFromSession = async () => {
       try {
+        // If query param exists, fetch that user's profile
+        if (queryUserId) {
+          const id = Number(queryUserId);
+          setCurrentUserId(id);
+
+          // Still need to get session user for auth checks
+          try {
+            const sessionResponse = await fetch('http://localhost/backend/check-session', {
+              method: 'GET',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            const sessionData = await sessionResponse.json();
+            const session = sessionData.data || sessionData;
+            if (session.authenticated && session.user && session.user.id) {
+              setSessionUserId(Number(session.user.id));
+            }
+          } catch (err) {
+            console.error("Failed to get session:", err);
+          }
+
+          await fetchProfileData(id);
+          return;
+        }
+
+        // Otherwise fetch session user
         const response = await fetch('http://localhost/backend/check-session', {
           method: 'GET',
           credentials: 'include', // Important: send cookies
@@ -36,20 +67,17 @@ function ProfilePageUser() {
         });
 
         const response_data = await response.json();
+        console.log("Session response:", response_data);
 
-        console.log("Session response:", response_data); // Debug log
-
-        // Backend returns {status, message, data: {authenticated, user}}
         const sessionData = response_data.data || response_data;
 
         if (sessionData.authenticated && sessionData.user && sessionData.user.id) {
-          const userId = Number(sessionData.user.id); // Ensure it's a number
-          console.log("Extracted userId:", userId, typeof userId); // Debug log
-          setCurrentUserId(userId);
+          const userId = Number(sessionData.user.id);
+          setSessionUserId(userId); // Set session user
+          setCurrentUserId(userId); // Viewing own profile
           await fetchProfileData(userId);
         } else {
-          // Not authenticated
-          console.log("Not authenticated, session data:", sessionData); // Debug log
+          console.log("Not authenticated, session data:", sessionData);
           setLoading(false);
           setError("Please login to view your profile.");
         }
@@ -62,7 +90,7 @@ function ProfilePageUser() {
 
     loadUserFromSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, [queryUserId]); // Re-run if URL param changes
 
 
   const fetchProfileData = async (userId) => {
@@ -227,15 +255,20 @@ function ProfilePageUser() {
                         <div key={proj.project_id} className="w-full">
                           <ProjectCard
                             {...proj}
-                            userId={currentUserId}
-                            onDelete={async (id) => {
-                              setProjects(projects.filter(p => p.project_id !== id));
-                              // Refresh from backend to ensure consistency
-                              if (currentUserId) {
-                                await fetchProfileData(currentUserId);
-                              }
-                            }}
-                            onEdit={handleEditProject}
+                            userId={currentUserId} // Pass logged-in user ID for auth checks inside delete
+                            onDelete={
+                              (currentUserId === currentUserId)
+                                ? async (id) => {
+                                  setProjects(projects.filter(p => p.project_id !== id));
+                                  if (currentUserId) await fetchProfileData(currentUserId);
+                                }
+                                : undefined
+                            }
+                            onEdit={
+                              (currentUserId === currentUserId)
+                                ? handleEditProject
+                                : undefined
+                            }
                           />
                         </div>
                       ))}

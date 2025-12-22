@@ -33,7 +33,9 @@ return [
     'GET /api/user' => ['UserController', 'getAll'],
     'GET /api/user/profile' => ['UserController', 'getProfile'],
     'PUT /api/user' => ['UserController', 'update'],
+    'PUT /api/user' => ['UserController', 'update'],
     'DELETE /api/user' => ['UserController', 'delete'],
+    'GET /api/users/search' => ['UserController', 'search'],
 
     // ============================================
     // Student Routes (Legacy compatibility)

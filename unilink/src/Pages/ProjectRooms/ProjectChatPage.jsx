@@ -354,11 +354,13 @@ const ProjectChatPage = () => {
                                         {/* Avatar - only show if first message in group */}
                                         {!isMe ? (
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/50 to-purple-500/50 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-1 shadow-lg overflow-hidden">
-                                                {msg.profile_image || msg.profile_picture ? (
+                                                {msg.username === 'unilink' ? (
+                                                    <img src="/Images/Logo_Png.png" alt="UniLink AI" className="w-full h-full object-contain p-1" />
+                                                ) : (msg.profile_image || msg.profile_picture ? (
                                                     <img src={`${API_BASE_URL}/${msg.profile_image || msg.profile_picture}`} alt={msg.username} className="w-full h-full object-cover" />
                                                 ) : (
                                                     msg.username?.charAt(0).toUpperCase()
-                                                )}
+                                                ))}
                                             </div>
                                         ) : null}
 
