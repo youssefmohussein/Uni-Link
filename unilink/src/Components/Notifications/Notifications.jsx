@@ -24,7 +24,7 @@ const Notifications = ({ isOpen, onClose }) => {
             setLoading(true);
             const data = await getNotifications(50, 0);
             if (data.status === 'success') {
-                setNotifications(data.notifications || []);
+                setNotifications(data.data?.notifications || []);
             }
         } catch (error) {
             console.error('Error fetching notifications:', error);
@@ -38,7 +38,7 @@ const Notifications = ({ isOpen, onClose }) => {
         try {
             const data = await getUnreadCount();
             if (data.status === 'success') {
-                setUnreadCount(data.unread_count || 0);
+                setUnreadCount(data.data?.unread_count || 0);
             }
         } catch (error) {
             console.error('Error fetching unread count:', error);

@@ -4,6 +4,7 @@ import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiEdit2, FiTrash2, FiRefreshCw, FiPlus, FiSearch } from "react-icons/fi";
 import Card from "../../Components/Admin_Components/Card";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 
 const RoomForm = ({ isOpen, onClose, onSubmit, initialData }) => {
     const [formData, setFormData] = useState({
@@ -76,6 +77,7 @@ const AdminRoomsPage = () => {
     const [editingRoom, setEditingRoom] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
     useEffect(() => {
         fetchRooms();
@@ -93,14 +95,17 @@ const AdminRoomsPage = () => {
         }
     };
 
-    const handleDelete = async (roomId) => {
-        if (!window.confirm("Are you sure? This will delete the room and ALL messages inside it.")) return;
+    const handleDelete = async () => {
         try {
-            await projectRoomHandler.deleteRoom(roomId);
+            await projectRoomHandler.deleteRoom(deleteModal.id);
             fetchRooms();
         } catch (err) {
             alert(err.message);
         }
+    };
+
+    const openDeleteModal = (roomId) => {
+        setDeleteModal({ isOpen: true, id: roomId });
     };
 
     const handleSave = async (data) => {
@@ -212,7 +217,7 @@ const AdminRoomsPage = () => {
                                                 <FiEdit2 size={16} />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(room.room_id)}
+                                                onClick={() => openDeleteModal(room.room_id)}
                                                 className="p-2 rounded cursor-pointer text-red-500 transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_6px_currentColor]"
                                                 title="Delete Room"
                                             >
@@ -238,6 +243,15 @@ const AdminRoomsPage = () => {
                 onClose={() => { setIsAdding(false); setEditingRoom(null); }}
                 onSubmit={handleSave}
                 initialData={editingRoom}
+            />
+
+            <ConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, id: null })}
+                onConfirm={handleDelete}
+                title="Delete Room"
+                message="Are you sure you want to delete this room? This will assume deleting all messages and files inside it."
+                confirmText="Delete Room"
             />
         </div>
     );

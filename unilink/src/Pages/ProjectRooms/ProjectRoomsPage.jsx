@@ -7,6 +7,7 @@ import * as facultyHandler from "../../../api/facultyandmajorHandler";
 import * as professorHandler from "../../../api/professorHandler";
 import { API_BASE_URL } from "../../../config/api";
 import PasswordModal from "../../Components/ProjectRoom/PasswordModal";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 import { toast } from "react-hot-toast";
 
 const CreateRoomModal = ({ onClose, onCreated, userId }) => {
@@ -274,6 +275,7 @@ const ProjectRoomsPage = () => {
     const [activeTab, setActiveTab] = useState("my"); // 'my' or 'other'
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
     const navigate = useNavigate();
     const hasFetched = useRef(false);
 
@@ -354,17 +356,19 @@ const ProjectRoomsPage = () => {
         }
     };
 
-    const handleDeleteRoom = async (e, roomId) => {
-        e.stopPropagation();
-        if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
-
+    const handleDeleteRoom = async () => {
         try {
-            await projectRoomHandler.deleteRoom(roomId);
+            await projectRoomHandler.deleteRoom(deleteModal.id);
             toast.success("Project deleted successfully");
             fetchRooms();
         } catch (err) {
             toast.error("Failed to delete project: " + err.message);
         }
+    };
+
+    const confirmDeleteRoom = (e, roomId) => {
+        e.stopPropagation();
+        setDeleteModal({ isOpen: true, id: roomId });
     };
 
     // Fetch faculties for filter
@@ -604,7 +608,7 @@ const ProjectRoomsPage = () => {
                                                 <div className="flex gap-2">
                                                     {parseInt(room.owner_id) === parseInt(user?.id || user?.user_id) && (
                                                         <button
-                                                            onClick={(e) => handleDeleteRoom(e, room.room_id)}
+                                                            onClick={(e) => confirmDeleteRoom(e, room.room_id)}
                                                             className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition"
                                                             title="Delete Room"
                                                         >
@@ -708,6 +712,15 @@ const ProjectRoomsPage = () => {
                 isOpen={showPasswordModal}
                 onClose={() => setShowPasswordModal(false)}
                 onConfirm={handleConfirmJoin}
+            />
+
+            <ConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, id: null })}
+                onConfirm={handleDeleteRoom}
+                title="Delete Project Room"
+                message="Are you sure you want to delete this project room? This action cannot be undone."
+                confirmText="Delete Room"
             />
         </div>
     );

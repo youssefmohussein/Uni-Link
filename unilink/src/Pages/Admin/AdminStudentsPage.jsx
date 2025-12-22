@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import StudentsTable from "../../Components/Admin_Components/StudentsTable";
 import StudentForm from "../../Components/Admin_Components/StudentForm";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 import { motion } from "framer-motion";
 import * as studentHandler from "../../../api/studentHandler";
 
@@ -11,6 +12,7 @@ export default function AdminStudentsPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [editingStudent, setEditingStudent] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
   const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
@@ -63,16 +65,20 @@ export default function AdminStudentsPage() {
   };
 
   // Delete student
-  const handleDeleteStudent = async (student_id) => {
-    if (!window.confirm("Are you sure you want to delete this student?")) return;
+  const handleDeleteStudent = async () => {
     try {
-      await studentHandler.deleteStudent(student_id);
+      await studentHandler.deleteStudent(deleteModal.id);
       await getStudentsFromService();
+      setDeleteModal({ isOpen: false, id: null });
       alert("Student deleted successfully");
     } catch (err) {
       console.error(err);
       alert("Failed to delete student: " + (err.message || ""));
     }
+  };
+
+  const onDeleteClick = (student_id) => {
+    setDeleteModal({ isOpen: true, id: student_id });
   };
 
   return (
@@ -98,7 +104,7 @@ export default function AdminStudentsPage() {
             setQuery={setQuery}
             onRefresh={getStudentsFromService}
             setEditingStudent={setEditingStudent}
-            handleDeleteStudent={handleDeleteStudent}
+            handleDeleteStudent={onDeleteClick}
             faculties={faculties}
             majors={majors}
           />
@@ -112,6 +118,15 @@ export default function AdminStudentsPage() {
           initialData={editingStudent}
           faculties={faculties}
           majors={majors}
+        />
+
+        <ConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, id: null })}
+          onConfirm={handleDeleteStudent}
+          title="Delete Student"
+          message="Are you sure you want to delete this student? This action cannot be undone."
+          confirmText="Delete Student"
         />
       </motion.div>
     </div>

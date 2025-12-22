@@ -5,6 +5,7 @@ import FacultyForm from "../../Components/Admin_Components/FacultyFormModal";
 import MajorFormModal from "../../Components/Admin_Components/MajorFormModal";
 import FacultiesTable from "../../Components/Admin_Components/FacultyForm";
 import MajorsTable from "../../Components/Admin_Components/MajorForm";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 import * as handler from "../../../api/facultyandmajorHandler";
 
 export default function AdminUniversityPage() {
@@ -18,6 +19,8 @@ export default function AdminUniversityPage() {
   const [majors, setMajors] = useState([]);
   const [isMajorFormOpen, setIsMajorFormOpen] = useState(false);
   const [editMajorData, setEditMajorData] = useState(null);
+
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, type: null, id: null });
 
   // Fetch all faculties
   const fetchFaculties = async () => {
@@ -58,14 +61,8 @@ export default function AdminUniversityPage() {
     }
   };
 
-  const handleDeleteFaculty = async (id) => {
-    if (!window.confirm("Delete this faculty?")) return;
-    try {
-      await handler.deleteFaculty(id);
-      fetchFaculties();
-    } catch (err) {
-      alert(err.message);
-    }
+  const handleDeleteFaculty = (id) => {
+    setDeleteModal({ isOpen: true, type: 'FACULTY', id });
   };
 
   // Major actions
@@ -114,11 +111,19 @@ export default function AdminUniversityPage() {
     }
   };
 
-  const handleDeleteMajor = async (id) => {
-    if (!window.confirm("Delete this major?")) return;
+  const handleDeleteMajor = (id) => {
+    setDeleteModal({ isOpen: true, type: 'MAJOR', id });
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      await handler.deleteMajor(id);
-      await loadMajors(selectedFaculty.faculty_id);
+      if (deleteModal.type === 'FACULTY') {
+        await handler.deleteFaculty(deleteModal.id);
+        fetchFaculties();
+      } else if (deleteModal.type === 'MAJOR') {
+        await handler.deleteMajor(deleteModal.id);
+        await loadMajors(selectedFaculty.faculty_id);
+      }
     } catch (err) {
       alert(err.message);
     }
@@ -180,6 +185,17 @@ export default function AdminUniversityPage() {
           </>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, type: null, id: null })}
+        onConfirm={handleConfirmDelete}
+        title={deleteModal.type === 'FACULTY' ? "Delete Faculty" : "Delete Major"}
+        message={deleteModal.type === 'FACULTY'
+          ? "Are you sure you want to delete this faculty? All associated majors and users might be affected."
+          : "Are you sure you want to delete this major?"}
+        confirmText="Delete"
+      />
     </div>
   );
 }

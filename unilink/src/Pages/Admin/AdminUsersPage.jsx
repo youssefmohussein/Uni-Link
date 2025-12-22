@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import UsersTable from "../../Components/Admin_Components/UsersTable";
 import UserForm from "../../Components/Admin_Components/UserForm";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 import { motion } from "framer-motion";
 import * as userHandler from "../../../api/userHandler";
 
@@ -15,6 +16,7 @@ export default function AdminUsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
   // Fetch users
   const getUsersFromService = async () => {
@@ -77,16 +79,20 @@ export default function AdminUsersPage() {
   };
 
   // Delete User
-  const handleDeleteUser = async (user_id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  const handleDeleteUser = async () => {
     try {
-      await userHandler.deleteUser(user_id);
+      await userHandler.deleteUser(deleteModal.id);
       await getUsersFromService();
+      setDeleteModal({ isOpen: false, id: null });
       alert("User deleted successfully");
     } catch (err) {
       console.error(err);
       alert("Failed to delete user: " + (err.message || ""));
     }
+  };
+
+  const onDeleteClick = (user_id) => {
+    setDeleteModal({ isOpen: true, id: user_id });
   };
 
   return (
@@ -113,7 +119,7 @@ export default function AdminUsersPage() {
             query={query}
             setQuery={setQuery}
             setEditingUser={setEditingUser}
-            handleDeleteUser={handleDeleteUser}
+            handleDeleteUser={onDeleteClick}
             onRefresh={getUsersFromService}
             onAddUser={() => setIsAdding(true)}
           />
@@ -136,6 +142,15 @@ export default function AdminUsersPage() {
           initialData={editingUser}
           faculties={faculties}
           majors={majors}
+        />
+
+        <ConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, id: null })}
+          onConfirm={handleDeleteUser}
+          title="Delete User"
+          message="Are you sure you want to delete this user? This action cannot be undone."
+          confirmText="Delete User"
         />
       </motion.div>
     </div>

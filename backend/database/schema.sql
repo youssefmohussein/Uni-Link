@@ -472,20 +472,8 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Trigger: Create notification on chat mention
-DELIMITER $$
-CREATE TRIGGER `notify_user_on_mention`
-AFTER INSERT ON `chat_mentions`
-FOR EACH ROW
-BEGIN
-  DECLARE room_id_val INT;
-  
-  SELECT room_id INTO room_id_val FROM chat_messages WHERE message_id = NEW.message_id;
-  
-  INSERT INTO `notifications` (`user_id`, `type`, `title`, `message`, `related_entity_type`, `related_entity_id`)
-  VALUES (NEW.user_id, 'CHAT_MENTION', 'You were mentioned', 'You were mentioned in a chat message', 'CHAT_MESSAGE', NEW.message_id);
-END$$
-DELIMITER ;
+-- Trigger: Create notification on chat mention removed as it is now handled in PHP
+-- (redundant and caused incorrect redirection)
 
 -- ======================================================
 -- INITIAL DATA SEEDING

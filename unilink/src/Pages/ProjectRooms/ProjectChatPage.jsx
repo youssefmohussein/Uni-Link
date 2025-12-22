@@ -5,6 +5,7 @@ import VoiceMessage from "../../Components/ProjectRoom/VoiceMessage";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
 import { API_BASE_URL } from "../../../config/api";
 import { toast } from "react-hot-toast";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 
 const ProjectChatPage = () => {
     const { id: roomId } = useParams();
@@ -24,6 +25,7 @@ const ProjectChatPage = () => {
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState("");
     const [mentionIndex, setMentionIndex] = useState(0);
+    const [deleteRoomModal, setDeleteRoomModal] = useState(false);
 
     const fileInputRef = useRef(null);
     const messagesEndRef = useRef(null);
@@ -88,9 +90,7 @@ const ProjectChatPage = () => {
         }
     };
 
-    const handleDeleteRoom = async () => {
-        if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) return;
-
+    const confirmDeleteRoom = async () => {
         try {
             await projectRoomHandler.deleteRoom(roomId);
             toast.success("Room deleted successfully");
@@ -98,6 +98,10 @@ const ProjectChatPage = () => {
         } catch (err) {
             toast.error("Failed to delete room: " + err.message);
         }
+    };
+
+    const openDeleteModal = () => {
+        setDeleteRoomModal(true);
     };
 
     const handleFileChange = (e) => {
@@ -657,7 +661,7 @@ const ProjectChatPage = () => {
                                         <i className="fa-solid fa-triangle-exclamation"></i> Danger Zone
                                     </h3>
                                     <button
-                                        onClick={handleDeleteRoom}
+                                        onClick={openDeleteModal}
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition border border-red-500/20 group font-bold text-sm"
                                     >
                                         <i className="fa-solid fa-trash-can group-hover:shake"></i>
@@ -710,6 +714,15 @@ const ProjectChatPage = () => {
                     background: rgba(88, 166, 255, 0.4);
                 }
             `}</style>
+
+            <ConfirmationModal
+                isOpen={deleteRoomModal}
+                onClose={() => setDeleteRoomModal(false)}
+                onConfirm={confirmDeleteRoom}
+                title="Delete Room"
+                message="Are you sure you want to delete this room? This action cannot be undone."
+                confirmText="Delete Room"
+            />
         </div>
     );
 };

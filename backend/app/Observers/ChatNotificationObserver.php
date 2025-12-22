@@ -49,9 +49,9 @@ class ChatNotificationObserver implements NotificationObserver
                         'user_id' => $userId,
                         'type' => 'CHAT_MENTION',
                         'title' => 'You were mentioned',
-                        'message' => "{$payload['sender_username']} has mentioned you in the chat of room {$payload['room_name']}",
-                        'related_entity_type' => 'CHAT_ROOM',
-                        'related_entity_id' => $payload['room_id']
+                        'message' => ($payload['sender_username'] ?? 'Someone') . " has mentioned you in " . ($payload['room_name'] ?? 'a chat room'),
+                        'related_entity_type' => 'CHAT_MESSAGE',
+                        'related_entity_id' => $payload['room_id'] ?? null
                     ];
 
                     error_log("ChatNotificationObserver: Creating notification for user_id: " . $userId);

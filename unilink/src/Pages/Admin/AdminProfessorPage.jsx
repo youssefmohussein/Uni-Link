@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import ProfessorTable from "../../Components/Admin_Components/ProfessorTable";
 import ProfessorForm from "../../Components/Admin_Components/ProfessorForm";
+import ConfirmationModal from "../../Components/Common/ConfirmationModal";
 import { motion } from "framer-motion";
 import * as professorHandler from "../../../api/professorHandler";
 import * as userHandler from "../../../api/userHandler"; // for faculties + majors
@@ -12,6 +13,7 @@ export default function AdminProfessorPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [editingProfessor, setEditingProfessor] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
   const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
@@ -73,16 +75,19 @@ export default function AdminProfessorPage() {
   };
 
   // Delete Professor
-  const handleDeleteProfessor = async (user_id) => {
-    if (!window.confirm("Are you sure you want to delete this professor?")) return;
+  const handleDeleteProfessor = async () => {
     try {
-      await professorHandler.deleteProfessor(user_id);
+      await professorHandler.deleteProfessor(deleteModal.id);
       await getProfessorsFromService();
-      alert("Professor deleted successfully");
+      // alert("Professor deleted successfully"); // Removed alert
     } catch (err) {
       console.error(err);
       alert("Failed to delete professor: " + (err.message || ""));
     }
+  };
+
+  const openDeleteModal = (user_id) => {
+    setDeleteModal({ isOpen: true, id: user_id });
   };
 
   return (
@@ -107,7 +112,7 @@ export default function AdminProfessorPage() {
             query={query}
             setQuery={setQuery}
             setEditingProfessor={setEditingProfessor}
-            handleDeleteProfessor={handleDeleteProfessor}
+            handleDeleteProfessor={openDeleteModal}
             onRefresh={getProfessorsFromService}
           />
         )}
@@ -121,6 +126,15 @@ export default function AdminProfessorPage() {
           faculties={faculties}
           majors={majors}
           rankOptions={rankOptions}
+        />
+
+        <ConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, id: null })}
+          onConfirm={handleDeleteProfessor}
+          title="Delete Professor"
+          message="Are you sure you want to delete this professor? This action cannot be undone."
+          confirmText="Delete Professor"
         />
       </motion.div>
     </div>
