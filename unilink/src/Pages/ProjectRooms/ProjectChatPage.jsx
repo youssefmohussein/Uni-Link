@@ -236,7 +236,7 @@ const ProjectChatPage = () => {
         }
     };
 
-<<<<<<< Updated upstream
+
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -275,7 +275,10 @@ const ProjectChatPage = () => {
             setIsRecording(false);
             if (recordingIntervalRef.current) {
                 clearInterval(recordingIntervalRef.current);
-=======
+            }
+        }
+    };
+
     const handleInputChange = (e) => {
         const value = e.target.value;
         const cursorPosition = e.target.selectionStart;
@@ -330,12 +333,11 @@ const ProjectChatPage = () => {
                 insertMention(filteredMembers[mentionIndex].username);
             } else if (e.key === 'Escape') {
                 setShowMentionList(false);
->>>>>>> Stashed changes
+
             }
         }
     };
 
-<<<<<<< Updated upstream
     const cancelRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
@@ -347,9 +349,8 @@ const ProjectChatPage = () => {
             }
         }
     };
-=======
+
     const inputRef = useRef(null);
->>>>>>> Stashed changes
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -646,16 +647,6 @@ const ProjectChatPage = () => {
                                     </span>
                                 </button>
                             </div>
-<<<<<<< Updated upstream
-                            <input
-                                className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
-                                placeholder="Type your message..."
-                                value={newMessage}
-                                onChange={e => setNewMessage(e.target.value)}
-                                disabled={sending || isRecording}
-                            />
-=======
-
                             <div className="flex-grow relative">
                                 {showMentionList && filteredMembers.length > 0 && (
                                     <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-slide-in-up z-[60]">
@@ -689,10 +680,9 @@ const ProjectChatPage = () => {
                                     value={newMessage}
                                     onChange={handleInputChange}
                                     onKeyDown={handleKeyDown}
-                                    disabled={sending}
+                                    disabled={sending || isRecording}
                                 />
                             </div>
->>>>>>> Stashed changes
                             <button
                                 type="submit"
                                 disabled={(!newMessage.trim() && !selectedFile && !audioBlob) || sending || isRecording}

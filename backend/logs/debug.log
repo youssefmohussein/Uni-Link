@@ -218,3 +218,5 @@
 [21-Dec-2025 16:33:00 Europe/Berlin] Session data: {"user":{"id":27,"username":"addnew","email":"add@unilink.com","role":"Student"}}
 [21-Dec-2025 16:33:00 Europe/Berlin] getCurrentUser - User data: {"id":27,"username":"addnew","email":"add@unilink.com","role":"Student"}
 [21-Dec-2025 16:33:00 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":27,"username":"addnew","email":"add@unilink.com","role":"Student"}}
+[22-Dec-2025 12:34:02 Europe/Berlin] Static file request - URI: /uploads/media/media_69483ad83a491.jpg, Normalized: uploads\media\media_69483ad83a491.jpg, Path: C:\Develope Tools\xamp\htdocs\backend\uploads\media\media_69483ad83a491.jpg, Exists: no, IsFile: no
+[22-Dec-2025 12:34:02 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/media\/media_69483ad83a491.jpg","normalized_uri":"uploads\\media\\media_69483ad83a491.jpg","file_path":"C:\\Develope Tools\\xamp\\htdocs\\backend\\uploads\\media\\media_69483ad83a491.jpg","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":true}

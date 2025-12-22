@@ -16,12 +16,8 @@ class PostService extends BaseService
 
     public function __construct(PostRepository $postRepo, CommentRepository $commentRepo)
     {
-    private ContentModerationService $moderationService;
-    
-    public function __construct(PostRepository $postRepo, CommentRepository $commentRepo) {
         $this->postRepo = $postRepo;
         $this->commentRepo = $commentRepo;
-        $this->moderationService = new ContentModerationService();
     }
 
     /**
@@ -55,18 +51,6 @@ class PostService extends BaseService
             throw new \Exception('Validation failed: ' . json_encode($errors), 400);
         }
 
-        
-        // Content Moderation - Check for toxicity/negative sentiment
-        try {
-            $this->moderationService->validateContent($data['content']);
-        } catch (ContentBlockedException $e) {
-            throw new \Exception(
-                'Content blocked: ' . $e->getMessage() . 
-                ' (Toxicity score: ' . round($e->getToxicityScore() * 100) . '%)',
-                400
-            );
-        }
-        
         // Sanitize
         $data['content'] = $this->sanitize($data['content']);
         $data['created_at'] = date('Y-m-d H:i:s');
