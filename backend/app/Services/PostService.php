@@ -13,11 +13,13 @@ class PostService extends BaseService
 {
     private PostRepository $postRepo;
     private CommentRepository $commentRepo;
+    private GamificationService $gamificationService;
 
-    public function __construct(PostRepository $postRepo, CommentRepository $commentRepo)
+    public function __construct(PostRepository $postRepo, CommentRepository $commentRepo, GamificationService $gamificationService)
     {
         $this->postRepo = $postRepo;
         $this->commentRepo = $commentRepo;
+        $this->gamificationService = $gamificationService;
     }
 
     /**
@@ -65,6 +67,13 @@ class PostService extends BaseService
         // Return the created post with post_id
         $post = $this->postRepo->find($postId);
         $post['post_id'] = $postId; // Ensure post_id is set
+
+        // Award points for creating a post
+        $this->gamificationService->awardPoints(
+            (int)$data['author_id'], 
+            GamificationService::POINTS_POST_CREATE, 
+            'Created a post'
+        );
 
         return $post;
     }

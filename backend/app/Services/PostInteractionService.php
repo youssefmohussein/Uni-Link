@@ -15,9 +15,13 @@ use App\Strategies\PostInteraction\ShareStrategy;
  */
 class PostInteractionService extends BaseService {
     private InteractionContext $context;
+    private GamificationService $gamificationService;
+    private \App\Repositories\PostRepository $postRepo;
     
-    public function __construct() {
+    public function __construct(GamificationService $gamificationService, \App\Repositories\PostRepository $postRepo) {
         $this->context = new InteractionContext();
+        $this->gamificationService = $gamificationService;
+        $this->postRepo = $postRepo;
     }
     
     /**
@@ -51,6 +55,23 @@ class PostInteractionService extends BaseService {
         }
         
         $this->context->executeInteraction($postId, $userId);
+        
+        // Award points to the POST AUTHOR (not the liker) when they receive a like
+        if ($type === 'like') {
+            // Need to find post author first
+            $post = $this->postRepo->find($postId);
+            if ($post && isset($post['author_id'])) {
+                // Don't award points for liking own post
+                if ($post['author_id'] != $userId) {
+                    $this->gamificationService->awardPoints(
+                        (int)$post['author_id'], 
+                        GamificationService::POINTS_LIKE_RECEIVED, 
+                        'Received a like on post'
+                    );
+                }
+            }
+        }
+
         return true;
     }
     

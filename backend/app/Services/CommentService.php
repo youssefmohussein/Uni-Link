@@ -12,10 +12,12 @@ use App\Repositories\PostRepository;
 class CommentService extends BaseService {
     private CommentRepository $commentRepo;
     private PostRepository $postRepo;
+    private GamificationService $gamificationService;
     
-    public function __construct(CommentRepository $commentRepo, PostRepository $postRepo) {
+    public function __construct(CommentRepository $commentRepo, PostRepository $postRepo, GamificationService $gamificationService) {
         $this->commentRepo = $commentRepo;
         $this->postRepo = $postRepo;
+        $this->gamificationService = $gamificationService;
     }
     
     /**
@@ -50,6 +52,13 @@ class CommentService extends BaseService {
             'content' => $sanitized['content'],
             'created_at' => date('Y-m-d H:i:s')
         ]);
+        
+        // Award points for creating a comment
+        $this->gamificationService->awardPoints(
+            (int)$data['user_id'], 
+            GamificationService::POINTS_COMMENT_CREATE, 
+            'Created a comment'
+        );
         
         return $this->commentRepo->find($commentId);
     }

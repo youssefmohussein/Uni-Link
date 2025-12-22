@@ -175,7 +175,8 @@ $container->singleton('UserService', function ($c) {
 $container->singleton('PostService', function ($c) {
     return new PostService(
         $c->get('PostRepository'),
-        $c->get('CommentRepository')
+        $c->get('CommentRepository'),
+        $c->get('GamificationService')
     );
 });
 
@@ -207,12 +208,16 @@ $container->singleton('SkillService', function ($c) {
 $container->singleton('CommentService', function ($c) {
     return new CommentService(
         $c->get('CommentRepository'),
-        $c->get('PostRepository')
+        $c->get('PostRepository'),
+        $c->get('GamificationService')
     );
 });
 
 $container->singleton('PostInteractionService', function ($c) {
-    return new PostInteractionService();
+    return new PostInteractionService(
+        $c->get('GamificationService'),
+        $c->get('PostRepository')
+    );
 });
 
 $container->singleton('SavedPostService', function ($c) {
@@ -255,6 +260,12 @@ $container->singleton('AiService', function ($c) {
     return new AiService(
         $c->get('ChatRepository'),
         $c->get('UserRepository')
+    );
+});
+
+$container->singleton('GamificationService', function ($c) {
+    return new \App\Services\GamificationService(
+        $c->get('StudentRepository')
     );
 });
 
