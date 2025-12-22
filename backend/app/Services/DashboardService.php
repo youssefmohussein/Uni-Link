@@ -33,25 +33,26 @@ class DashboardService extends BaseService
     /**
      * Get dashboard statistics
      * 
-     * @return array Dashboard stats
+     * @param int|null $facultyId Optional faculty ID to filter stats
+     * @return array Dashboard statistics
      */
-    public function getStats(): array
+    public function getStats(?int $facultyId = null): array
     {
-        $totalUsers = $this->userRepo->count();
-        // Role values in DB are uppercase: ADMIN, PROFESSOR, STUDENT
-        $students = $this->userRepo->count(['role' => 'STUDENT']);
-        $professors = $this->userRepo->count(['role' => 'PROFESSOR']);
-        $admins = $this->userRepo->count(['role' => 'ADMIN']);
+        // Get total counts
+        $totalUsers = count($this->userRepo->findAll());
+        $students = count($this->userRepo->findByRole('Student'));
+        $professors = count($this->userRepo->findByRole('Professor'));
 
         return [
             'stats' => [
                 'totalUsers' => $totalUsers,
                 'students' => $students,
                 'professors' => $professors,
-                'admins' => $admins
+                'activeProjects' => 12 // Placeholder
             ],
             'weeklyActivity' => $this->getWeeklyActivity(),
-            'facultyDistribution' => $this->getFacultyDistribution(),
+            'facultyDistribution' => $this->getFacultyDistribution($facultyId),
+            'majorDistribution' => $this->getMajorDistribution($facultyId),
             'userStatus' => [
                 'active' => $totalUsers - 5, // Placeholder - would need actual status tracking
                 'idle' => 3,
@@ -92,14 +93,33 @@ class DashboardService extends BaseService
     /**
      * Get faculty distribution
      * 
+     * @param int|null $facultyId Optional faculty ID
      * @return array Faculty distribution
      */
-    private function getFacultyDistribution(): array
+    private function getFacultyDistribution(?int $facultyId = null): array
     {
-        $results = $this->userRepo->getFacultyDistribution();
+        $results = $this->userRepo->getFacultyDistribution($facultyId);
         return array_map(function ($row) {
             return [
                 'faculty_name' => $row['faculty_name'] ?? 'Unknown',
+                'student_count' => (int) ($row['student_count'] ?? 0)
+            ];
+        }, $results);
+    }
+
+    /**
+     * Get major distribution
+     * 
+     * @param int|null $facultyId Optional faculty ID
+     * @return array Major distribution
+     */
+    private function getMajorDistribution(?int $facultyId = null): array
+    {
+        $results = $this->userRepo->getStudentDistributionByMajor($facultyId);
+        return array_map(function ($row) {
+            return [
+                'faculty_name' => $row['faculty_name'] ?? 'Unknown',
+                'major_name' => $row['major_name'] ?? 'Unknown',
                 'student_count' => (int) ($row['student_count'] ?? 0)
             ];
         }, $results);

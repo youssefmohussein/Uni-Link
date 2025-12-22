@@ -185,20 +185,18 @@ class ProfessorController extends BaseController
             $this->requireAuth();
             $userId = $this->getCurrentUserId();
 
-            // Use DashboardService for global stats
-            $globalStats = $this->dashboardService->getStats();
+            // Get user's faculty to filter analytics
+            $user = $this->userService->getUserProfile($userId);
+            $facultyId = $user['faculty_id'] ?? null;
+
+            // Use DashboardService for global stats, filtered by faculty
+            $globalStats = $this->dashboardService->getStats((int)$facultyId);
             
             // Get supervised projects count using user_id
             $supervisedProjectsCount = $this->professorRepo->getSupervisedProjectsCount($userId);
             
             // Combine stats
-            // We want to return the structure expected by frontend (global stats)
-            // But we can also add professor specific stats if needed
             $stats = $globalStats;
-            
-            // Override or add professor specific counts if the frontend expects them mixed
-            // Based on ProfessorPage.jsx: 
-            // stats.stats.students, stats.stats.totalUsers are used.
             
             $this->success($stats);
 

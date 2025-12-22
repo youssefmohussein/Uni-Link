@@ -380,17 +380,70 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * 
      * @return array Faculty distribution
      */
-    public function getFacultyDistribution(): array
+    /**
+     * Get faculty distribution of students
+     * 
+     * @param int|null $facultyId Optional faculty ID to filter
+     * @return array Faculty distribution
+     */
+    public function getFacultyDistribution(?int $facultyId = null): array
     {
-        return $this->query("
+        $sql = "
             SELECT f.name as faculty_name, COUNT(DISTINCT u.user_id) as student_count
             FROM faculties f
             LEFT JOIN users u ON f.faculty_id = u.faculty_id AND u.role = 'STUDENT'
+        ";
+
+        $params = [];
+        if ($facultyId) {
+            $sql .= " WHERE f.faculty_id = ? ";
+            $params[] = $facultyId;
+        }
+
+        $sql .= "
             GROUP BY f.faculty_id, f.name
             ORDER BY student_count DESC
             LIMIT 5
-        ");
+        ";
+
+        return $this->query($sql, $params);
     }
 
-    // Transaction methods inherited from BaseRepository
+    /**
+     * Get student distribution by major within faculties
+     * 
+     * @return array Major distribution
+     */
+    /**
+     * Get student distribution by major within faculties
+     * 
+     * @param int|null $facultyId Optional faculty ID to filter by
+     * @return array Major distribution
+     */
+    public function getStudentDistributionByMajor(?int $facultyId = null): array
+    {
+        $sql = "
+            SELECT 
+                f.name as faculty_name,
+                m.name as major_name,
+                COUNT(u.user_id) as student_count
+            FROM users u
+            JOIN faculties f ON u.faculty_id = f.faculty_id
+            JOIN majors m ON u.major_id = m.major_id
+            WHERE u.role = 'STUDENT'
+        ";
+
+        $params = [];
+        if ($facultyId) {
+            $sql .= " AND u.faculty_id = ?";
+            $params[] = $facultyId;
+        }
+
+        $sql .= "
+            GROUP BY f.faculty_id, m.major_id, f.name, m.name
+            ORDER BY f.name, student_count DESC
+        ";
+
+        return $this->query($sql, $params);
+    }
 }

@@ -121,16 +121,30 @@ const ProfessorPage = () => {
                                 <h3 className="text-xl font-bold mb-4">Student Analytics</h3>
                                 <div className="space-y-4">
                                     {stats.facultyDistribution.map((fac, idx) => (
-                                        <div key={idx} className="flex justify-between items-center">
-                                            <span>{fac.faculty_name}</span>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-accent"
-                                                        style={{ width: `${(fac.student_count / stats.stats.students) * 100}%` }}
-                                                    />
-                                                </div>
-                                                <span className="text-sm text-muted">{fac.student_count}</span>
+                                        <div key={idx} className="space-y-2">
+                                            <div className="flex justify-between items-center font-medium">
+                                                <span>{fac.faculty_name}</span>
+                                                <span className="text-sm text-muted">{fac.student_count} Students</span>
+                                            </div>
+
+                                            {/* Major Breakdown */}
+                                            <div className="pl-4 border-l-2 border-white/10 space-y-2">
+                                                {stats.majorDistribution
+                                                    .filter(m => m.faculty_name === fac.faculty_name)
+                                                    .map((major, mIdx) => (
+                                                        <div key={mIdx} className="flex justify-between items-center text-sm">
+                                                            <span className="text-muted-foreground">{major.major_name}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                                    <div
+                                                                        className="h-full bg-accent/70"
+                                                                        style={{ width: `${(major.student_count / fac.student_count) * 100}%` }}
+                                                                    />
+                                                                </div>
+                                                                <span className="text-xs text-muted">{major.student_count}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                             </div>
                                         </div>
                                     ))}
