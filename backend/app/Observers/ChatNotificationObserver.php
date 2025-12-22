@@ -37,18 +37,36 @@ class ChatNotificationObserver implements NotificationObserver
 
     private function handleChatMention(array $payload): void
     {
+        error_log("ChatNotificationObserver: handleChatMention called with payload: " . json_encode($payload));
+
         // Create notification for each mentioned user
         if (isset($payload['mentioned_users']) && is_array($payload['mentioned_users'])) {
+            error_log("ChatNotificationObserver: Processing " . count($payload['mentioned_users']) . " mentioned users");
+
             foreach ($payload['mentioned_users'] as $userId) {
-                $this->notificationRepo->create([
-                    'user_id' => $userId,
-                    'type' => 'CHAT_MENTION',
-                    'title' => 'You were mentioned',
-                    'message' => "{$payload['sender_username']} has mentioned you in the chat of room {$payload['room_name']}",
-                    'related_entity_type' => 'CHAT_ROOM',
-                    'related_entity_id' => $payload['room_id']
-                ]);
+                try {
+                    $notificationData = [
+                        'user_id' => $userId,
+                        'type' => 'CHAT_MENTION',
+                        'title' => 'You were mentioned',
+                        'message' => "{$payload['sender_username']} has mentioned you in the chat of room {$payload['room_name']}",
+                        'related_entity_type' => 'CHAT_ROOM',
+                        'related_entity_id' => $payload['room_id']
+                    ];
+
+                    error_log("ChatNotificationObserver: Creating notification for user_id: " . $userId);
+                    error_log("ChatNotificationObserver: Notification data: " . json_encode($notificationData));
+
+                    $notificationId = $this->notificationRepo->create($notificationData);
+
+                    error_log("ChatNotificationObserver: Successfully created notification with ID: " . $notificationId);
+                } catch (\Exception $e) {
+                    error_log("ChatNotificationObserver: ERROR creating notification: " . $e->getMessage());
+                    error_log("ChatNotificationObserver: Stack trace: " . $e->getTraceAsString());
+                }
             }
+        } else {
+            error_log("ChatNotificationObserver: No mentioned_users in payload or not an array");
         }
     }
 

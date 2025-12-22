@@ -2,6 +2,7 @@
 // Displays user notifications with real-time updates
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     getNotifications,
     getUnreadCount,
@@ -15,6 +16,7 @@ const Notifications = ({ isOpen, onClose }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     // Fetch notifications
     const fetchNotifications = async () => {
@@ -82,6 +84,22 @@ const Notifications = ({ isOpen, onClose }) => {
         }
     };
 
+    // Handle notification click with navigation
+    const handleNotificationClick = async (notification) => {
+        // Mark as read if unread
+        if (!notification.is_read) {
+            await handleMarkAsRead(notification.notification_id);
+        }
+
+        // Navigate based on notification type
+        if (notification.type === 'CHAT_MENTION' && notification.related_entity_id) {
+            // Close notification panel
+            onClose();
+            // Navigate to the chat room
+            navigate(`/project-room/${notification.related_entity_id}`);
+        }
+    };
+
     // Initial fetch
     useEffect(() => {
         if (isOpen) {
@@ -124,8 +142,8 @@ const Notifications = ({ isOpen, onClose }) => {
                     notifications.map(notification => (
                         <div
                             key={notification.notification_id}
-                            className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
-                            onClick={() => !notification.is_read && handleMarkAsRead(notification.notification_id)}
+                            className={`notification-item ${!notification.is_read ? 'unread' : ''} ${notification.type === 'CHAT_MENTION' ? 'clickable' : ''}`}
+                            onClick={() => handleNotificationClick(notification)}
                         >
                             <div className="notification-content">
                                 <div className="notification-title">{notification.title}</div>

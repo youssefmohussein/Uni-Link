@@ -38,19 +38,25 @@ class PersistenceHandler extends MessageHandler
                 return ['error' => 'Failed to save message'];
             }
 
+
             $message['message_id'] = $messageId;
 
             // Save mentions if any
             if (isset($message['mentioned_users']) && !empty($message['mentioned_users'])) {
+                error_log("PersistenceHandler: Found " . count($message['mentioned_users']) . " mentioned users");
+
                 foreach ($message['mentioned_users'] as $userId) {
                     $this->chatRepo->createMention([
                         'message_id' => $messageId,
                         'user_id' => $userId
                     ]);
+                    error_log("PersistenceHandler: Created mention for user_id: " . $userId);
                 }
 
                 // Notify mentioned users
                 $roomName = $this->chatRepo->getRoomName($message['room_id']);
+                error_log("PersistenceHandler: Room name: " . $roomName . ", Sender: " . ($message['sender_username'] ?? 'Someone'));
+
                 $this->notificationService->notifyAll('CHAT_MENTION', [
                     'message_id' => $messageId,
                     'room_id' => $message['room_id'],
@@ -58,6 +64,8 @@ class PersistenceHandler extends MessageHandler
                     'mentioned_users' => $message['mentioned_users'],
                     'sender_username' => $message['sender_username'] ?? 'Someone'
                 ]);
+
+                error_log("PersistenceHandler: Called notifyAll for CHAT_MENTION");
             }
 
             // Return success with message ID

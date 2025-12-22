@@ -238,10 +238,11 @@ return [
 
     // ============================================
     // Notification Routes (NEW)
-    // ============================================
+    // ============================================    // Notifications
     'GET /api/notifications' => ['NotificationController', 'getNotifications'],
     'GET /api/notifications/unread' => ['NotificationController', 'getUnread'],
     'GET /api/notifications/unread-count' => ['NotificationController', 'getUnreadCount'],
+    'GET /api/notifications/debug' => ['NotificationController', 'debug'],
     'PUT /api/notifications/mark-as-read' => ['NotificationController', 'markAsRead'],
     'PUT /api/notifications/mark-all-read' => ['NotificationController', 'markAllAsRead'],
     'DELETE /api/notifications/delete' => ['NotificationController', 'deleteNotification'],

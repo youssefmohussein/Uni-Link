@@ -198,6 +198,12 @@ class ProjectRoomController extends BaseController
             $this->requireAuth();
 
             $data = $this->getJsonInput();
+
+            // Allow room_id from GET for DELETE requests where body might be dropped
+            if ((!isset($data['room_id']) || $data['room_id'] === '') && isset($_GET['room_id'])) {
+                $data['room_id'] = $_GET['room_id'];
+            }
+
             $this->validateRequired($data, ['room_id']);
 
             $userId = $this->getCurrentUserId();

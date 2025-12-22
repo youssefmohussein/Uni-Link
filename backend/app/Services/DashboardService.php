@@ -42,14 +42,17 @@ class DashboardService extends BaseService
         $totalUsers = count($this->userRepo->findAll());
         $students = count($this->userRepo->findByRole('Student'));
         $professors = count($this->userRepo->findByRole('Professor'));
+        $admins = count($this->userRepo->findByRole('Admin'));
 
         return [
             'stats' => [
                 'totalUsers' => $totalUsers,
                 'students' => $students,
                 'professors' => $professors,
+                'admins' => $admins,
                 'activeProjects' => 12 // Placeholder
             ],
+            'weeklyActivity' => $this->getWeeklyActivity(),
             'topSkills' => $this->getTopSkills($facultyId),
             'projectGradeDistribution' => $this->getProjectGradeDistribution($facultyId),
             'facultyDistribution' => $this->getFacultyDistribution($facultyId),

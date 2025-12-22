@@ -159,6 +159,63 @@ class NotificationController extends BaseController
     }
 
     /**
+     * Debug: Check notifications and mentions
+     */
+    public function debug(): void
+    {
+        try {
+            $db = \App\Utils\Database::getInstance()->getConnection();
+
+            // Get recent notifications
+            $stmt = $db->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 10");
+            $notifications = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Get recent mentions
+            $stmt = $db->query("SELECT * FROM chat_mentions ORDER BY created_at DESC LIMIT 10");
+            $mentions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            ResponseHandler::success([
+                'notifications' => $notifications,
+                'notifications_count' => count($notifications),
+                'mentions' => $mentions,
+                'mentions_count' => count($mentions),
+                'message' => count($notifications) === 0
+                    ? 'No notifications found - notifications are NOT being created from mentions'
+                    : 'Found notifications in database'
+            ]);
+
+        } catch (\Exception $e) {
+            ResponseHandler::error($e->getMessage(), 500);
+        }
+    }
+
+    /**
+            $db = \App\Utils\Database::getInstance()->getConnection();
+
+            // Get recent notifications
+            $stmt = $db->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 10");
+            $notifications = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Get recent mentions
+            $stmt = $db->query("SELECT * FROM chat_mentions ORDER BY created_at DESC LIMIT 10");
+            $mentions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            $this->success([
+                'notifications' => $notifications,
+                'notifications_count' => count($notifications),
+                'mentions' => $mentions,
+                'mentions_count' => count($mentions),
+                'message' => count($notifications) === 0
+                    ? 'No notifications found - notifications are NOT being created from mentions'
+                    : 'Found notifications in database'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Get notifications by type
      * GET /api/notifications/by-type/:type
      */
