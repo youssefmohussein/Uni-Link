@@ -46,52 +46,81 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     return () => clearInterval(interval);
   }, []);
 
+  /* 🌈 Navigation Items */
   const navItems = [
     { label: "Home", icon: "fas fa-home", category: "all", count: null },
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
     { label: "Project Rooms", icon: "fas fa-users", category: "project-rooms", count: counts.projectRooms || null, isRoute: true, route: "/project-rooms" },
     { label: "Questions", icon: "fas fa-question-circle", category: "Questions", count: counts.questions || null, countColor: "bg-red-500" },
-    { label: "Leaderboard", icon: "fas fa-trophy", category: "Leaderboard", count: null, isRoute: true, route: "/leaderboard" },
+    {
+      label: "Leaderboard",
+      icon: "fas fa-trophy",
+      category: "Leaderboard",
+      count: null,
+      action: () => setShowLeaderboard(true)
+    },
   ];
 
+  /* 🏆 Leaderboard Modal State */
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
   return (
-    <aside className="w-56 xl:w-64 hidden lg:block mr-3 xl:mr-4 flex-shrink-0">
-      {/* 📁 Navigation */}
-      <GlassSurface
-        width="100%"
-        height="auto"
-        borderRadius={20}
-        opacity={0.5}
-        blur={10}
-        borderWidth={0.05}
-        className="mb-6 !items-start !justify-start"
-      >
-        <nav className="space-y-1 w-full relative z-10">
-          {navItems.map((item) => (
-            <button
-              key={item.category}
-              onClick={() => item.isRoute ? navigate(item.route) : onFilterChange(item.category)}
-              className={`flex items-center space-x-3 p-3 rounded-lg w-full text-left transition-all duration-300 ${currentFilter === item.category
-                ? "font-semibold text-accent bg-accent/20 hover:bg-accent/30 shadow-md"
-                : "font-medium text-main hover:bg-white/10 hover:text-accent"
-                }`}
-            >
-              <i className={`${item.icon} text-lg`}></i>
-              <span>{item.label}</span>
-              {item.count && (
-                <span
-                  className={`ml-auto text-white text-xs font-bold px-2 py-0.5 rounded-full ${item.countColor || "bg-accent"
-                    }`}
-                >
-                  {item.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-      </GlassSurface>
-    </aside>
+    <>
+      <aside className="w-56 xl:w-64 hidden lg:block mr-3 xl:mr-4 flex-shrink-0">
+        {/* 📁 Navigation */}
+        <GlassSurface
+          width="100%"
+          height="auto"
+          borderRadius={20}
+          opacity={0.5}
+          blur={10}
+          borderWidth={0.05}
+          className="mb-6 !items-start !justify-start"
+        >
+          <nav className="space-y-1 w-full relative z-10">
+            {navItems.map((item) => (
+              <button
+                key={item.category}
+                onClick={() => {
+                  if (item.action) {
+                    item.action();
+                  } else if (item.isRoute) {
+                    navigate(item.route);
+                  } else {
+                    onFilterChange(item.category);
+                  }
+                }}
+                className={`flex items-center space-x-3 p-3 rounded-lg w-full text-left transition-all duration-300 ${currentFilter === item.category && !item.action && !item.isRoute
+                  ? "font-semibold text-accent bg-accent/20 hover:bg-accent/30 shadow-md"
+                  : "font-medium text-main hover:bg-white/10 hover:text-accent"
+                  }`}
+              >
+                <i className={`${item.icon} text-lg`}></i>
+                <span>{item.label}</span>
+                {item.count && (
+                  <span
+                    className={`ml-auto text-white text-xs font-bold px-2 py-0.5 rounded-full ${item.countColor || "bg-accent"
+                      }`}
+                  >
+                    {item.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+        </GlassSurface>
+      </aside>
+
+      {/* 🏆 Leaderboard Modal */}
+      {showLeaderboard && (
+        <React.Suspense fallback={null}>
+          <LeaderboardModal isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
+        </React.Suspense>
+      )}
+    </>
   );
 };
+// Lazy load to prevent circular dependencies if any
+const LeaderboardModal = React.lazy(() => import('../Leaderboard/LeaderboardModal'));
 
 export default LeftSidebar;
