@@ -173,4 +173,153 @@ class ProjectRepository extends BaseRepository {
         
         return $this->query($sql);
     }
+
+    /**
+     * Get project grade distribution by faculty
+     * 
+     * @param int|null $facultyId Optional faculty ID to filter
+     * @return array Grade distribution
+     */
+    public function getProjectGradeDistribution(?int $facultyId = null): array {
+        $sql = "
+            SELECT 
+                CASE 
+                    WHEN p.grade >= 90 THEN 'A (90-100)'
+                    WHEN p.grade >= 80 THEN 'B (80-89)'
+                    WHEN p.grade >= 70 THEN 'C (70-79)'
+                    WHEN p.grade >= 60 THEN 'D (60-69)'
+                    WHEN p.grade IS NOT NULL THEN 'F (Below 60)'
+                    ELSE 'Not Graded'
+                END as grade_range,
+                COUNT(*) as project_count
+            FROM projects p
+            JOIN users u ON p.student_id = u.user_id
+        ";
+
+        $params = [];
+        if ($facultyId) {
+            $sql .= " WHERE u.faculty_id = ?";
+            $params[] = $facultyId;
+        }
+
+        $sql .= "
+            GROUP BY grade_range
+            ORDER BY 
+                CASE grade_range
+                    WHEN 'A (90-100)' THEN 1
+                    WHEN 'B (80-89)' THEN 2
+                    WHEN 'C (70-79)' THEN 3
+                    WHEN 'D (60-69)' THEN 4
+                    WHEN 'F (Below 60)' THEN 5
+                    ELSE 6
+                END
+        ";
+
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Get all projects with grading info filtered by faculty
+     * 
+     * @param int|null $facultyId Optional faculty filter
+     * @param string|null $status Filter: 'graded', 'not_graded', 'all'
+     * @return array Projects with grading status
+     */
+    public function getProjectsWithGradingStatus(?int $facultyId = null, ?string $status = 'all'): array {
+        $sql = "
+            SELECT 
+                p.*,
+                u.username as student_name,
+                u.email as student_email,
+                COALESCE(f.name, 'No Faculty') as faculty_name,
+                COALESCE(m.name, 'No Major') as major_name,
+                CASE 
+                    WHEN p.grade IS NOT NULL THEN 'graded'
+                    ELSE 'not_graded'
+                END as grading_status
+            FROM projects p
+            JOIN users u ON p.student_id = u.user_id
+            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+            LEFT JOIN majors m ON u.major_id = m.major_id
+        ";
+
+        $params = [];
+        $conditions = [];
+
+        // Only filter by faculty if facultyId is provided AND not null
+        if ($facultyId !== null) {
+            $conditions[] = "(u.faculty_id = ? OR u.faculty_id IS NULL)";
+            $params[] = $facultyId;
+        }
+
+        if ($status === 'graded') {
+            $conditions[] = "p.grade IS NOT NULL";
+        } elseif ($status === 'not_graded') {
+            $conditions[] = "p.grade IS NULL";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql .= " ORDER BY p.submitted_at DESC";
+
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Update project grade
+     * 
+     * @param int $projectId Project ID
+     * @param float $grade Grade value
+     * @return bool Success
+     */
+    public function updateGrade(int $projectId, float $grade): bool {
+        $sql = "UPDATE projects SET grade = ?, updated_at = NOW() WHERE project_id = ?";
+        return $this->execute($sql, [$grade, $projectId]) > 0;
+    }
+
+    /**
+     * Update project status
+     * 
+     * @param int $projectId Project ID
+     * @param string $status Status (PENDING, APPROVED, REJECTED)
+     * @return bool Success
+     */
+    public function updateProjectStatus(int $projectId, string $status): bool {
+        $sql = "UPDATE projects SET status = ?, updated_at = NOW() WHERE project_id = ?";
+        return $this->execute($sql, [$status, $projectId]) > 0;
+    }
+
+    /**
+     * Get top skills by faculty
+     * 
+     * @param int|null $facultyId Optional faculty ID to filter
+     * @return array Top skills
+     */
+    public function getTopSkillsByFaculty(?int $facultyId = null): array {
+        $sql = "
+            SELECT s.name as skill_name, COUNT(ps.project_id) as project_count
+            FROM project_skills ps
+            JOIN skills s ON ps.skill_id = s.skill_id
+            JOIN projects p ON ps.project_id = p.project_id
+            JOIN users u ON p.student_id = u.user_id
+        ";
+
+        $params = [];
+        if ($facultyId) {
+            $sql .= " WHERE u.faculty_id = ? ";
+            $params[] = $facultyId;
+        }
+
+        $sql .= "
+            GROUP BY s.skill_id, s.name
+            ORDER BY project_count DESC
+            LIMIT 5
+        ";
+
+        return $this->query($sql, $params);
+    }
 }
+
+

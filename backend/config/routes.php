@@ -133,6 +133,11 @@ return [
     'POST /api/projects/approve' => ['ProjectController', 'approveProject'],
     'POST /api/projects/reject' => ['ProjectController', 'rejectProject'],
 
+    // ============================================
+    // Grading Routes
+    // ============================================
+    'GET /api/grading/projects' => ['GradingController', 'getProjects'],
+    'POST /api/grading/grade' => ['GradingController', 'gradeProject'],
 
     // ============================================
     // Project Room Routes (Legacy compatibility)

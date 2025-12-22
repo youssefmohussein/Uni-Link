@@ -50,7 +50,8 @@ class DashboardService extends BaseService
                 'professors' => $professors,
                 'activeProjects' => 12 // Placeholder
             ],
-            'weeklyActivity' => $this->getWeeklyActivity(),
+            'topSkills' => $this->getTopSkills($facultyId),
+            'projectGradeDistribution' => $this->getProjectGradeDistribution($facultyId),
             'facultyDistribution' => $this->getFacultyDistribution($facultyId),
             'majorDistribution' => $this->getMajorDistribution($facultyId),
             'userStatus' => [
@@ -88,6 +89,23 @@ class DashboardService extends BaseService
         }
 
         return $activity;
+    }
+
+    /**
+     * Get top skills in faculty
+     * 
+     * @param int|null $facultyId Optional faculty ID
+     * @return array Top skills
+     */
+    private function getTopSkills(?int $facultyId = null): array
+    {
+        $results = $this->projectRepo->getTopSkillsByFaculty($facultyId);
+        return array_map(function ($row) {
+            return [
+                'name' => $row['skill_name'],
+                'count' => (int) $row['project_count']
+            ];
+        }, $results);
     }
 
     /**
@@ -133,6 +151,23 @@ class DashboardService extends BaseService
     private function getRecentPostsCount(): int
     {
         return $this->postRepo->getRecentCount();
+    }
+
+    /**
+     * Get project grade distribution
+     * 
+     * @param int|null $facultyId Optional faculty ID
+     * @return array Grade distribution
+     */
+    private function getProjectGradeDistribution(?int $facultyId = null): array
+    {
+        $results = $this->projectRepo->getProjectGradeDistribution($facultyId);
+        return array_map(function ($row) {
+            return [
+                'grade_range' => $row['grade_range'] ?? 'Unknown',
+                'project_count' => (int) ($row['project_count'] ?? 0)
+            ];
+        }, $results);
     }
 
     /**
