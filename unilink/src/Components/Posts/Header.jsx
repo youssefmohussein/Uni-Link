@@ -1,9 +1,99 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiBell, FiUser, FiPlus, FiSearch, FiX } from "react-icons/fi";
 import Logo from "../../Uni-Link-Logo.webp";
+import { searchUsers } from "../../../api/userHandler"; // Import user search API
+import Notifications from "../Notifications/Notifications";
+import { getUnreadCount } from "../../services/notificationService";
 
 const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch, hideShareButton = false }) => {
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const searchTimeoutRef = React.useRef(null);
+
+  // Handle local user search
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    if (onSearch) onSearch(val); // Propagate to parent (PostPage)
+
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+    if (!val.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const users = await searchUsers(val);
+        setSuggestions(users || []);
+        setShowSuggestions(true);
+      } catch (err) {
+        console.error("Header search failed", err);
+        setSuggestions([]);
+      }
+    }, 300);
+  };
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [user, setUser] = useState(null);
+
+  // Get user from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        console.log("Header: User data loaded:", parsedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        console.error("Header: Error parsing user data:", e);
+      }
+    }
+  }, []);
+
+  // Fetch unread count on mount and periodically
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        console.log("Header: Fetching unread count...");
+        const data = await getUnreadCount();
+        console.log("Header: Unread count response:", data);
+
+        if (data.status === 'success') {
+          const count = data.data?.unread_count || 0;
+          console.log("Header: Setting unread count to:", count);
+          setUnreadCount(count);
+        }
+      } catch (error) {
+        console.error('Header: Error fetching unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+
+    // Poll every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const handleProfileClick = () => {
+    if (user?.role === 'Admin') {
+      navigate('/admin/dashboard');
+    } else {
+      navigate('/profile');
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-[#0d1117] to-[#161b22] shadow-lg border-b border-[#21262d] backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16 text-white font-main">
