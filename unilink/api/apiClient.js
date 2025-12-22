@@ -41,7 +41,7 @@ export async function apiRequest(endpoint, method = "GET", data = null) {
     }
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${json.message || 'Unknown error'}`);
+      throw new Error(json.message || `Error ${response.status}: ${json.error || 'Unknown error'}`);
     }
 
     console.log("Response:", json);
