@@ -17,9 +17,18 @@ const ProjectChatPage = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filePreview, setFilePreview] = useState(null);
-    const fileInputRef = useRef(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [recordingDuration, setRecordingDuration] = useState(0);
+    const [showMentionList, setShowMentionList] = useState(false);
+    const [mentionSearch, setMentionSearch] = useState("");
+    const [mentionIndex, setMentionIndex] = useState(0);
 
+    const fileInputRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const recordingIntervalRef = useRef(null);
+    const inputRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user'));
     const pollingInterval = useRef(null);
 
@@ -104,7 +113,6 @@ const ProjectChatPage = () => {
         }
     };
 
-<<<<<<< HEAD
     const handleDeleteMessage = async (messageId) => {
         if (!window.confirm("Are you sure you want to delete this message?")) return;
 
@@ -117,7 +125,6 @@ const ProjectChatPage = () => {
             toast.error(err.message);
         }
     };
-
 
     const startRecording = async () => {
         try {
@@ -215,7 +222,6 @@ const ProjectChatPage = () => {
                 insertMention(filteredMembers[mentionIndex].username);
             } else if (e.key === 'Escape') {
                 setShowMentionList(false);
-
             }
         }
     };
@@ -232,35 +238,56 @@ const ProjectChatPage = () => {
         }
     };
 
-    const inputRef = useRef(null);
-
-=======
->>>>>>> parent of 7419150 (Merge branch 'main' of https://github.com/youssefmohussein/Uni-Link)
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() && !selectedFile) return;
+        if (!newMessage.trim() && !selectedFile && !audioBlob) return;
 
         setSending(true);
         try {
             let fileData = null;
-            if (selectedFile) {
+
+            // Handle voice message
+            if (audioBlob) {
+                const voiceFile = new File([audioBlob], `voice-${Date.now()}.webm`, { type: 'audio/webm' });
+                fileData = await projectRoomHandler.uploadChatFile(voiceFile);
+                await projectRoomHandler.sendMessage({
+                    room_id: roomId,
+                    sender_id: user.id || user.user_id,
+                    content: newMessage || "Voice message",
+                    message_type: 'VOICE',
+                    file_path: fileData.file_path
+                });
+                setAudioBlob(null);
+                setRecordingDuration(0);
+            }
+            // Handle file attachment
+            else if (selectedFile) {
                 fileData = await projectRoomHandler.uploadChatFile(selectedFile);
+                await projectRoomHandler.sendMessage({
+                    room_id: roomId,
+                    sender_id: user.id || user.user_id,
+                    content: newMessage,
+                    message_type: selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE',
+                    file_path: fileData.file_path
+                });
+                setSelectedFile(null);
+                setFilePreview(null);
+            }
+            // Handle text message
+            else {
+                await projectRoomHandler.sendMessage({
+                    room_id: roomId,
+                    sender_id: user.id || user.user_id,
+                    content: newMessage,
+                    message_type: 'TEXT',
+                    file_path: null
+                });
             }
 
-            await projectRoomHandler.sendMessage({
-                room_id: roomId,
-                sender_id: user.id || user.user_id,
-                content: newMessage,
-                message_type: fileData ? (selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE') : 'TEXT',
-                file_path: fileData ? fileData.file_path : null
-            });
-
             setNewMessage("");
-            setSelectedFile(null);
-            setFilePreview(null);
             fetchMessages(); // Immediate refresh
         } catch (err) {
-            alert("Failed to send: " + err.message);
+            toast.error("Failed to send: " + err.message);
         } finally {
             setSending(false);
         }
@@ -352,6 +379,15 @@ const ProjectChatPage = () => {
                                                 </div>
                                             )}
 
+                                            {msg.message_type === 'VOICE' && msg.file_path && (
+                                                <div className="mb-2">
+                                                    <audio controls className="w-full max-w-xs">
+                                                        <source src={`${API_BASE_URL}/${msg.file_path}`} type="audio/webm" />
+                                                        Your browser does not support the audio element.
+                                                    </audio>
+                                                </div>
+                                            )}
+
                                             {msg.message_type === 'FILE' && msg.file_path && (
                                                 <div className="mb-2">
                                                     <a
@@ -409,6 +445,27 @@ const ProjectChatPage = () => {
                                 </button>
                             </div>
                         )}
+
+                        {audioBlob && (
+                            <div className="bg-[#121212] rounded-xl border border-white/10 p-3 flex items-center justify-between animate-slide-in-right">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded bg-red-500/20 flex items-center justify-center">
+                                        <i className="fa-solid fa-microphone text-red-500 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Voice Message</p>
+                                        <p className="text-[10px] text-gray-500">{recordingDuration}s</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={cancelRecording}
+                                    className="p-2 text-gray-400 hover:text-red-500 transition"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSend} className="bg-[#121212] rounded-2xl border border-white/10 p-2 flex items-center gap-2 shadow-xl">
                             <input
                                 type="file"
@@ -416,7 +473,6 @@ const ProjectChatPage = () => {
                                 onChange={handleFileChange}
                                 className="hidden"
                             />
-<<<<<<< HEAD
                             <div className="flex gap-1">
                                 <button
                                     type="button"
@@ -491,26 +547,9 @@ const ProjectChatPage = () => {
                                     disabled={sending || isRecording}
                                 />
                             </div>
-=======
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current.click()}
-                                className="p-4 text-gray-400 hover:text-white transition w-14 h-14 flex items-center justify-center"
-                                disabled={sending}
-                            >
-                                <i className="fa-solid fa-paperclip text-lg"></i>
-                            </button>
-                            <input
-                                className="flex-grow bg-transparent text-white placeholder-gray-500 px-2 py-4 focus:outline-none text-sm"
-                                placeholder="Type your message..."
-                                value={newMessage}
-                                onChange={e => setNewMessage(e.target.value)}
-                                disabled={sending}
-                            />
->>>>>>> parent of 7419150 (Merge branch 'main' of https://github.com/youssefmohussein/Uni-Link)
                             <button
                                 type="submit"
-                                disabled={(!newMessage.trim() && !selectedFile) || sending}
+                                disabled={(!newMessage.trim() && !selectedFile && !audioBlob) || sending}
                                 className="p-4 bg-accent text-white rounded-xl hover:bg-accent/80 transition disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 flex items-center justify-center shadow-lg shadow-accent/20"
                             >
                                 {sending ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane text-lg"></i>}
@@ -604,9 +643,16 @@ const ProjectChatPage = () => {
                 .animate-slide-in-right {
                     animation: slideIn 0.3s ease-out;
                 }
+                .animate-slide-in-up {
+                    animation: slideUp 0.2s ease-out;
+                }
                 @keyframes slideIn {
                     from { transform: translateX(100%); opacity: 0; }
                     to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translateY(10px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
                 .shake {
                     animation: shake 0.5s ease-in-out infinite;
