@@ -67,6 +67,12 @@ class UserController extends BaseController
             $this->requireRole('Admin');
 
             $data = $this->getJsonInput();
+
+            // Allow user_id from GET for DELETE requests where body might be dropped
+            if ((!isset($data['user_id']) || $data['user_id'] === '') && isset($_GET['user_id'])) {
+                $data['user_id'] = $_GET['user_id'];
+            }
+
             $this->validateRequired($data, ['user_id']);
 
             $this->userService->deleteUser((int) $data['user_id']);

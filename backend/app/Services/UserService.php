@@ -349,7 +349,49 @@ class UserService extends BaseService
         }
 
         return $this->transaction(function () use ($userId) {
-            // No separate role tables - just delete from Users table
+            // 1. Manually delete all related data first to resolve FK constraints everywhere
+            // This includes data dependent on User AND data dependent on Student/Professor
+            $db = \App\Utils\Database::getInstance()->getConnection();
+
+            // Delete user skills
+            $db->prepare("DELETE FROM user_skills WHERE user_id = ?")->execute([$userId]);
+
+            // Delete CVs
+            $db->prepare("DELETE FROM cvs WHERE user_id = ?")->execute([$userId]);
+
+            // Delete notifications (as sender or receiver)
+            $db->prepare("DELETE FROM notifications WHERE user_id = ? OR sender_id = ?")->execute([$userId, $userId]);
+
+            // Delete chat messages
+            $db->prepare("DELETE FROM chat_messages WHERE user_id = ?")->execute([$userId]);
+
+            // Delete room members
+            $db->prepare("DELETE FROM room_members WHERE user_id = ?")->execute([$userId]);
+
+            // Delete saved posts
+            $db->prepare("DELETE FROM saved_posts WHERE user_id = ?")->execute([$userId]);
+
+            // Delete post interactions
+            $db->prepare("DELETE FROM post_interactions WHERE user_id = ?")->execute([$userId]);
+
+            // Delete comments
+            $db->prepare("DELETE FROM comments WHERE user_id = ?")->execute([$userId]);
+
+            // Delete projects (Try both assumptions for safety)
+            // If projects links to student_id, we check if there's a student record first.
+            $db->prepare("DELETE FROM projects WHERE student_id IN (SELECT student_id FROM students WHERE user_id = ?)")->execute([$userId]);
+            // Fallback if projects uses user_id directly or just to be safe
+            $db->prepare("DELETE FROM projects WHERE user_id = ?")->execute([$userId]);
+
+            // Delete posts
+            $db->prepare("DELETE FROM posts WHERE user_id = ?")->execute([$userId]);
+
+            // 2. NOW delete role-specific data using repositories
+            $this->studentRepo->deleteWhere(['user_id' => $userId]);
+            $this->professorRepo->deleteWhere(['user_id' => $userId]);
+            $this->adminRepo->deleteWhere(['user_id' => $userId]);
+
+            // 3. Finally delete the user
             return $this->userRepo->delete($userId);
         }, $this->userRepo);
     }

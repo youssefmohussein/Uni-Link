@@ -22,10 +22,15 @@ export default function StudentsTable({
     return found ? (found.faculty_name || found.name) : "-";
   };
 
-  const getMajorName = (id) => {
+  const getMajorName = (id, student) => {
+    // Check for direct property if joined
+    if (student?.major_name) return student.major_name;
+    if (student?.major?.name) return student.major.name;
+
     if (!id) return "-";
+    // Loose equality check (==) to handle string/number differences
     const found = majors.find((m) => m && m.major_id == id);
-    return found ? (found.major_name || found.name) : "-";
+    return found ? (found.name || found.major_name) : "-";
   };
 
   const filtered = useMemo(() => {
@@ -100,7 +105,7 @@ export default function StudentsTable({
           <div className="col-span-2 truncate">{s?.username || "-"}</div>
           <div className="col-span-3 truncate">{s?.email || "-"}</div>
           <div className="col-span-3 truncate">{getFacultyName(s?.faculty_id)}</div>
-          <div className="col-span-2 truncate">{getMajorName(s?.major_id)}</div>
+          <div className="col-span-2 truncate">{getMajorName(s?.major_id, s)}</div>
           <div className="col-span-1">{s?.year ?? 0}</div>
           <div className="col-span-1">{s?.gpa ?? 0}</div>
           <div className="col-span-1">{s?.points ?? 0}</div>
@@ -124,7 +129,7 @@ export default function StudentsTable({
 
             {/* Delete Button */}
             <button
-              onClick={() => handleDeleteStudent(s.student_id)}
+              onClick={() => handleDeleteStudent(s.user_id)}
               className="
                 p-2 rounded cursor-pointer
                 text-red-500
