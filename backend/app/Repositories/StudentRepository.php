@@ -8,7 +8,7 @@ namespace App\Repositories;
  */
 class StudentRepository extends BaseRepository {
     protected string $table = 'students';
-    protected string $primaryKey = 'student_id';
+    protected string $primaryKey = 'user_id';
     
     /**
      * Find students by year
@@ -35,22 +35,22 @@ class StudentRepository extends BaseRepository {
     /**
      * Update student points
      * 
-     * @param int $studentId Student ID
+     * @param int $userId User ID
      * @param int $points Points to add (can be negative)
      * @return bool Success status
      */
-    public function updatePoints(int $studentId, int $points): bool {
+    public function updatePoints(int $userId, int $points): bool {
         $sql = "UPDATE {$this->table} SET points = points + ? WHERE {$this->primaryKey} = ?";
-        return $this->execute($sql, [$points, $studentId]) > 0;
+        return $this->execute($sql, [$points, $userId]) > 0;
     }
     
     /**
      * Get student with user information
      * 
-     * @param int $studentId Student ID
+     * @param int $userId User ID
      * @return array|null Student with user data
      */
-    public function getWithUserInfo(int $studentId): ?array {
+    public function getWithUserInfo(int $userId): ?array {
         $sql = "
             SELECT s.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.bio, 
                    f.name as faculty_name, m.name as major_name
@@ -58,9 +58,9 @@ class StudentRepository extends BaseRepository {
             JOIN users u ON s.user_id = u.user_id
             LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
             LEFT JOIN majors m ON u.major_id = m.major_id
-            WHERE s.student_id = ?
+            WHERE s.user_id = ?
         ";
-        return $this->queryOne($sql, [$studentId]);
+        return $this->queryOne($sql, [$userId]);
     }
     
     /**

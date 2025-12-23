@@ -32,21 +32,13 @@ class GamificationService extends BaseService
      */
     public function awardPoints(int $userId, int $points, string $actionType): bool
     {
-        // Get student ID from user ID
-        // Note: We need to find the student record associated with this user
-        // The studentRepo updatePoints method expects a student_id, but usually we work with user_id
-        // Let's modify this to handle finding the student_id first.
-        
-        // This query is needed because points are on the student table, not users table
-        $db = $this->studentRepo->getDb();
-        $stmt = $db->prepare("SELECT student_id FROM students WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        $student = $stmt->fetch(\PDO::FETCH_ASSOC);
+        // Get student record from user ID
+        $student = $this->studentRepo->findOneBy('user_id', $userId);
 
         if ($student) {
-            $studentId = $student['student_id'];
-            $this->studentRepo->updatePoints($studentId, $points);
-            error_log("Gamification: Awarded $points points to User $userId (Student $studentId) for $actionType");
+            // Use user_id as studentId since they are the same in this schema
+            $this->studentRepo->updatePoints($userId, $points);
+            error_log("Gamification: Awarded $points points to User $userId for $actionType");
             return true;
         } else {
             // User might be a professor or admin, or student record missing

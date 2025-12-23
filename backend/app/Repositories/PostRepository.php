@@ -230,16 +230,6 @@ class PostRepository extends BaseRepository
     }
 
     /**
-     * Get database connection
-     * 
-     * @return \PDO
-     */
-    public function getDb(): \PDO
-    {
-        return $this->db;
-    }
-
-    /**
      * Get post counts grouped by category
      * 
      * @return array Array of category counts

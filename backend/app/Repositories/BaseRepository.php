@@ -422,4 +422,14 @@ abstract class BaseRepository
         $stmt->execute($params);
         return $stmt->rowCount();
     }
+
+    /**
+     * Get database connection
+     * 
+     * @return PDO
+     */
+    public function getDb(): PDO
+    {
+        return $this->db;
+    }
 }
