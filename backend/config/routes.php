@@ -58,6 +58,10 @@ return [
     'GET /getProfessorById/\d+' => ['ProfessorController', 'getById'],
     'GET /getDashboardStats' => ['ProfessorController', 'getDashboardStats'],
 
+    // [VULNERABILITY 9: SSRF - Server Side Request Forgery]
+    // A new endpoint for 'importing' posts from a URL
+    'GET /api/posts/import' => ['PostController', 'importFromUrl'],
+
     // ============================================
     // Admin Routes (Legacy compatibility)
     // ============================================

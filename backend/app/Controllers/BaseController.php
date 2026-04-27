@@ -139,10 +139,11 @@ abstract class BaseController
             throw new \Exception('File size exceeds maximum allowed size', 400);
         }
 
-        // Check file type
-        if (!empty($allowedTypes) && !in_array($file['type'], $allowedTypes)) {
-            throw new \Exception('File type not allowed', 400);
-        }
+        // [VULNERABILITY 4: Insecure File Upload]
+        // Bypassing file type validation allows attackers to upload executable PHP scripts
+        // if (!empty($allowedTypes) && !in_array($file['type'], $allowedTypes)) {
+        //     throw new \Exception('File type not allowed', 400);
+        // }
 
         // Create upload directory if it doesn't exist
         if (!is_dir($uploadDir)) {

@@ -300,3 +300,67 @@
 [27-Apr-2026 19:51:23 Europe/Berlin] Session created for user: 2, Session ID: i0uavc1p65hd8h8e3ntal0v986
 [27-Apr-2026 19:51:23 Europe/Berlin] Session data: {"user":{"id":2,"username":"student","email":"student@unilink.com","role":"Student","profile_image":null}}
 [27-Apr-2026 19:51:23 Europe/Berlin] Login redirect - User ID: 2, Role: 'Student', Uppercase: 'STUDENT', Redirect: '/posts'
+[27-Apr-2026 20:18:47 Europe/Berlin] AuthService: Login attempt for identifier: 'test' OR 1=1 --'
+[27-Apr-2026 20:18:47 Europe/Berlin] UserRepository: Searching for user with identifier: 'test' OR 1=1 --'
+[27-Apr-2026 20:18:47 Europe/Berlin] UserRepository: No user found with identifier: 'test' OR 1=1 --'
+[27-Apr-2026 20:18:47 Europe/Berlin] UserRepository: Total users in database: 3
+[27-Apr-2026 20:18:47 Europe/Berlin] AuthService: Login failed - Account not found for identifier: 'test' OR 1=1 --'
+[27-Apr-2026 20:18:47 Europe/Berlin] AuthService: Login exception - User 'test' OR 1=1 --' does not exist in our database. (Code: 404)
+[27-Apr-2026 20:18:54 Europe/Berlin] AuthService: Login attempt for identifier: 'admin' OR 1=1 --'
+[27-Apr-2026 20:18:54 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin' OR 1=1 --'
+[27-Apr-2026 20:18:54 Europe/Berlin] UserRepository: No user found with identifier: 'admin' OR 1=1 --'
+[27-Apr-2026 20:18:54 Europe/Berlin] UserRepository: Total users in database: 3
+[27-Apr-2026 20:18:54 Europe/Berlin] AuthService: Login failed - Account not found for identifier: 'admin' OR 1=1 --'
+[27-Apr-2026 20:18:54 Europe/Berlin] AuthService: Login exception - User 'admin' OR 1=1 --' does not exist in our database. (Code: 404)
+[27-Apr-2026 20:19:02 Europe/Berlin] AuthService: Login attempt for identifier: 'admin''
+[27-Apr-2026 20:19:02 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin''
+[27-Apr-2026 20:19:02 Europe/Berlin] UserRepository: No user found with identifier: 'admin''
+[27-Apr-2026 20:19:02 Europe/Berlin] UserRepository: Total users in database: 3
+[27-Apr-2026 20:19:02 Europe/Berlin] AuthService: Login failed - Account not found for identifier: 'admin''
+[27-Apr-2026 20:19:02 Europe/Berlin] AuthService: Login exception - User 'admin'' does not exist in our database. (Code: 404)
+[27-Apr-2026 20:19:03 Europe/Berlin] AuthService: Login attempt for identifier: 'admin'
+[27-Apr-2026 20:19:03 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin'
+[27-Apr-2026 20:19:03 Europe/Berlin] UserRepository: User found - ID: 1, Username: admin, Email: admin@unilink.com, Role: ADMIN
+[27-Apr-2026 20:19:03 Europe/Berlin] AuthService: User found, verifying password for user ID: 1
+[27-Apr-2026 20:19:04 Europe/Berlin] AuthService: Login failed - Incorrect password for user ID: 1
+[27-Apr-2026 20:19:04 Europe/Berlin] AuthService: Login exception - Incorrect password for the given user. (Code: 401)
+[27-Apr-2026 20:30:37 Europe/Berlin] AuthService: Login attempt for identifier: 'admin' OR '1'='1'--'
+[27-Apr-2026 20:30:37 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin' OR '1'='1'--'
+[27-Apr-2026 20:30:37 Europe/Berlin] UserRepository: No user found with identifier: 'admin' OR '1'='1'--'
+[27-Apr-2026 20:30:37 Europe/Berlin] UserRepository: Total users in database: 3
+[27-Apr-2026 20:30:37 Europe/Berlin] AuthService: Login failed - Account not found for identifier: 'admin' OR '1'='1'--'
+[27-Apr-2026 20:30:37 Europe/Berlin] AuthService: Login exception - User 'admin' OR '1'='1'--' does not exist in our database. (Code: 404)
+[27-Apr-2026 20:31:10 Europe/Berlin] AuthService: Login attempt for identifier: ''admin' OR '1'='1'--'
+[27-Apr-2026 20:31:10 Europe/Berlin] UserRepository: Searching for user with identifier: ''admin' OR '1'='1'--'
+[27-Apr-2026 20:31:10 Europe/Berlin] UserRepository: No user found with identifier: ''admin' OR '1'='1'--'
+[27-Apr-2026 20:31:10 Europe/Berlin] UserRepository: Total users in database: 3
+[27-Apr-2026 20:31:10 Europe/Berlin] AuthService: Login failed - Account not found for identifier: ''admin' OR '1'='1'--'
+[27-Apr-2026 20:31:10 Europe/Berlin] AuthService: Login exception - User ''admin' OR '1'='1'--' does not exist in our database. (Code: 404)
+[27-Apr-2026 20:31:47 Europe/Berlin] AuthService: Login attempt for identifier: 'student'
+[27-Apr-2026 20:31:47 Europe/Berlin] UserRepository: Searching for user with identifier: 'student'
+[27-Apr-2026 20:31:47 Europe/Berlin] UserRepository: User found - ID: 2, Username: student, Email: student@unilink.com, Role: STUDENT
+[27-Apr-2026 20:31:47 Europe/Berlin] AuthService: User found, verifying password for user ID: 2
+[27-Apr-2026 20:31:48 Europe/Berlin] AuthService: Password verified successfully for user ID: 2
+[27-Apr-2026 20:31:48 Europe/Berlin] AuthService - User ID: 2, DB Role: 'STUDENT', Normalized Role: 'STUDENT'
+[27-Apr-2026 20:31:48 Europe/Berlin] AuthService - Model Role: 'Student'
+[27-Apr-2026 20:31:48 Europe/Berlin] Session created for user: 2, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 20:31:48 Europe/Berlin] Session data: {"user":{"id":2,"username":"student","email":"student@unilink.com","role":"Student","profile_image":null}}
+[27-Apr-2026 20:31:48 Europe/Berlin] Login redirect - User ID: 2, Role: 'Student', Uppercase: 'STUDENT', Redirect: '/posts'
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file request - URI: /uploads/defaults/admin.png, Normalized: uploads\defaults\admin.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\admin.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/admin.png","normalized_uri":"uploads\\defaults\\admin.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\admin.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file request - URI: /uploads/defaults/student.png, Normalized: uploads\defaults\student.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\student.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/student.png","normalized_uri":"uploads\\defaults\\student.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\student.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file request - URI: /uploads/defaults/professor.png, Normalized: uploads\defaults\professor.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\professor.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:50 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/professor.png","normalized_uri":"uploads\\defaults\\professor.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\professor.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:48:58 Europe/Berlin] Static file request - URI: /uploads/defaults/admin.png, Normalized: uploads\defaults\admin.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\admin.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:58 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/admin.png","normalized_uri":"uploads\\defaults\\admin.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\admin.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:48:59 Europe/Berlin] Static file request - URI: /uploads/defaults/student.png, Normalized: uploads\defaults\student.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\student.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:59 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/student.png","normalized_uri":"uploads\\defaults\\student.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\student.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:48:59 Europe/Berlin] Static file request - URI: /uploads/defaults/professor.png, Normalized: uploads\defaults\professor.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\professor.png, Exists: no, IsFile: no
+[27-Apr-2026 20:48:59 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/professor.png","normalized_uri":"uploads\\defaults\\professor.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\professor.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:49:27 Europe/Berlin] Static file request - URI: /uploads/defaults/admin.png, Normalized: uploads\defaults\admin.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\admin.png, Exists: no, IsFile: no
+[27-Apr-2026 20:49:27 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/admin.png","normalized_uri":"uploads\\defaults\\admin.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\admin.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:49:45 Europe/Berlin] Static file request - URI: /uploads/defaults/student.png, Normalized: uploads\defaults\student.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\student.png, Exists: no, IsFile: no
+[27-Apr-2026 20:49:45 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/student.png","normalized_uri":"uploads\\defaults\\student.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\student.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 20:49:45 Europe/Berlin] Static file request - URI: /uploads/defaults/professor.png, Normalized: uploads\defaults\professor.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\professor.png, Exists: no, IsFile: no
+[27-Apr-2026 20:49:45 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/professor.png","normalized_uri":"uploads\\defaults\\professor.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\professor.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}

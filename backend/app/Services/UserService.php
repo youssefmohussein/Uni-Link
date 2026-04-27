@@ -425,10 +425,11 @@ class UserService extends BaseService
     {
         $users = $this->userRepo->findAll($limit, $offset, 'user_id ASC');
 
-        // Remove passwords
-        foreach ($users as &$user) {
-            unset($user['password_hash']);
-        }
+        // [VULNERABILITY 8: Sensitive Data Exposure]
+        // Not removing password hashes leaks sensitive cryptographic data to the API consumers
+        // foreach ($users as &$user) {
+        //     unset($user['password_hash']);
+        // }
 
         return $users;
     }

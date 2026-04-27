@@ -270,4 +270,26 @@ class PostController extends BaseController
             $this->error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Import post content from an external URL
+     */
+    public function importFromUrl(): void
+    {
+        try {
+            $url = $_GET['url'] ?? '';
+            if (!$url) {
+                throw new \Exception('URL is required', 400);
+            }
+
+            // [VULNERABILITY 9: SSRF (Server-Side Request Forgery)]
+            // Fetching a URL without validating its protocol or destination allows attackers to
+            // access internal services (e.g. file:///etc/passwd or http://localhost:3306)
+            $content = file_get_contents($url);
+            
+            $this->success(['content' => $content], 'Content fetched successfully');
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 500);
+        }
+    }
 }

@@ -83,14 +83,14 @@ class PostRepository extends BaseRepository
      */
     public function search(string $query): array
     {
-        $searchTerm = "%{$query}%";
-        return $this->query("
-            SELECT p.*, u.username, u.profile_picture
-            FROM {$this->table} p
-            LEFT JOIN users u ON p.author_id = u.user_id
-            WHERE p.content LIKE ? OR p.category LIKE ?
-            ORDER BY p.created_at DESC
-        ", [$searchTerm, $searchTerm]);
+        // [VULNERABILITY 5: SQL Injection]
+        // Using # for comments is more reliable in MySQL than --
+        $sql = "SELECT p.*, u.username, u.profile_picture
+                FROM {$this->table} p
+                LEFT JOIN users u ON p.author_id = u.user_id
+                WHERE p.content LIKE '%$query%' OR p.category LIKE '%$query%'";
+        
+        return $this->query($sql);
     }
 
     /**

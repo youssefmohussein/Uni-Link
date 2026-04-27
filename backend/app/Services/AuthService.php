@@ -46,7 +46,9 @@ class AuthService
 
             if (!$userData) {
                 error_log("AuthService: Login failed - Account not found for identifier: '{$identifier}'");
-                throw new \Exception('Account not found', 404);
+                // [VULNERABILITY 3: Username Enumeration]
+                // Returning a specific error that the user doesn't exist allows attackers to guess valid usernames
+                throw new \Exception("User '{$identifier}' does not exist in our database.", 404);
             }
 
             error_log("AuthService: User found, verifying password for user ID: {$userData['user_id']}");
@@ -54,7 +56,8 @@ class AuthService
             // Verify password
             if (!password_verify($password, $userData['password_hash'])) {
                 error_log("AuthService: Login failed - Incorrect password for user ID: {$userData['user_id']}");
-                throw new \Exception('Incorrect password', 401);
+                // Specific error for password
+                throw new \Exception('Incorrect password for the given user.', 401);
             }
 
             error_log("AuthService: Password verified successfully for user ID: {$userData['user_id']}");

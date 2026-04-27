@@ -12,9 +12,10 @@ require_once __DIR__ . '/config/env_loader.php';
 // Load .env
 loadEnv(__DIR__ . '/.env');
 
-// CORS Headers for React frontend - MUST be before any output
-// Note: Content-Type will be set per request (JSON for API, appropriate type for static files)
-header("Access-Control-Allow-Origin: http://localhost:5173");
+// [VULNERABILITY 1: Security Misconfiguration - Open CORS]
+// Blindly reflecting the Origin header allows any website to make credentialed requests
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-USER-ID, Authorization, X-Requested-With");
@@ -27,8 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Start session for authentication
 if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Lax');
+    // [VULNERABILITY - Student 6: Weak Session Management]
+    // HttpOnly flag is DISABLED: JavaScript can read the session cookie (XSS can steal it)
+    // SameSite is NONE: Session cookie is sent on cross-origin requests (CSRF risk)
+    // session.cookie_secure is OFF: Cookie sent over HTTP (sniffable on network)
+    ini_set('session.cookie_httponly', '0');  // BAD: Should be '1'
+    ini_set('session.cookie_samesite', 'None'); // BAD: Should be 'Lax' or 'Strict'
+    // No session ID regeneration after login (session fixation possible)
 
     // Set custom error log for debugging
     $logDir = __DIR__ . '/logs';
@@ -57,9 +63,14 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 
 set_exception_handler(function ($e) {
     http_response_code($e->getCode() ?: 500);
+    // [VULNERABILITY 2: Sensitive Data Exposure / Verbose Errors]
+    // Leaking full stack trace, file paths, and database queries to the user
     echo json_encode([
         'status' => 'error',
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
     ]);
     exit;
 });
@@ -77,6 +88,38 @@ if (strpos($requestUri, '/backend/') === 0) {
     $requestUri = substr($requestUri, 7); // Remove '/backend'
 }
 $requestUri = '/' . ltrim($requestUri, '/'); // Ensure it starts with /
+
+// [VULNERABILITY - Student 4: Directory Traversal]
+// The /api/files endpoint serves files without sanitizing the 'path' parameter.
+// Attackers can use ../ sequences to escape the intended directory.
+// Example: GET /api/files?path=../../.env
+if (preg_match('#^/api/files#', $requestUri)) {
+    $requestedPath = $_GET['path'] ?? '';
+    // NO sanitization - path traversal is possible!
+    $baseDir = __DIR__ . '/uploads/';
+    $fullPath = $baseDir . $requestedPath;
+    if (file_exists($fullPath) && is_file($fullPath)) {
+        header('Content-Type: text/plain');
+        readfile($fullPath);
+    } else {
+        http_response_code(404);
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'File not found: ' . $fullPath]);
+    }
+    exit;
+}
+
+// [VULNERABILITY - Student 3: Reflected XSS]
+// The /api/search/reflect endpoint echoes the user's 'q' parameter directly into an HTML response
+// without any encoding, allowing script injection.
+// Example: GET /api/search/reflect?q=<script>alert(document.cookie)</script>
+if (preg_match('#^/api/search/reflect#', $requestUri)) {
+    $query = $_GET['q'] ?? '';
+    // BAD: No htmlspecialchars() - raw user input echoed into HTML page
+    header('Content-Type: text/html');
+    echo "<html><body><h2>Search Results for: " . $query . "</h2></body></html>";
+    exit;
+}
 
 // Serve static files (uploads/media, etc.) before routing
 if (preg_match('#^/uploads/#', $requestUri)) {

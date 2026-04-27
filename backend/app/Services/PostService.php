@@ -120,9 +120,11 @@ class PostService extends BaseService
             throw new \Exception('Post not found', 404);
         }
 
-        if ($post['author_id'] != $userId) {
-            throw new \Exception('Unauthorized', 403);
-        }
+        // [VULNERABILITY 10: Broken Access Control]
+        // Bypassing the ownership check allows ANY authenticated user to delete ANY post
+        // if ($post['author_id'] != $userId) {
+        //     throw new \Exception('Unauthorized', 403);
+        // }
 
         return $this->postRepo->delete($postId);
     }

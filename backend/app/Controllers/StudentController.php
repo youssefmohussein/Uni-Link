@@ -55,6 +55,10 @@ class StudentController extends BaseController
             $data = $this->getJsonInput();
             $this->validateRequired($data, ['user_id']);
 
+            // [VULNERABILITY 6 & 7: IDOR and Mass Assignment]
+            // Any authenticated user can pass ANY user_id and modify their data.
+            // Furthermore, they can pass {"points": 9999} to artificially inflate their leaderboard score.
+            // No checks are made to verify ownership or filter updateable fields.
             $user = $this->userService->updateUser((int) $data['user_id'], $data);
 
             unset($user['password_hash']);

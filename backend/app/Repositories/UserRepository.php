@@ -452,18 +452,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function searchByUsername(string $query, int $limit = 20): array
     {
-        $sql = "
-            SELECT 
-                u.user_id, u.username, u.profile_picture, u.bio, u.role,
-                f.name as faculty_name,
-                m.name as major_name
-            FROM users u
-            LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
-            LEFT JOIN majors m ON u.major_id = m.major_id
-            WHERE u.username LIKE ?
-            LIMIT " . (int)$limit;
+        // [VULNERABILITY 5 (People): SQL Injection]
+        // Simplified for easier exploitation: ' OR 1=1 #
+        $sql = "SELECT u.*, f.name as faculty_name, m.name as major_name
+                FROM users u
+                LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
+                LEFT JOIN majors m ON u.major_id = m.major_id
+                WHERE u.username LIKE '%$query%'
+                LIMIT " . (int)$limit;
 
-        // Use query() which is the BaseRepository wrapper for fetching all
-        return $this->query($sql, ["%$query%"]);
+        return $this->query($sql);
     }
 }
