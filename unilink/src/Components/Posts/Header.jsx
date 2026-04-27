@@ -95,7 +95,7 @@ const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch, hideSha
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-[#0d1117] to-[#161b22] shadow-lg border-b border-[#21262d] backdrop-blur-md">
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#0d1117] shadow-lg border-b border-[#21262d]">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16 text-white font-main">
 
         {/* Left: Logo and UniLink */}

@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import HolographicEarth from '../Components/loading/planetcomponent';
 
 const LoadingPage = ({ onComplete }) => {
     const [fadeOut, setFadeOut] = useState(false);
 
     useEffect(() => {
-        // Wait 2 seconds then trigger fade out
         const timer = setTimeout(() => {
             setFadeOut(true);
-            // Give time for fade out animation before unmounting
             setTimeout(() => {
                 if (onComplete) onComplete();
-            }, 500);
-        }, 3000);
+            }, 400);
+        }, 1500);
 
         return () => clearTimeout(timer);
     }, [onComplete]);
@@ -29,35 +24,38 @@ const LoadingPage = ({ onComplete }) => {
                 height: '100vh',
                 background: '#050505',
                 zIndex: 9999,
-                transition: 'opacity 0.5s ease-out',
                 opacity: fadeOut ? 0 : 1,
-                pointerEvents: fadeOut ? 'none' : 'auto'
+                pointerEvents: fadeOut ? 'none' : 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '1.5rem',
+                transition: 'opacity 0.4s ease-out',
             }}
         >
-            <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} intensity={1} />
-                <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00ffff" />
-
-                {/* Center the planet by offsetting its internal Y position (0.7) */}
-                <group position={[0, -0.7, 0]}>
-                    <HolographicEarth isOpen={true} />
-                </group>
-
-                <Html center position={[0, -1.5, 0]}>
-                    <div style={{
-                        color: '#00ffff',
-                        fontFamily: "'Orbitron', sans-serif",
-                        letterSpacing: '0.2em',
-                        fontSize: '1.2rem',
-                        textAlign: 'center',
-                        textShadow: '0 0 15px rgba(0, 255, 255, 0.8)',
-                        whiteSpace: 'nowrap'
-                    }}>
-                        Loading Unilink...
-                    </div>
-                </Html>
-            </Canvas>
+            <div
+                style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    border: '3px solid rgba(88,166,255,0.2)',
+                    borderTopColor: '#58a6ff',
+                    animation: 'spin 0.8s linear infinite',
+                }}
+            />
+            <div
+                style={{
+                    color: '#58a6ff',
+                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: '0.15em',
+                    fontSize: '1rem',
+                    textAlign: 'center',
+                }}
+            >
+                Loading Uni-Link...
+            </div>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 };

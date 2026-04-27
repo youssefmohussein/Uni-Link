@@ -92,7 +92,7 @@ function EditProjectModal({ isOpen, onClose, project, userId, onSuccess }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
             <div className="bg-panel p-8 rounded-2xl shadow-2xl w-full max-w-2xl animate-fadeIn">
                 {/* Header */}
                 <h2 className="text-2xl font-semibold text-main mb-6 border-b border-muted pb-3">

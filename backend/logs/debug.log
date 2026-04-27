@@ -364,3 +364,7 @@
 [27-Apr-2026 20:49:45 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/student.png","normalized_uri":"uploads\\defaults\\student.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\student.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
 [27-Apr-2026 20:49:45 Europe/Berlin] Static file request - URI: /uploads/defaults/professor.png, Normalized: uploads\defaults\professor.png, Path: F:\GG store\Uni-Link\backend\uploads\defaults\professor.png, Exists: no, IsFile: no
 [27-Apr-2026 20:49:45 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/defaults\/professor.png","normalized_uri":"uploads\\defaults\\professor.png","file_path":"F:\\GG store\\Uni-Link\\backend\\uploads\\defaults\\professor.png","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":false}
+[27-Apr-2026 22:24:18 Europe/Berlin] Checking session, Session ID: d97o9juisj8bsor9v3vq80e570
+[27-Apr-2026 22:24:18 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 22:24:18 Europe/Berlin] getCurrentUser - User data: {"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}
+[27-Apr-2026 22:24:18 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}

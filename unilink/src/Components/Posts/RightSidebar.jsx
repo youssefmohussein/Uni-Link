@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
 const RightSidebar = ({ currentFilter, onFilterChange }) => {
   const [categoryCounts, setCategoryCounts] = useState({
@@ -11,7 +10,6 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    // Fetch category counts from the backend
     const fetchCategoryCounts = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/posts/category-counts', {
@@ -37,7 +35,6 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
     };
 
     fetchCategoryCounts();
-    // Refresh counts every 30 seconds
     const interval = setInterval(fetchCategoryCounts, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -51,17 +48,7 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
 
   return (
     <aside className="w-60 xl:w-72 hidden md:block ml-4 flex-shrink-0">
-
-      {/* Categories */}
-      <GlassSurface
-        width="100%"
-        height="auto"
-        borderRadius={20}
-        opacity={0.5}
-        blur={10}
-        borderWidth={0.05}
-        className="mb-6 !items-start !justify-start"
-      >
+      <div className="mb-6 bg-[rgba(0,0,0,0.3)] border border-white/10 rounded-2xl p-4">
         <div className="w-full relative z-10">
           <h3 className="font-bold text-white mb-4 border-b border-white/10 pb-2">Post Categories</h3>
           <nav className="space-y-3">
@@ -100,7 +87,7 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
             </div>
           </nav>
         </div>
-      </GlassSurface>
+      </div>
     </aside>
   );
 };

@@ -3,7 +3,6 @@ import Sidebar from "../../Components/Admin_Components/Sidebar";
 import ProfessorTable from "../../Components/Admin_Components/ProfessorTable";
 import ProfessorForm from "../../Components/Admin_Components/ProfessorForm";
 import ConfirmationModal from "../../Components/Common/ConfirmationModal";
-import { motion } from "framer-motion";
 import * as professorHandler from "../../../api/professorHandler";
 import * as userHandler from "../../../api/userHandler"; // for faculties + majors
 
@@ -94,10 +93,10 @@ export default function AdminProfessorPage() {
     <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      <div
+       
+       
+       
         className="flex-1 p-8"
       >
         <h1 className="text-2xl font-bold mb-6">Manage Professors</h1>
@@ -136,7 +135,7 @@ export default function AdminProfessorPage() {
           message="Are you sure you want to delete this professor? This action cannot be undone."
           confirmText="Delete Professor"
         />
-      </motion.div>
+      </div>
     </div>
   );
 }

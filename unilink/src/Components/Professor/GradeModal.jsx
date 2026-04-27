@@ -28,7 +28,7 @@ const GradeModal = ({ project, onClose, onSubmit }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60  flex items-center justify-center z-50 p-4">
             <div className="bg-[#1a1a1a] rounded-2xl border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="p-6 border-b border-white/10">

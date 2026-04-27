@@ -6,8 +6,6 @@ import LeftSidebar from "../../Components/Posts/LeftSidebar";
 import RightSidebar from "../../Components/Posts/RightSidebar";
 import PostCard from "../../Components/Posts/PostCard";
 import PostForm from "../../Components/Posts/PostForm";
-import Galaxy from "../../Animations/Galaxy/Galaxy";
-import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
 
 const PostPage = () => {
@@ -323,36 +321,9 @@ const PostPage = () => {
   if (!user) return null; // Prevent rendering while redirecting
 
   return (
-    <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
-      {/* 🌌 Starry Night Sky Background */}
-      {/* Black background for galaxy */}
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          background: '#000000',
-        }}
-      />
-
-      {/* Animated stars overlay - Subtle twinkling on top of the image */}
-      <div className="fixed inset-0 z-0 mix-blend-screen opacity-60">
-        <Galaxy
-          transparent={true}
-          hueShift={0}             // Keep stars white/natural to blend with image
-          density={0.8}            // Low density, just adding accents
-          glowIntensity={0.3}      // Very low glow to avoid "huge shine"
-          saturation={0.0}         // White stars
-          speed={0.05}             // Very slow movement
-          mouseRepulsion={true}
-          repulsionStrength={0.5}
-          twinkleIntensity={1.0}   // High twinkle for effect
-          disableAnimation={false}
-          rotationSpeed={0.005}    // Almost static rotation
-          starSpeed={0.2}
-        />
-      </div>
-
+    <div className="flex flex-col min-h-screen bg-[#000000] text-main font-main relative overflow-hidden">
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative flex flex-col min-h-screen">
         {/* 🌟 Header */}
         <Header
           logoSize="large"
@@ -406,7 +377,7 @@ const PostPage = () => {
                 <p className="mt-4 text-muted">Loading posts...</p>
               </div>
             ) : error ? (
-              <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+              <div className="bg-white/5 rounded-custom p-6 text-center border border-white/10">
                 <p className="text-red-500 mb-4">{error}</p>
                 <button
                   onClick={fetchPosts}
@@ -416,7 +387,7 @@ const PostPage = () => {
                 </button>
               </div>
             ) : filteredPosts.length === 0 && (!searchQuery || displayUsers.length === 0) ? (
-              <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20" style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+              <div className="bg-white/5 rounded-custom p-6 text-center border border-white/10">
                 <p className="text-muted">
                   {searchQuery
                     ? `No posts or people found matching "${searchQuery}".`
@@ -445,8 +416,8 @@ const PostPage = () => {
       {/* 📝 Post Creation Modal */}
       {
         isPostModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="w-full max-w-2xl relative animate-scale-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+            <div className="w-full max-w-2xl relative">
               <button
                 onClick={closePostModal}
                 className="absolute -top-10 right-0 text-white hover:text-accent transition-colors"

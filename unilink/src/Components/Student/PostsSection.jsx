@@ -61,8 +61,7 @@ function PostsSection({ posts, onRefresh, userId }) {
   };
 
   return (
-    <section className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg"
-      style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+    <section className="rounded-xl border border-white/10 bg-white/5 p-6">
       <h2 className="text-lg font-semibold text-white mb-5">📝 Recent Posts</h2>
 
       {posts.length === 0 ? (

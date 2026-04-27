@@ -3,7 +3,6 @@ import Sidebar from "../../Components/Admin_Components/Sidebar";
 import StudentsTable from "../../Components/Admin_Components/StudentsTable";
 import StudentForm from "../../Components/Admin_Components/StudentForm";
 import ConfirmationModal from "../../Components/Common/ConfirmationModal";
-import { motion } from "framer-motion";
 import * as studentHandler from "../../../api/studentHandler";
 
 export default function AdminStudentsPage() {
@@ -85,10 +84,10 @@ export default function AdminStudentsPage() {
     <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      <div
+       
+       
+       
         className="flex-1 p-8"
       >
         <h1 className="text-2xl font-bold mb-6">Manage Students</h1>
@@ -128,7 +127,7 @@ export default function AdminStudentsPage() {
           message="Are you sure you want to delete this student? This action cannot be undone."
           confirmText="Delete Student"
         />
-      </motion.div>
+      </div>
     </div>
   );
 }

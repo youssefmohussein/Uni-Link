@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import AdminTable from "../../Components/Admin_Components/AdminTable";
-import { motion } from "framer-motion";
 import * as adminHandler from "../../../api/adminHandler";
 
 export default function AdminAdminPage() {
@@ -46,10 +45,10 @@ export default function AdminAdminPage() {
     <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      <div
+       
+       
+       
         className="flex-1 p-8"
       >
         <div className="flex justify-between items-center mb-6">
@@ -70,7 +69,7 @@ export default function AdminAdminPage() {
             onUpdateStatus={handleUpdateStatus}
           />
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

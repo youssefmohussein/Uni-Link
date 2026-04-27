@@ -130,7 +130,7 @@ const CreateRoomModal = ({ onClose, onCreated, userId }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80  flex items-center justify-center z-50 p-4">
             <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold text-white mb-4">Create Project</h2>
                 {error && <div className="bg-red-500/20 text-red-200 p-3 rounded mb-4 text-sm">{error}</div>}
@@ -617,7 +617,7 @@ const ProjectRoomsPage = () => {
                                                     )}
                                                     <button
                                                         onClick={() => handleJoinRequest(room)}
-                                                        className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm cursor-pointer"
+                                                        className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold  cursor-pointer"
                                                     >
                                                         Enter
                                                     </button>
@@ -682,7 +682,7 @@ const ProjectRoomsPage = () => {
                                                 </div>
                                                 <button
                                                     onClick={() => handleJoinRequest(room)}
-                                                    className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold backdrop-blur-sm cursor-pointer"
+                                                    className="px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black text-white rounded-lg transition text-xs font-semibold  cursor-pointer"
                                                 >
                                                     Join
                                                 </button>

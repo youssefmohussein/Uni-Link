@@ -122,8 +122,7 @@ export default function SkillsSection({ userId }) {
   };
 
   return (
-    <section className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg"
-      style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+    <section className="rounded-xl border border-white/10 bg-white/5 p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-white">💻 Skills</h2>
         <button

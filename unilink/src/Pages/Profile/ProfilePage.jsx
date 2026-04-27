@@ -7,7 +7,7 @@ import SkillsSection from "../../Components/Student/SkillsSection.jsx";
 import ProfileHeader from "../../Components/Student/ProfileHeader.jsx";
 import CVSection from "../../Components/Student/CvSection.jsx";
 import PostsSection from "../../Components/Student/PostsSection.jsx";
-import Galaxy from "../../Animations/Galaxy/Galaxy";
+
 import * as profileHandler from "../../../api/profileHandler";
 import * as studentHandler from "../../../api/studentHandler";
 
@@ -174,36 +174,15 @@ function ProfilePageUser() {
 
 
   return (
-    <div className="flex flex-col min-h-screen bg-main text-main font-main transition-theme relative overflow-hidden">
-      {/* 🌌 Starry Night Sky Background */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-black via-black to-black">
-        {/* Galaxy animation provides the starry effect */}
-      </div>
-
-      {/* Animated stars overlay - Static purple/blue galaxy like About Us */}
-      <div className="fixed inset-0 z-0 mix-blend-screen opacity-60">
-        <Galaxy
-          transparent={true}
-          hueShift={260}
-          density={1.5}
-          glowIntensity={0.1}
-          saturation={0.6}
-          speed={0.15}
-          mouseRepulsion={false}
-          disableAnimation={false}
-        />
-      </div>
-
-
-      {/* Content Layer */}
-      <div className="relative z-10 max-w-7xl mx-auto p-6 w-full">
+    <div className="flex flex-col min-h-screen bg-black text-main font-main relative">
+      <div className="max-w-7xl mx-auto p-6 w-full">
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
             <p className="mt-4 text-muted">Loading profile...</p>
           </div>
         ) : error ? (
-          <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 text-center border border-white/20">
+          <div className="bg-white/5 rounded-custom p-6 text-center border border-white/10">
             <p className="text-red-500 mb-4">{error}</p>
             <button
               onClick={() => fetchProfileData(currentUserId)}
@@ -236,7 +215,7 @@ function ProfilePageUser() {
               {/* Projects & Posts */}
               <section className="lg:col-span-2 space-y-8">
                 {/* Projects */}
-                <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 border border-white/20">
+                <div className="bg-white/5 rounded-custom p-6 border border-white/10">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold text-white">🚀 Projects</h2>
                     <button

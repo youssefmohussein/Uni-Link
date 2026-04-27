@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Card from "./Card";
 
 export default function MajorFormModal({
@@ -56,19 +55,19 @@ export default function MajorFormModal({
   };
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70  p-4"
+         
+         
+         
         >
-          <motion.div
+          <div
             className="w-full max-w-2xl"
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+           
+           
+           
           >
             <Card>
               <h3
@@ -140,9 +139,9 @@ export default function MajorFormModal({
                 </div>
               </form>
             </Card>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

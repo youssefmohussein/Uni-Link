@@ -1,13 +1,12 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 export default function AnimatedUserRow({ u, setEditingUser, handleDeleteUser, index }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
+    <div
+     
+     
+     
       className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-white/10 items-center text-sm text-white/70 hover:bg-white/5"
     >
       <div className="col-span-3 truncate">{u.username}</div>
@@ -47,6 +46,6 @@ export default function AnimatedUserRow({ u, setEditingUser, handleDeleteUser, i
         </button>
 
       </div>
-    </motion.div>
+    </div>
   );
 }

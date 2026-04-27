@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import * as postHandler from "../../../api/postHandler";
-import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
-
 const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBadge }) => {
   const [post, setPost] = useState(initialPost);
   const [showComments, setShowComments] = useState(false);
@@ -167,15 +165,7 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
   };
 
   return (
-    <GlassSurface
-      width="100%"
-      height="auto"
-      borderRadius={20}
-      opacity={0.5}
-      blur={10}
-      borderWidth={0.05}
-      className="mb-6 !items-start !justify-start"
-    >
+    <div className="mb-6 bg-[rgba(0,0,0,0.3)] border border-white/10 rounded-2xl p-6">
       <div className="w-full relative z-10">
         {/* 👤 Post Header */}
         <div className="flex items-center justify-between mb-5">
@@ -432,7 +422,7 @@ const PostCard = ({ initialPost, onRefresh, currentUserId, onUnsave, showSavedBa
           </div>
         )}
       </div>
-    </GlassSurface>
+    </div>
   );
 };
 

@@ -57,7 +57,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="fixed top-0 left-0 w-full z-40 px-8 py-4 flex justify-between items-center border-b border-white/10 bg-white/5 backdrop-blur-md shadow-lg">
+        <nav className="fixed top-0 left-0 w-full z-40 px-8 py-4 flex justify-between items-center border-b border-white/10 bg-black/90 shadow-lg">
             {/* Left: Logo */}
             <div className="flex items-center">
                 <a href="/"><img src={logo} alt="Uni-Link Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" /></a>
@@ -125,7 +125,7 @@ const Navbar = () => {
                         </div>
                     </div>
                 ) : (
-                    <button className="px-6 py-2 rounded-full text-white font-semibold border border-white/20 hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
+                    <button className="px-6 py-2 rounded-full text-white font-semibold border border-white/20 hover:bg-white/10 transition-colors">
                         <a href="/login">Log in</a>
                     </button>
                 )}

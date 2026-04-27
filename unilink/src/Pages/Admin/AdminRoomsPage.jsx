@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/Admin_Components/Sidebar";
 import * as projectRoomHandler from "../../../api/projectRoomHandler";
-import { motion, AnimatePresence } from "framer-motion";
 import { FiEdit2, FiTrash2, FiRefreshCw, FiPlus, FiSearch } from "react-icons/fi";
 import Card from "../../Components/Admin_Components/Card";
 import ConfirmationModal from "../../Components/Common/ConfirmationModal";
@@ -28,10 +27,10 @@ const RoomForm = ({ isOpen, onClose, onSubmit, initialData }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
+        <div className="fixed inset-0 bg-black/80  flex items-center justify-center z-50 p-4">
+            <div
+               
+               
                 className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
             >
                 <h2 className="text-2xl font-bold text-white mb-4">
@@ -65,7 +64,7 @@ const RoomForm = ({ isOpen, onClose, onSubmit, initialData }) => {
                         </button>
                     </div>
                 </form>
-            </motion.div>
+            </div>
         </div>
     );
 };
@@ -136,9 +135,9 @@ const AdminRoomsPage = () => {
     return (
         <div className="flex bg-bg min-h-screen text-main font-main">
             <Sidebar />
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+            <div
+               
+               
                 className="flex-1 p-6 overflow-y-auto"
             >
                 <div className="flex justify-between items-center mb-6">
@@ -195,13 +194,13 @@ const AdminRoomsPage = () => {
                         {loading ? (
                             <div className="text-center py-8 text-white/50">Loading...</div>
                         ) : (
-                            <AnimatePresence>
+                            <>
                                 {filteredRooms.map(room => (
-                                    <motion.div
+                                    <div
                                         key={room.room_id}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
+                                       
+                                       
+                                       
                                         className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-white/10 items-center hover:bg-white/5 transition text-sm text-white/80"
                                     >
                                         <div className="col-span-1">#{room.room_id}</div>
@@ -224,9 +223,9 @@ const AdminRoomsPage = () => {
                                                 <FiTrash2 size={16} />
                                             </button>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 ))}
-                            </AnimatePresence>
+                            </>
                         )}
                         {!loading && filteredRooms.length === 0 && (
                             <div className="text-center py-10 text-white/50">
@@ -235,7 +234,7 @@ const AdminRoomsPage = () => {
                         )}
                     </div>
                 </Card>
-            </motion.div>
+            </div>
 
             {/* Reusable Form Modal */}
             <RoomForm

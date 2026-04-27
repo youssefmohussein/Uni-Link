@@ -308,7 +308,7 @@ const ProjectChatPage = () => {
                 {/* Main Chat Content */}
                 <div className={`flex flex-col h-full transition-all duration-300 ${showInfo ? 'w-full lg:w-2/3' : 'w-full'}`}>
                     {/* Chat Header */}
-                    <div className="flex items-center justify-between py-4 border-b border-white/10 mb-4 bg-main/50 backdrop-blur-sm sticky top-0 z-10">
+                    <div className="flex items-center justify-between py-4 border-b border-white/10 mb-4 bg-main/50  sticky top-0 z-10">
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => navigate('/project-rooms')}

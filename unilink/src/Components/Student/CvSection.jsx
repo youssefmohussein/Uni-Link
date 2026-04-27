@@ -115,8 +115,7 @@ function CVSection({ userId }) {
   };
 
   return (
-    <section className="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-custom shadow-2xl p-6 relative overflow-hidden border border-white/20"
-      style={{ backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
+    <section className="rounded-custom border border-white/10 bg-white/5 p-6 relative overflow-hidden">
       <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2">
         📄 CV Documents
       </h2>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
 
 const LeftSidebar = ({ currentFilter, onFilterChange }) => {
   const navigate = useNavigate();
@@ -10,16 +9,13 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
   });
 
   useEffect(() => {
-    // Fetch dynamic counts from the backend
     const fetchCounts = async () => {
       try {
-        // Fetch project rooms count
         const roomsResponse = await fetch('http://localhost:8000/api/chat/rooms/total-count', {
           credentials: 'include'
         });
         const roomsData = await roomsResponse.json();
 
-        // Fetch questions count from category counts
         const categoriesResponse = await fetch('http://localhost:8000/api/posts/category-counts', {
           credentials: 'include'
         });
@@ -41,12 +37,10 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     };
 
     fetchCounts();
-    // Refresh counts every 30 seconds
     const interval = setInterval(fetchCounts, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  /* 🌈 Navigation Items */
   const navItems = [
     { label: "Home", icon: "fas fa-home", category: "all", count: null },
     { label: "Trending Posts", icon: "fas fa-fire", category: "trending", count: null },
@@ -61,23 +55,13 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     },
   ];
 
-  /* 🏆 Leaderboard Modal State */
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   return (
     <>
       <aside className="w-56 xl:w-64 hidden lg:block mr-3 xl:mr-4 flex-shrink-0">
-        {/* 📁 Navigation */}
-        <GlassSurface
-          width="100%"
-          height="auto"
-          borderRadius={20}
-          opacity={0.5}
-          blur={10}
-          borderWidth={0.05}
-          className="mb-6 !items-start !justify-start"
-        >
-          <nav className="space-y-1 w-full relative z-10">
+        <div className="mb-6 bg-[rgba(0,0,0,0.3)] border border-white/10 rounded-2xl p-4">
+          <nav className="space-y-1 w-full">
             {navItems.map((item) => (
               <button
                 key={item.category}
@@ -90,8 +74,8 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
                     onFilterChange(item.category);
                   }
                 }}
-                className={`flex items-center space-x-3 p-3 rounded-lg w-full text-left transition-all duration-300 ${currentFilter === item.category && !item.action && !item.isRoute
-                  ? "font-semibold text-accent bg-accent/20 hover:bg-accent/30 shadow-md"
+                className={`flex items-center space-x-3 p-3 rounded-lg w-full text-left transition-colors ${currentFilter === item.category && !item.action && !item.isRoute
+                  ? "font-semibold text-accent bg-accent/20 hover:bg-accent/30"
                   : "font-medium text-main hover:bg-white/10 hover:text-accent"
                   }`}
               >
@@ -108,10 +92,9 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
               </button>
             ))}
           </nav>
-        </GlassSurface>
+        </div>
       </aside>
 
-      {/* 🏆 Leaderboard Modal */}
       {showLeaderboard && (
         <React.Suspense fallback={null}>
           <LeaderboardModal isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
@@ -120,7 +103,7 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     </>
   );
 };
-// Lazy load to prevent circular dependencies if any
+
 const LeaderboardModal = React.lazy(() => import('../Leaderboard/LeaderboardModal'));
 
 export default LeftSidebar;

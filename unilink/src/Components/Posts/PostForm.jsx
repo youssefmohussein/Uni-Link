@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import GlassSurface from "../Login_Components/LiquidGlass/GlassSurface";
-
 const PostForm = ({
   postFormRef,
   newPostContent,
@@ -43,15 +41,7 @@ const PostForm = ({
 
   return (
     <div ref={postFormRef} className="mb-6">
-      <GlassSurface
-        width="100%"
-        height="auto"
-        borderRadius={20}
-        opacity={0.5}
-        blur={10}
-        borderWidth={0.05}
-        className="!items-start !justify-start"
-      >
+      <div className="bg-[rgba(0,0,0,0.3)] border border-white/10 rounded-2xl p-6">
         <div className="w-full relative z-10">
           {/* 🧑‍🎓 User input area */}
           <div className="flex items-start space-x-4">
@@ -151,7 +141,7 @@ const PostForm = ({
             </button>
           </div>
         </div>
-      </GlassSurface>
+      </div>
     </div>
   );
 };

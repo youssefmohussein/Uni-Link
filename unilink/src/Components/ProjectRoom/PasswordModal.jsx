@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const PasswordModal = ({ room, isOpen, onClose, onConfirm }) => {
     const [password, setPassword] = useState("");
@@ -23,12 +22,12 @@ const PasswordModal = ({ room, isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
 
     return (
-        <AnimatePresence>
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-                <motion.div
-                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        <>
+            <div className="fixed inset-0 bg-black/80  flex items-center justify-center z-[100] p-4">
+                <div
+                   
+                   
+                   
                     className="bg-[#1a1a1a] border border-white/10 rounded-3xl p-8 w-full max-w-md shadow-2xl relative overflow-hidden"
                 >
                     {/* Background Glow */}
@@ -58,14 +57,14 @@ const PasswordModal = ({ room, isOpen, onClose, onConfirm }) => {
                                     required
                                 />
                                 {error && (
-                                    <motion.p
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
+                                    <p
+                                       
+                                       
                                         className="text-red-500 text-xs mt-2 ml-1"
                                     >
                                         <i className="fa-solid fa-circle-exclamation mr-1"></i>
                                         {error}
-                                    </motion.p>
+                                    </p>
                                 )}
                             </div>
 
@@ -94,9 +93,9 @@ const PasswordModal = ({ room, isOpen, onClose, onConfirm }) => {
                             </div>
                         </form>
                     </div>
-                </motion.div>
+                </div>
             </div>
-        </AnimatePresence>
+        </>
     );
 };
 

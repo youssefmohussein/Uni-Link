@@ -104,7 +104,7 @@ const ProfessorPage = () => {
 
             <div className="container mx-auto pt-24 px-4 md:px-8 max-w-7xl">
                 {/* Profile Header */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-custom p-8 mb-8 border border-white/10 flex flex-col md:flex-row items-center gap-8">
+                <div className="bg-white/5 rounded-custom p-8 mb-8 border border-white/10 flex flex-col md:flex-row items-center gap-8">
                     <img
                         src={professor.profile_image || `https://ui-avatars.com/api/?name=${professor.username}`}
                         alt={professor.username}

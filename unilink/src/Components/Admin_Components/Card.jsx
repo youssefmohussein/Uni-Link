@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 /**
  * Card Component
@@ -11,14 +10,11 @@ import { motion } from "framer-motion";
  */
 export default function Card({ title, children, className = "" }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      whileHover={{
-        y: -4,
-        boxShadow: "0 12px 25px rgba(0, 0, 0, 0.35)",
-      }}
+    <div
+     
+     
+     
+     
       className={`
         bg-panel 
         text-main 
@@ -46,6 +42,6 @@ export default function Card({ title, children, className = "" }) {
       )}
 
       <div className="text-main">{children}</div>
-    </motion.div>
+    </div>
   );
 }

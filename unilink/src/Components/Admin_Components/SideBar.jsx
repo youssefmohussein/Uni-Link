@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen, FiGlobe, FiLogOut } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -17,18 +16,6 @@ export default function Sidebar() {
     { label: "University", icon: <FiGlobe />, path: "/admin/university" }
   ];
 
-  // Sidebar expand/collapse animation
-  const sidebarVariants = {
-    open: { width: 250, transition: { type: "spring", stiffness: 220, damping: 20 } },
-    closed: { width: 70, transition: { type: "spring", stiffness: 220, damping: 20 } },
-  };
-
-  // Menu item hover & tap animation
-  const itemVariants = {
-    hover: { scale: 1.05, backgroundColor: "rgba(128,0,255,0.15)" },
-    tap: { scale: 0.95 },
-  };
-
   const handleLogout = async () => {
     try {
       await fetch('http://localhost:8000/logout', {
@@ -43,24 +30,20 @@ export default function Sidebar() {
   };
 
   return (
-    <motion.aside
-      animate={open ? "open" : "closed"}
-      variants={sidebarVariants}
-      className="h-screen flex flex-col border-r border-white/10 shadow-xl"
+    <aside
+      className={`h-screen flex flex-col border-r border-white/10 shadow-xl transition-all duration-300 ${open ? 'w-[250px]' : 'w-[70px]'}`}
       style={{ backgroundColor: "var(--panel)" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b relative" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+      <div className="flex items-center justify-between px-4 py-4 border-b relative h-16" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
         {open ? (
           <>
-            <motion.h1
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+            <h1
               className="font-bold text-lg text-accent whitespace-nowrap"
               style={{ color: "var(--accent)" }}
             >
               Admin
-            </motion.h1>
+            </h1>
             <button
               onClick={() => setOpen(!open)}
               className="p-2 rounded-full hover:bg-white/10 transition-all duration-300"
@@ -70,26 +53,19 @@ export default function Sidebar() {
             </button>
           </>
         ) : (
-          <div className="flex flex-col justify-center ml-3 gap-1 cursor-pointer" onClick={() => setOpen(true)}>
-            {[0, 1, 2].map((i) => (
-              <motion.span
-                key={i}
-                className="block w-5 h-0.5 rounded-full bg-accent"
-                animate={{ x: [0, 2, 0], opacity: [0.6, 1, 0.6] }}
-                transition={{ repeat: Infinity, duration: 0.8 + i * 0.1, ease: "easeInOut" }}
-              />
-            ))}
+          <div className="flex flex-col justify-center ml-3 gap-1 cursor-pointer w-full h-full items-center" onClick={() => setOpen(true)}>
+            <FiMenu size={22} style={{ color: "var(--accent)" }} />
           </div>
         )}
       </div>
 
       {/* Menu Items */}
-      <nav className="flex-1 px-2 py-6 space-y-2 relative">
+      <nav className="flex-1 px-2 py-6 space-y-2 relative overflow-y-auto overflow-x-hidden">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
 
           return (
-            <motion.div key={item.label} variants={itemVariants} whileHover="hover" whileTap="tap" className="relative">
+            <div key={item.label} className="relative transition-all duration-200 hover:scale-[1.02]">
               <Link
                 to={item.path}
                 className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all"
@@ -98,33 +74,23 @@ export default function Sidebar() {
                   color: isActive ? "var(--accent)" : "var(--muted)",
                 }}
               >
-                <motion.div
-                  animate={isActive ? { rotate: [0, 15, -15, 0] } : { rotate: 0 }}
-                  transition={{ repeat: isActive ? Infinity : 0, duration: 1.2 }}
+                <div
                   className="text-xl"
                   style={{ color: isActive ? "var(--accent)" : "var(--muted)" }}
                 >
                   {item.icon}
-                </motion.div>
+                </div>
 
-                <AnimatePresence>
-                  {open && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="font-medium"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                {open && (
+                  <span className="font-medium whitespace-nowrap">
+                    {item.label}
+                  </span>
+                )}
               </Link>
 
               {/* Glowing Active Indicator */}
               {isActive && open && (
-                <motion.span
-                  layoutId="active-indicator"
+                <span
                   className="absolute left-0 top-0 h-full w-1 rounded-r-full"
                   style={{
                     background: "var(--accent-gradient)",
@@ -132,7 +98,7 @@ export default function Sidebar() {
                   }}
                 />
               )}
-            </motion.div>
+            </div>
           );
         })}
       </nav>
@@ -140,49 +106,33 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="px-4 py-3 border-t space-y-3" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
         {/* Logout Button */}
-        <motion.button
+        <button
           onClick={handleLogout}
-          variants={itemVariants}
-          whileHover="hover"
-          whileTap="tap"
-          className="w-full flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all"
+          className="w-full flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all hover:scale-[1.02]"
           style={{
             backgroundColor: "transparent",
             color: "var(--muted)",
           }}
         >
-          <motion.div className="text-xl">
+          <div className="text-xl">
             <FiLogOut />
-          </motion.div>
-          <AnimatePresence>
-            {open && (
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="font-medium"
-              >
-                Logout
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          </div>
+          {open && (
+            <span className="font-medium whitespace-nowrap">
+              Logout
+            </span>
+          )}
+        </button>
 
         {/* Copyright */}
-        <div className="text-xs text-muted" style={{ color: "var(--muted)" }}>
-          <AnimatePresence>
-            {open ? (
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                © 2025 Admin Panel
-              </motion.span>
-            ) : (
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                ©
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <div className="text-xs text-muted text-center" style={{ color: "var(--muted)" }}>
+          {open ? (
+            <span>© 2025 Admin Panel</span>
+          ) : (
+            <span>©</span>
+          )}
         </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

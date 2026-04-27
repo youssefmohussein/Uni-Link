@@ -4,7 +4,6 @@ import Sidebar from "../../Components/Admin_Components/Sidebar";
 import UsersTable from "../../Components/Admin_Components/UsersTable";
 import UserForm from "../../Components/Admin_Components/UserForm";
 import ConfirmationModal from "../../Components/Common/ConfirmationModal";
-import { motion } from "framer-motion";
 import * as userHandler from "../../../api/userHandler";
 
 export default function AdminUsersPage() {
@@ -99,10 +98,10 @@ export default function AdminUsersPage() {
     <div className="flex bg-dark min-h-screen text-white">
       <Sidebar />
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      <div
+       
+       
+       
         className="flex-1 p-8"
       >
         <div className="flex justify-between items-center mb-6">
@@ -152,7 +151,7 @@ export default function AdminUsersPage() {
           message="Are you sure you want to delete this user? This action cannot be undone."
           confirmText="Delete User"
         />
-      </motion.div>
+      </div>
     </div>
   );
 }

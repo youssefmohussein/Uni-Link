@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PostCard from "../../Components/Posts/PostCard";
 import Header from "../../Components/Posts/Header";
-import Galaxy from "../../Animations/Galaxy/Galaxy";
-import starryNightBg from "../../assets/starry_night_user.jpg";
 import * as postHandler from "../../../api/postHandler";
 import authHandler from "../../handlers/authHandler";
 
@@ -102,22 +100,7 @@ const CollectionsPage = () => {
     };
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-[#0d1117]">
-            {/* 🌌 Animated Background */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <Galaxy />
-                <div
-                    className="absolute inset-0 opacity-5"
-                    style={{
-                        backgroundImage: `url(${starryNightBg})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                    }}
-                />
-            </div>
-
-            {/* Main Content */}
-            <div className="relative z-10">
+        <div className="min-h-screen relative bg-black">
                 <Header
                     searchQuery=""
                     onSearchChange={() => { }}
@@ -214,7 +197,6 @@ const CollectionsPage = () => {
                         </div>
                     )}
                 </main>
-            </div>
         </div>
     );
 };

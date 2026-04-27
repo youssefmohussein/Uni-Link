@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import GlassSurface from '../Login_Components/LiquidGlass/GlassSurface';
-
 const LeaderboardModal = ({ isOpen, onClose }) => {
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -56,17 +54,9 @@ const LeaderboardModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60  animate-fade-in" onClick={onClose}>
             <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
-                <GlassSurface
-                    width="100%"
-                    height="auto"
-                    borderRadius={24}
-                    opacity={0.95}
-                    blur={12}
-                    borderWidth={0.05}
-                    className="bg-[#0d1117] p-6 md:p-8 shadow-2xl relative"
-                >
+                <div className="bg-[#0d1117] p-6 md:p-8 shadow-2xl relative border border-white/10 rounded-3xl">
                     {/* Close Button */}
                     <button
                         onClick={onClose}
@@ -172,7 +162,7 @@ const LeaderboardModal = ({ isOpen, onClose }) => {
                             </div>
                         )}
                     </div>
-                </GlassSurface>
+                </div>
             </div>
         </div>
     );

@@ -1,7 +1,5 @@
 // src/Components/Admin_Components/StatsCard.jsx
 import React from "react";
-import { motion } from "framer-motion";
-import CountUp from "react-countup";
 import { Line } from "react-chartjs-2";
 
 import { useNavigate } from "react-router-dom";
@@ -10,16 +8,16 @@ export default function StatsCard({ label, value, icon: Icon, color, sparklineDa
   const navigate = useNavigate();
 
   return (
-    <motion.div
+    <div
       className={`bg-panel rounded-custom p-5 border border-border shadow-md hover:shadow-xl transition-smooth ${path ? 'cursor-pointer' : ''}`}
-      whileHover={{ y: -5, scale: 1.02 }}
+     
       onClick={() => path && navigate(path)}
     >
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="text-muted text-sm">{label}</p>
           <h2 className="text-2xl font-bold">
-            <CountUp end={value} duration={1.5} separator="," />
+            {Number(value).toLocaleString()}
           </h2>
         </div>
         <Icon className={`text-3xl ${color.startsWith('admin-') ? '' : color}`} style={color.startsWith('admin-') ? { color: `var(--${color})` } : {}} />
@@ -37,6 +35,6 @@ export default function StatsCard({ label, value, icon: Icon, color, sparklineDa
           />
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
