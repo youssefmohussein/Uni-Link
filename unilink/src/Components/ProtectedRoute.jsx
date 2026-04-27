@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
         const checkAuth = async () => {
             try {
-                const response = await fetch('http://localhost/backend/check-session', {
+                const response = await fetch('http://localhost:8000/check-session', {
                     method: 'GET',
                     credentials: 'include'
                 });

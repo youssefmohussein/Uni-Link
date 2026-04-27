@@ -220,3 +220,83 @@
 [21-Dec-2025 16:33:00 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":27,"username":"addnew","email":"add@unilink.com","role":"Student"}}
 [22-Dec-2025 12:34:02 Europe/Berlin] Static file request - URI: /uploads/media/media_69483ad83a491.jpg, Normalized: uploads\media\media_69483ad83a491.jpg, Path: C:\Develope Tools\xamp\htdocs\backend\uploads\media\media_69483ad83a491.jpg, Exists: no, IsFile: no
 [22-Dec-2025 12:34:02 Europe/Berlin] Static file not found: {"request_uri":"\/uploads\/media\/media_69483ad83a491.jpg","normalized_uri":"uploads\\media\\media_69483ad83a491.jpg","file_path":"C:\\Develope Tools\\xamp\\htdocs\\backend\\uploads\\media\\media_69483ad83a491.jpg","file_exists":false,"is_file":false,"is_dir":false,"parent_dir_exists":true}
+[27-Apr-2026 19:34:25 Europe/Berlin] AuthService: Login attempt for identifier: 'admin'
+[27-Apr-2026 19:34:25 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin'
+[27-Apr-2026 19:34:25 Europe/Berlin] UserRepository: User found - ID: 1, Username: admin, Email: admin@unilink.com, Role: ADMIN
+[27-Apr-2026 19:34:25 Europe/Berlin] AuthService: User found, verifying password for user ID: 1
+[27-Apr-2026 19:34:25 Europe/Berlin] AuthService: Password verified successfully for user ID: 1
+[27-Apr-2026 19:34:25 Europe/Berlin] AuthService - User ID: 1, DB Role: 'ADMIN', Normalized Role: 'ADMIN'
+[27-Apr-2026 19:34:25 Europe/Berlin] AuthService - Model Role: 'Admin'
+[27-Apr-2026 19:34:25 Europe/Berlin] Session created for user: 1, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:34:25 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:34:25 Europe/Berlin] Login redirect - User ID: 1, Role: 'Admin', Uppercase: 'ADMIN', Redirect: '/admin/dashboard'
+[27-Apr-2026 19:34:26 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:34:26 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:34:26 Europe/Berlin] getCurrentUser - User data: {"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}
+[27-Apr-2026 19:34:26 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:34:29 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:34:29 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:34:29 Europe/Berlin] getCurrentUser - User data: {"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}
+[27-Apr-2026 19:34:29 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:36:38 Europe/Berlin] AuthService: Login attempt for identifier: 'professor'
+[27-Apr-2026 19:36:38 Europe/Berlin] UserRepository: Searching for user with identifier: 'professor'
+[27-Apr-2026 19:36:38 Europe/Berlin] UserRepository: User found - ID: 3, Username: professor, Email: prof@unilink.com, Role: PROFESSOR
+[27-Apr-2026 19:36:38 Europe/Berlin] AuthService: User found, verifying password for user ID: 3
+[27-Apr-2026 19:36:38 Europe/Berlin] AuthService: Password verified successfully for user ID: 3
+[27-Apr-2026 19:36:38 Europe/Berlin] AuthService - User ID: 3, DB Role: 'PROFESSOR', Normalized Role: 'PROFESSOR'
+[27-Apr-2026 19:36:38 Europe/Berlin] AuthService - Model Role: 'Professor'
+[27-Apr-2026 19:36:38 Europe/Berlin] Session created for user: 3, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:36:38 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:36:38 Europe/Berlin] Login redirect - User ID: 3, Role: 'Professor', Uppercase: 'PROFESSOR', Redirect: '/professor'
+[27-Apr-2026 19:36:39 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:36:39 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:36:39 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:36:39 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:37:55 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:37:55 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:37:55 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:37:55 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:38:07 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:38:07 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:38:07 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:38:07 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:38:37 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:38:37 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:38:37 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:38:37 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:49:54 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:49:54 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:49:54 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:49:54 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:50:12 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:50:12 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:50:12 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:50:12 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:50:35 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:50:35 Europe/Berlin] Session data: {"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:50:35 Europe/Berlin] getCurrentUser - User data: {"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}
+[27-Apr-2026 19:50:35 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":3,"username":"professor","email":"prof@unilink.com","role":"Professor","profile_image":null}}
+[27-Apr-2026 19:50:51 Europe/Berlin] AuthService: Login attempt for identifier: 'admin'
+[27-Apr-2026 19:50:51 Europe/Berlin] UserRepository: Searching for user with identifier: 'admin'
+[27-Apr-2026 19:50:51 Europe/Berlin] UserRepository: User found - ID: 1, Username: admin, Email: admin@unilink.com, Role: ADMIN
+[27-Apr-2026 19:50:51 Europe/Berlin] AuthService: User found, verifying password for user ID: 1
+[27-Apr-2026 19:50:51 Europe/Berlin] AuthService: Password verified successfully for user ID: 1
+[27-Apr-2026 19:50:51 Europe/Berlin] AuthService - User ID: 1, DB Role: 'ADMIN', Normalized Role: 'ADMIN'
+[27-Apr-2026 19:50:51 Europe/Berlin] AuthService - Model Role: 'Admin'
+[27-Apr-2026 19:50:51 Europe/Berlin] Session created for user: 1, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:50:51 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:50:51 Europe/Berlin] Login redirect - User ID: 1, Role: 'Admin', Uppercase: 'ADMIN', Redirect: '/admin/dashboard'
+[27-Apr-2026 19:50:53 Europe/Berlin] Checking session, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:50:53 Europe/Berlin] Session data: {"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:50:53 Europe/Berlin] getCurrentUser - User data: {"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}
+[27-Apr-2026 19:50:53 Europe/Berlin] getCurrentUser - Response data: {"authenticated":true,"user":{"id":1,"username":"admin","email":"admin@unilink.com","role":"Admin","profile_image":null}}
+[27-Apr-2026 19:51:23 Europe/Berlin] AuthService: Login attempt for identifier: 'student'
+[27-Apr-2026 19:51:23 Europe/Berlin] UserRepository: Searching for user with identifier: 'student'
+[27-Apr-2026 19:51:23 Europe/Berlin] UserRepository: User found - ID: 2, Username: student, Email: student@unilink.com, Role: STUDENT
+[27-Apr-2026 19:51:23 Europe/Berlin] AuthService: User found, verifying password for user ID: 2
+[27-Apr-2026 19:51:23 Europe/Berlin] AuthService: Password verified successfully for user ID: 2
+[27-Apr-2026 19:51:23 Europe/Berlin] AuthService - User ID: 2, DB Role: 'STUDENT', Normalized Role: 'STUDENT'
+[27-Apr-2026 19:51:23 Europe/Berlin] AuthService - Model Role: 'Student'
+[27-Apr-2026 19:51:23 Europe/Berlin] Session created for user: 2, Session ID: i0uavc1p65hd8h8e3ntal0v986
+[27-Apr-2026 19:51:23 Europe/Berlin] Session data: {"user":{"id":2,"username":"student","email":"student@unilink.com","role":"Student","profile_image":null}}
+[27-Apr-2026 19:51:23 Europe/Berlin] Login redirect - User ID: 2, Role: 'Student', Uppercase: 'STUDENT', Redirect: '/posts'

@@ -52,7 +52,7 @@ class StudentRepository extends BaseRepository {
      */
     public function getWithUserInfo(int $userId): ?array {
         $sql = "
-            SELECT s.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.bio, 
+            SELECT s.*, u.username, u.email, u.profile_picture as profile_image, u.bio, 
                    f.name as faculty_name, m.name as major_name
             FROM students s
             JOIN users u ON s.user_id = u.user_id

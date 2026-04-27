@@ -29,7 +29,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         // All user data is in users table, no need to join with separate role tables
         $sql = "
             SELECT 
-                u.user_id, u.username, u.email, u.phone, u.profile_picture as profile_image,
+                u.user_id, u.username, u.email, u.profile_picture as profile_image,
                 u.bio, u.role, u.faculty_id, u.major_id,
                 f.name as faculty_name, m.name as major_name
             FROM users u
@@ -95,7 +95,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         u.user_id as admin_id,
                         u.username,
                         u.email,
-                        u.phone,
                         u.role,
                         u.faculty_id,
                         u.major_id,
@@ -119,7 +118,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         u.user_id as student_id,
                         u.username,
                         u.email,
-                        u.phone,
                         u.role,
                         u.faculty_id,
                         u.major_id,
@@ -149,7 +147,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                         u.user_id as professor_id,
                         u.username,
                         u.email,
-                        u.phone,
                         u.role,
                         u.faculty_id,
                         u.major_id,

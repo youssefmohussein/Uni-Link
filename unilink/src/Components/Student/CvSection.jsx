@@ -23,7 +23,7 @@ function CVSection({ userId }) {
         setCvFile({
           name: fileName,
           uploadedOn: new Date(cvData.created_at).toISOString().split("T")[0],
-          url: `http://localhost/backend/${cvData.file_path}`,
+          url: `http://localhost:8000/${cvData.file_path}`,
           filePath: cvData.file_path
         });
       }
@@ -71,7 +71,7 @@ function CVSection({ userId }) {
   const handleDownloadCV = async () => {
     try {
       // Use the backend download endpoint
-      const downloadUrl = `http://localhost/backend/index.php/downloadCV/${userId}`;
+      const downloadUrl = `http://localhost:8000/index.php/downloadCV/${userId}`;
 
       // Create a temporary link and trigger download
       const link = document.createElement('a');
@@ -93,7 +93,7 @@ function CVSection({ userId }) {
 
     try {
       setUploading(true);
-      const response = await fetch('http://localhost/backend/deleteCV', {
+      const response = await fetch('http://localhost:8000/deleteCV', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'

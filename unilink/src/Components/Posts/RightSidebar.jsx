@@ -14,7 +14,7 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
     // Fetch category counts from the backend
     const fetchCategoryCounts = async () => {
       try {
-        const response = await fetch('http://localhost/backend/api/posts/category-counts', {
+        const response = await fetch('http://localhost:8000/api/posts/category-counts', {
           credentials: 'include'
         });
         const data = await response.json();

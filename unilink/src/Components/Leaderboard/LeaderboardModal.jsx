@@ -17,7 +17,7 @@ const LeaderboardModal = ({ isOpen, onClose }) => {
     const fetchLeaderboard = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost/backend/api/leaderboard?limit=20', {
+            const response = await fetch('http://localhost:8000/api/leaderboard?limit=20', {
                 credentials: 'include'
             });
             const result = await response.json();

@@ -14,13 +14,13 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
     const fetchCounts = async () => {
       try {
         // Fetch project rooms count
-        const roomsResponse = await fetch('http://localhost/backend/api/chat/rooms/total-count', {
+        const roomsResponse = await fetch('http://localhost:8000/api/chat/rooms/total-count', {
           credentials: 'include'
         });
         const roomsData = await roomsResponse.json();
 
         // Fetch questions count from category counts
-        const categoriesResponse = await fetch('http://localhost/backend/api/posts/category-counts', {
+        const categoriesResponse = await fetch('http://localhost:8000/api/posts/category-counts', {
           credentials: 'include'
         });
         const categoriesData = await categoriesResponse.json();

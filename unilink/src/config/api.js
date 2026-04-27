@@ -1,10 +1,10 @@
 // API Configuration
 // Change this URL based on your setup:
 // - Development with PHP built-in server: 'http://localhost:8000'
-// - Development with Apache/XAMPP: 'http://localhost/backend/index.php'
+// - Development with Apache/XAMPP: 'http://localhost:8000/index.php'
 // - Production: your production URL
 
-export const API_BASE_URL = 'http://localhost/backend';
+export const API_BASE_URL = 'http://localhost:8000';
 
 // Helper function for API calls
 export const apiCall = async (endpoint, options = {}) => {

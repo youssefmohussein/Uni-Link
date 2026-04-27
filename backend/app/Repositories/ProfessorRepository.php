@@ -20,7 +20,7 @@ class ProfessorRepository extends BaseRepository
     public function getWithUserInfo(int $userId): ?array
     {
         $sql = "
-            SELECT p.*, u.username, u.email, u.phone, u.profile_picture as profile_image, u.bio,
+            SELECT p.*, u.username, u.email, u.profile_picture as profile_image, u.bio,
                    f.name as faculty_name, m.name as major_name
             FROM professors p
             JOIN users u ON p.user_id = u.user_id
@@ -39,7 +39,7 @@ class ProfessorRepository extends BaseRepository
     public function getAllWithUserInfo(): array
     {
         $sql = "SELECT 
-                    u.user_id, u.username, u.email, u.phone, u.profile_picture, u.role,
+                    u.user_id, u.username, u.email, u.profile_picture, u.role,
                     p.*,
                     f.name as faculty_name, f.faculty_id,
                     m.name as major_name, m.major_id

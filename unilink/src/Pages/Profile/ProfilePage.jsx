@@ -39,7 +39,7 @@ function ProfilePageUser() {
 
           // Still need to get session user for auth checks
           try {
-            const sessionResponse = await fetch('http://localhost/backend/check-session', {
+            const sessionResponse = await fetch('http://localhost:8000/check-session', {
               method: 'GET',
               credentials: 'include',
               headers: { 'Content-Type': 'application/json' }
@@ -58,7 +58,7 @@ function ProfilePageUser() {
         }
 
         // Otherwise fetch session user
-        const response = await fetch('http://localhost/backend/check-session', {
+        const response = await fetch('http://localhost:8000/check-session', {
           method: 'GET',
           credentials: 'include', // Important: send cookies
           headers: {

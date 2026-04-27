@@ -212,7 +212,7 @@ export const uploadPostMedia = async (post_id, files) => {
     }
 
     try {
-        const response = await fetch('http://localhost/backend/uploadMedia', {
+        const response = await fetch('http://localhost:8000/uploadMedia', {
             method: 'POST',
             credentials: 'include',
             body: formData, // Don't set Content-Type header, browser will set it with boundary

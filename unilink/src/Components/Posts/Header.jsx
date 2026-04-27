@@ -156,7 +156,7 @@ const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch, hideSha
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-600 group-hover:border-accent shrink-0">
                       {u.profile_picture ? (
                         // Correct relative path handling logic or use full URL if confirmed
-                        <img src={`http://localhost/backend/${u.profile_picture}`} alt={u.username} className="w-full h-full object-cover" />
+                        <img src={`http://localhost:8000/${u.profile_picture}`} alt={u.username} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center text-xs font-bold">
                           {u.username.charAt(0).toUpperCase()}
