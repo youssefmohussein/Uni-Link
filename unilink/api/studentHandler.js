@@ -171,7 +171,7 @@ export const addSkillCategory = async (userId, categoryName) => {
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to add skill category');
   }
-  return data.category_id;
+  return data.data ? data.data.category_id : data.category_id;
 };
 
 /**
@@ -190,7 +190,7 @@ export const addSkill = async (skillName, categoryId) => {
   if (data.status !== 'success') {
     throw new Error(data.message || 'Failed to add skill');
   }
-  return data.skill_id;
+  return data.data ? data.data.skill_id : data.skill_id;
 };
 
 /**

@@ -100,17 +100,26 @@ graph TD
 
 ## 📂 Project Structure
 
--   [`/unilink`](file:///c:/Develope%20Tools/Github/Uni-Link/unilink): React-based frontend application.
--   [`/backend`](file:///c:/Develope%20Tools/Github/Uni-Link/backend): Custom PHP backend framework.
-    -   [`/app`](file:///c:/Develope%20Tools/Github/Uni-Link/backend/app): OOP Logic (Controllers, Models, Strategies).
-    -   [`/config`](file:///c:/Develope%20Tools/Github/Uni-Link/backend/config): API Routes and Service definitions.
-    -   [`/routes`](file:///c:/Develope%20Tools/Github/Uni-Link/backend/routes): Legacy procedural routes.
+-   [`/unilink`](./unilink): React-based frontend application.
+-   [`/backend`](./backend): Custom PHP backend framework.
+-   [`/backend/app`](./backend/app): OOP Logic (Controllers, Repositories, Services).
+-   [`/backend/config`](./backend/config): API Routes and Service definitions.
+-   [`/backend/database`](./backend/database): SQL Schema and database migrations.
+
+---
+
+## 🛠️ Recent Improvements (April 2026)
+
+-   **Schema Stability**: Resolved multiple "Unknown column" SQL errors across `posts`, `chat_rooms`, and `users`.
+-   **Data Synchronization**: Standardized project timestamps (`submitted_at`) and categorized post logic.
+-   **API Robustness**: Improved frontend API handlers to support both direct and nested JSON responses.
+-   **Clean Workspace**: Removed all temporary diagnostic and legacy seeding scripts for a production-ready root directory.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///c:/Develope%20Tools/Github/Uni-Link/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ---
 

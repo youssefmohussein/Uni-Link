@@ -49,7 +49,7 @@ class ProjectService extends BaseService {
             'file_path' => $filePath,
             'status' => $data['status'] ?? 'Pending',
             'grade' => $data['grade'] ?? null,
-            'created_at' => date('Y-m-d H:i:s')
+            'submitted_at' => date('Y-m-d H:i:s')
         ]);
         
         // Add skills if provided

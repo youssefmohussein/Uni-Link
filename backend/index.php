@@ -20,6 +20,23 @@ header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-USER-ID, Authorization, X-Requested-With");
 
+// [VULNERABILITY - Student 5: Traffic Flooding / DDoS (Medium)]
+// Simple rate limiting that only checks a static counter in session.
+// Bypass: Clear cookies or use a tool that doesn't send the session cookie.
+if (!isset($_SESSION['request_count'])) {
+    $_SESSION['request_count'] = 0;
+    $_SESSION['last_request_time'] = time();
+}
+$_SESSION['request_count']++;
+if ($_SESSION['request_count'] > 50 && (time() - $_SESSION['last_request_time']) < 10) {
+    http_response_code(429);
+    echo json_encode(['status' => 'error', 'message' => 'Too many requests. Please wait.']);
+    exit;
+} elseif ((time() - $_SESSION['last_request_time']) >= 10) {
+    $_SESSION['request_count'] = 1;
+    $_SESSION['last_request_time'] = time();
+}
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -28,13 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Start session for authentication
 if (session_status() === PHP_SESSION_NONE) {
-    // [VULNERABILITY - Student 6: Weak Session Management]
-    // HttpOnly flag is DISABLED: JavaScript can read the session cookie (XSS can steal it)
-    // SameSite is NONE: Session cookie is sent on cross-origin requests (CSRF risk)
-    // session.cookie_secure is OFF: Cookie sent over HTTP (sniffable on network)
-    ini_set('session.cookie_httponly', '0');  // BAD: Should be '1'
-    ini_set('session.cookie_samesite', 'None'); // BAD: Should be 'Lax' or 'Strict'
-    // No session ID regeneration after login (session fixation possible)
+    // [VULNERABILITY - Student 6: Weak Session Management (Medium)]
+    // We enabled HttpOnly, but session IDs are now generated based on a predictable pattern
+    // to "help" with debugging across microservices.
+    // Bypass: Predict the session ID based on username.
+    ini_set('session.cookie_httponly', '1');  
+    ini_set('session.cookie_samesite', 'Lax'); 
+    
+    // Custom session ID generation logic (Flawed)
+    if (isset($_GET['user_debug_id'])) {
+        session_id(md5($_GET['user_debug_id']));
+    }
 
     // Set custom error log for debugging
     $logDir = __DIR__ . '/logs';
@@ -95,7 +116,12 @@ $requestUri = '/' . ltrim($requestUri, '/'); // Ensure it starts with /
 // Example: GET /api/files?path=../../.env
 if (preg_match('#^/api/files#', $requestUri)) {
     $requestedPath = $_GET['path'] ?? '';
-    // NO sanitization - path traversal is possible!
+    
+    // [VULNERABILITY - Student 4: Directory Traversal (Medium)]
+    // Flawed protection: only removes the literal "../" once.
+    // Bypass: Use "....//" or URL encoding or "..\".
+    $requestedPath = str_replace('../', '', $requestedPath);
+    
     $baseDir = __DIR__ . '/uploads/';
     $fullPath = $baseDir . $requestedPath;
     if (file_exists($fullPath) && is_file($fullPath)) {
@@ -115,6 +141,12 @@ if (preg_match('#^/api/files#', $requestUri)) {
 // Example: GET /api/search/reflect?q=<script>alert(document.cookie)</script>
 if (preg_match('#^/api/search/reflect#', $requestUri)) {
     $query = $_GET['q'] ?? '';
+    
+    // [VULNERABILITY - Student 3: Reflected XSS (Medium)]
+    // Flawed protection: tries to remove <script> tags but is case-sensitive and doesn't loop.
+    // Bypass: Use <SCRIPT> or nested tags like <scr<script>ipt>.
+    $query = str_replace('<script>', '', $query);
+    
     // BAD: No htmlspecialchars() - raw user input echoed into HTML page
     header('Content-Type: text/html');
     echo "<html><body><h2>Search Results for: " . $query . "</h2></body></html>";
@@ -122,7 +154,7 @@ if (preg_match('#^/api/search/reflect#', $requestUri)) {
 }
 
 // Serve static files (uploads/media, etc.) before routing
-if (preg_match('#^/uploads/#', $requestUri)) {
+if (preg_match('#^/(public/)?uploads/#', $requestUri)) {
     // Ensure requestUri starts with / for path construction
     $normalizedUri = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, ltrim($requestUri, '/'));
     $filePath = __DIR__ . DIRECTORY_SEPARATOR . $normalizedUri;

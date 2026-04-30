@@ -44,13 +44,22 @@ class UserSkillController extends BaseController {
             $this->requireAuth();
             
             $data = $this->getJsonInput();
-            $this->validateRequired($data, ['skill_id']);
-            
             $userId = $this->getCurrentUserId();
-            $proficiency = $data['proficiency'] ?? 3;
             
-            $this->skillService->addUserSkill($userId, (int)$data['skill_id'], (int)$proficiency);
-            $this->success(null, 'Skill added successfully');
+            if (isset($data['skills']) && is_array($data['skills'])) {
+                foreach ($data['skills'] as $skill) {
+                    if (isset($skill['skill_id'])) {
+                        $proficiency = $skill['proficiency'] ?? 3;
+                        $this->skillService->addUserSkill($userId, (int)$skill['skill_id'], (int)$proficiency);
+                    }
+                }
+            } else {
+                $this->validateRequired($data, ['skill_id']);
+                $proficiency = $data['proficiency'] ?? 3;
+                $this->skillService->addUserSkill($userId, (int)$data['skill_id'], (int)$proficiency);
+            }
+            
+            $this->success(null, 'Skill(s) added successfully');
             
         } catch (\Exception $e) {
             $this->error($e->getMessage(), (int)($e->getCode() ?: 400));

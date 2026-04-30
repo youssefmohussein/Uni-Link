@@ -454,6 +454,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         // [VULNERABILITY 5 (People): SQL Injection]
         // Simplified for easier exploitation: ' OR 1=1 #
+        // [UPGRADED TO MEDIUM] Flawed protection: Blacklist common SQL keywords in UPPERCASE only.
+        $blacklist = ['OR', 'AND', 'UNION', 'SELECT', 'DROP', 'WHERE'];
+        foreach ($blacklist as $word) {
+            if (strpos($query, $word) !== false) {
+                return []; 
+            }
+        }
         $sql = "SELECT u.*, f.name as faculty_name, m.name as major_name
                 FROM users u
                 LEFT JOIN faculties f ON u.faculty_id = f.faculty_id

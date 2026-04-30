@@ -89,10 +89,8 @@ class UserService extends BaseService
                 'username' => $sanitized['username'],
                 'email' => $sanitized['email'],
                 'password' => $sanitized['password'],
-                'phone' => $data['phone'] ?? null,
                 'profile_image' => $data['profile_image'] ?? null,
                 'bio' => $sanitized['bio'] ?? null,
-                'job_title' => $sanitized['job_title'] ?? null,
                 'role' => $sanitized['role'], // Role stored in Users table (ADMIN, PROFESSOR, STUDENT)
                 'faculty_id' => $data['faculty_id'] ?? null,
                 'major_id' => $data['major_id'] ?? null
@@ -168,10 +166,8 @@ class UserService extends BaseService
         $updateData = [
             'username' => $sanitized['username'] ?? $existingUser['username'],
             'email' => $sanitized['email'] ?? $existingUser['email'],
-            'phone' => $data['phone'] ?? $existingUser['phone'],
             'profile_picture' => $data['profile_image'] ?? $existingUser['profile_picture'],
             'bio' => $sanitized['bio'] ?? $existingUser['bio'],
-            'job_title' => $sanitized['job_title'] ?? $existingUser['job_title'],
             'role' => $newRole,
             'faculty_id' => $data['faculty_id'] ?? $existingUser['faculty_id'],
             'major_id' => $data['major_id'] ?? $existingUser['major_id']

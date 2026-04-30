@@ -22,7 +22,7 @@ class ProjectRepository extends BaseRepository {
             FROM projects p
             LEFT JOIN users u ON p.supervisor_id = u.user_id
             WHERE p.student_id = ?
-            ORDER BY p.created_at DESC
+            ORDER BY p.submitted_at DESC
         ";
         return $this->query($sql, [$userId]);
     }
@@ -164,7 +164,7 @@ class ProjectRepository extends BaseRepository {
             LEFT JOIN users s ON p.supervisor_id = s.user_id
             LEFT JOIN faculties f ON u.faculty_id = f.faculty_id
             LEFT JOIN majors m ON u.major_id = m.major_id
-            ORDER BY p.created_at DESC
+            ORDER BY p.submitted_at DESC
         ";
         
         if ($limit !== null) {
@@ -262,7 +262,7 @@ class ProjectRepository extends BaseRepository {
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $sql .= " ORDER BY p.created_at DESC";
+        $sql .= " ORDER BY p.submitted_at DESC";
 
         return $this->query($sql, $params);
     }

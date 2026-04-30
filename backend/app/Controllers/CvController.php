@@ -111,8 +111,8 @@ class CvController extends BaseController {
             $cv = $stmt->fetch(\PDO::FETCH_ASSOC);
             
             if (!$cv) {
-                // Not an error, just no CV
-                $this->error('CV not found', 404);
+                // Not an error, just no CV - return 200 with null to prevent console red errors
+                $this->success(null);
                 return;
             }
             

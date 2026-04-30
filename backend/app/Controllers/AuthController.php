@@ -77,6 +77,19 @@ class AuthController
             ], 'Login successful');
 
         } catch (\Exception $e) {
+            // [VULNERABILITY - Student 1: Brute Force (Medium)]
+            // Flawed protection: Uses a session-based counter to block IPs after 5 attempts.
+            // Bypass: Clear cookies/don't send session cookie to reset the counter.
+            if (!isset($_SESSION['login_attempts'])) {
+                $_SESSION['login_attempts'] = 0;
+            }
+            $_SESSION['login_attempts']++;
+            
+            if ($_SESSION['login_attempts'] > 5) {
+                ResponseHandler::error('Too many failed attempts. Please try again in 1 hour.', 429);
+                return;
+            }
+
             // Ensure code is always an integer (getCode() can return string, int, or 0)
             $exceptionCode = $e->getCode();
             if (is_numeric($exceptionCode) && $exceptionCode > 0) {
