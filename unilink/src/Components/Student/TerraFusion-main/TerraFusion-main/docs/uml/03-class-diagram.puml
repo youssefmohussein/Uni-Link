@@ -1,0 +1,99 @@
+@startuml
+!theme plain
+
+' ---------- 3. CLASS DIAGRAM ----------
+
+class User {
+    -id : int
+    -email : string
+    -password : string
+    -full_name : string
+    -role_id : int
+    -created_at : datetime
+    +getId() : int
+    +setPassword(password : string) : void
+    +verifyPassword(password : string) : bool
+}
+
+class Role {
+    -id : int
+    -name : string
+    -description : string
+}
+
+class MenuItem {
+    -id : int
+    -category_id : int
+    -name : string
+    -price : float
+    -is_available : bool
+    +isAvailable() : bool
+}
+
+class Category {
+    -id : int
+    -name : string
+    -description : string
+}
+
+class Order {
+    -id : int
+    -user_id : int
+    -order_type : string
+    -status : string
+    -total_amount : float
+    +updateStatus(status : string) : bool
+    +calculateTotal() : float
+}
+
+class OrderItem {
+    -id : int
+    -order_id : int
+    -menu_item_id : int
+    -quantity : int
+    -price_at_order : float
+    +getSubtotal() : float
+}
+
+class PaymentStrategyInterface {
+    {abstract} +processPayment(amount : float, data : array) : array
+}
+
+class CardPayment {
+    +processPayment(amount : float, data : array) : array
+}
+
+class CashPayment {
+    +processPayment(amount : float, data : array) : array
+}
+
+class MobilePayment {
+    +processPayment(amount : float, data : array) : array
+}
+
+class OrderTypeFactory {
+    {static} +createOrder(type : string, data : array) : Order
+}
+
+class OrderRepository {
+    +find(id : int) : Order
+    +create(data : array) : Order
+    +getByStatus(status : string) : array
+    +updateStatus(orderId : int, status : string) : bool
+}
+
+User "1" --> "*" Role
+Order "1" --> "*" OrderItem
+OrderItem "*" --> "1" MenuItem
+MenuItem "*" --> "1" Category
+Order "*" --> "1" User
+
+OrderRepository ..> Order : accesses
+OrderTypeFactory --> Order : creates
+
+PaymentStrategyInterface <|-- CardPayment
+PaymentStrategyInterface <|-- CashPayment
+PaymentStrategyInterface <|-- MobilePayment
+
+@enduml
+

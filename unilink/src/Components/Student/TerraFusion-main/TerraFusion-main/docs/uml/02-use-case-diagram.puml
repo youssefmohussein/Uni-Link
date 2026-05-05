@@ -1,0 +1,53 @@
+@startuml
+!theme plain
+
+' ---------- 2. USE CASE DIAGRAM ----------
+
+actor Customer
+actor "Restaurant Staff" as Staff
+actor Admin
+
+rectangle "TerraFusion" {
+    (Register) : <<Customer>>
+    (Login) : <<All>>
+    (Browse Menu) : <<Customer>>
+    (Add to Cart) : <<Customer>>
+    (Place Order) : <<Customer>>
+    (Track Order) : <<Customer>>
+    (View History) : <<Customer>>
+    (Leave Review) : <<Customer>>
+
+    (View New Orders) : <<Chef>>
+    (Update Order Status) : <<Staff>>
+    (Process In-Person Order) : <<Waiter>>
+    (Manage Tables) : <<Waiter>>
+
+    (Manage Menu) : <<Admin>>
+    (Manage Users) : <<Admin>>
+    (Set Promotions) : <<Admin>>
+    (Generate Reports) : <<Admin>>
+    (Manage Inventory) : <<Admin>>
+}
+
+Customer --> (Register)
+Customer --> (Login)
+Customer --> (Browse Menu)
+Customer --> (Add to Cart)
+Customer --> (Place Order)
+Customer --> (Track Order)
+Customer --> (View History)
+Customer --> (Leave Review)
+
+Staff --> (View New Orders)
+Staff --> (Update Order Status)
+Staff --> (Process In-Person Order)
+Staff --> (Manage Tables)
+
+Admin --> (Manage Menu)
+Admin --> (Manage Users)
+Admin --> (Set Promotions)
+Admin --> (Generate Reports)
+Admin --> (Manage Inventory)
+
+@enduml
+

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 
 const RightSidebar = ({ currentFilter, onFilterChange }) => {
   const [categoryCounts, setCategoryCounts] = useState({
@@ -12,7 +13,7 @@ const RightSidebar = ({ currentFilter, onFilterChange }) => {
   useEffect(() => {
     const fetchCategoryCounts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/posts/category-counts', {
+        const response = await fetch(`${API_BASE_URL}/api/posts/category-counts`, {
           credentials: 'include'
         });
         const data = await response.json();

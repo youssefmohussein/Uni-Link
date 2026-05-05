@@ -1,4 +1,5 @@
 import { apiRequest } from "./apiClient";
+import { API_BASE_URL } from "../config/api";
 
 /* ============================================================
    POST HANDLER
@@ -212,7 +213,7 @@ export const uploadPostMedia = async (post_id, files) => {
     }
 
     try {
-        const response = await fetch('http://localhost:8000/uploadMedia', {
+        const response = await fetch(`${API_BASE_URL}/uploadMedia`, {
             method: 'POST',
             credentials: 'include',
             body: formData, // Don't set Content-Type header, browser will set it with boundary

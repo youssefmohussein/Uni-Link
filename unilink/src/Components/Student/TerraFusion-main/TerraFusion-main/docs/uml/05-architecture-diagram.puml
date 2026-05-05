@@ -1,0 +1,95 @@
+@startuml
+!theme plain
+
+' ---------- 5. ARCHITECTURE DIAGRAM ----------
+
+package "Client (Browser)" {
+    [Customer UI]
+    [Staff UI]
+    [Admin UI]
+}
+
+package "Public" {
+    [index.php] as FrontController
+}
+
+package "App" {
+    [Router]
+    
+    package "Controllers" {
+        [AuthController]
+        [OrderController]
+        [MenuController]
+        [AdminController]
+        [StaffController]
+        [CustomerController]
+    }
+    
+    package "Services" {
+        [OrderTypeFactory]
+        [PaymentStrategyInterface]
+        [DeliveryServiceAdapter]
+    }
+    
+    package "Repositories" {
+        [UserRepository]
+        [OrderRepository]
+        [MenuRepository]
+        [ReportRepository]
+    }
+    
+    package "Models" {
+        [User]
+        [Order]
+        [MenuItem]
+        [Payment]
+    }
+    
+    package "Middleware" {
+        [AuthMiddleware]
+        [CsrfMiddleware]
+        [AdminMiddleware]
+        [StaffMiddleware]
+    }
+}
+
+package "Database" {
+    [MySQL]
+}
+
+[Customer UI] --> FrontController
+[Staff UI] --> FrontController
+[Admin UI] --> FrontController
+
+FrontController --> Router
+Router --> AuthController
+Router --> OrderController
+Router --> MenuController
+Router --> AdminController
+Router --> StaffController
+Router --> CustomerController
+
+AuthController --> UserRepository
+OrderController --> OrderRepository
+OrderController --> OrderTypeFactory
+OrderController --> PaymentStrategyInterface
+MenuController --> MenuRepository
+AdminController --> MenuRepository
+AdminController --> UserRepository
+AdminController --> ReportRepository
+StaffController --> OrderRepository
+
+UserRepository --> MySQL
+OrderRepository --> MySQL
+MenuRepository --> MySQL
+ReportRepository --> MySQL
+
+PaymentStrategyInterface ..> DeliveryServiceAdapter : (Future Integration)
+
+Router --> AuthMiddleware
+Router --> CsrfMiddleware
+Router --> AdminMiddleware
+Router --> StaffMiddleware
+
+@enduml
+

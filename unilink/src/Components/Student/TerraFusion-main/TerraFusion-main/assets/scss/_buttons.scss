@@ -1,0 +1,46 @@
+@import 'variables';
+
+.btn-gold {
+    background-color: $btn-gold;
+    color: $primary-bg;
+    border: none;
+    border-radius: $border-radius;
+    padding: 0.75rem 1.5rem;
+    font-weight: $font-weight-bold;
+    transition: all $transition-speed ease;
+    
+    &:hover {
+        background-color: $btn-gold-hover;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba($accent-gold, 0.3);
+        color: $primary-bg;
+    }
+    
+    &:focus {
+        animation: goldPulse 1.5s;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba($accent-gold, 0.5);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-outline-gold {
+    border: 2px solid $btn-gold;
+    color: $btn-gold;
+    background-color: transparent;
+    border-radius: $border-radius;
+    padding: 0.75rem 1.5rem;
+    font-weight: $font-weight-bold;
+    transition: all $transition-speed ease;
+    
+    &:hover {
+        background-color: $btn-gold;
+        color: $primary-bg;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba($accent-gold, 0.3);
+    }
+}
+

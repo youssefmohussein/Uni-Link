@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiUsers, FiBarChart2, FiSettings, FiMenu, FiUserCheck, FiBookOpen, FiGlobe, FiLogOut } from "react-icons/fi";
+import { API_BASE_URL } from "../../config/api";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -18,7 +19,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:8000/logout', {
+      await fetch(`${API_BASE_URL}/logout`, {
         method: 'POST',
         credentials: 'include'
       });

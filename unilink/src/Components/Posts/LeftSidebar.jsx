@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const LeftSidebar = ({ currentFilter, onFilterChange }) => {
   const navigate = useNavigate();
@@ -11,12 +12,12 @@ const LeftSidebar = ({ currentFilter, onFilterChange }) => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const roomsResponse = await fetch('http://localhost:8000/api/chat/rooms/total-count', {
+        const roomsResponse = await fetch(`${API_BASE_URL}/api/chat/rooms/total-count`, {
           credentials: 'include'
         });
         const roomsData = await roomsResponse.json();
 
-        const categoriesResponse = await fetch('http://localhost:8000/api/posts/category-counts', {
+        const categoriesResponse = await fetch(`${API_BASE_URL}/api/posts/category-counts`, {
           credentials: 'include'
         });
         const categoriesData = await categoriesResponse.json();

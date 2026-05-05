@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import authHandler from '../handlers/authHandler';
+import { API_BASE_URL } from '../config/api';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
     const [authState, setAuthState] = useState({
@@ -14,7 +15,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
         const checkAuth = async () => {
             try {
-                const response = await fetch('http://localhost:8000/check-session', {
+                const response = await fetch(`${API_BASE_URL}/check-session`, {
                     method: 'GET',
                     credentials: 'include'
                 });

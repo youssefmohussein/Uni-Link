@@ -1,0 +1,51 @@
+# TerraFusion .gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/*.log
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+vendor/
+node_modules/
+
+# Uploaded files
+assets/images/menu-items/*
+!assets/images/menu-items/.gitkeep
+
+# Cache
+
+cache/
+tmp/
+
+# Composer
+composer.phar
+composer.lock
+
+# Compiled assets (if using build process)
+assets/css/*.css.map
+assets/js/*.min.js
+
+.env
+config.php
+db_connect.php
+/vendor
+
+
+test_*.php
+models.txt

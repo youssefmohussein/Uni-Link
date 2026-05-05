@@ -1,0 +1,22 @@
+[2025-12-19 20:37:54] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+[2025-12-19 20:38:19] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+[2025-12-19 20:53:03] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+FULL SESSION: {"redirect_after_login":"\/TerraFusion\/Admin\/public\/index.php?page=menu","user_id":4,"full_name":"System Manager","email":"manager@gmail.com","user_phone":"01116545822","role":"Manager","role_id":4,"logged_in":true,"fingerprint":"5212a4a4ad86f038a481e83fb51056a3e2c00237bd0a1febe7e6320e17a8e9ea"}
+[2025-12-19 20:53:04] IS LOGGED IN Check: user_id = 4
+[2025-12-19 20:53:04] REQUIRE LOGIN Check: isLoggedIn = TRUE | session_id = 6jcnp8p7ukc70dvt9ctfort8k1
+[2025-12-19 20:53:06] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+FULL SESSION: {"redirect_after_login":"\/TerraFusion\/Admin\/public\/index.php?page=menu","user_id":4,"full_name":"System Manager","email":"manager@gmail.com","user_phone":"01116545822","role":"Manager","role_id":4,"logged_in":true,"fingerprint":"5212a4a4ad86f038a481e83fb51056a3e2c00237bd0a1febe7e6320e17a8e9ea"}
+[2025-12-19 20:53:06] IS LOGGED IN Check: user_id = 4
+[2025-12-19 20:53:06] REQUIRE LOGIN Check: isLoggedIn = TRUE | session_id = 6jcnp8p7ukc70dvt9ctfort8k1
+[2025-12-19 20:55:07] REQUEST: /TerraFusion/Admin/public/index.php | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+FULL SESSION: {"redirect_after_login":"\/TerraFusion\/Admin\/public\/index.php?page=menu","user_id":4,"full_name":"System Manager","email":"manager@gmail.com","user_phone":"01116545822","role":"Manager","role_id":4,"logged_in":true,"fingerprint":"5212a4a4ad86f038a481e83fb51056a3e2c00237bd0a1febe7e6320e17a8e9ea"}
+[2025-12-19 20:55:07] IS LOGGED IN Check: user_id = 4
+[2025-12-19 20:55:07] REQUIRE LOGIN Check: isLoggedIn = TRUE | session_id = 6jcnp8p7ukc70dvt9ctfort8k1
+[2025-12-19 21:02:58] REQUEST: /TerraFusion/Admin/public/index.php | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+FULL SESSION: {"redirect_after_login":"\/TerraFusion\/Admin\/public\/index.php?page=menu","user_id":4,"full_name":"System Manager","email":"manager@gmail.com","user_phone":"01116545822","role":"Manager","role_id":4,"logged_in":true,"fingerprint":"5212a4a4ad86f038a481e83fb51056a3e2c00237bd0a1febe7e6320e17a8e9ea"}
+[2025-12-19 21:02:58] IS LOGGED IN Check: user_id = 4
+[2025-12-19 21:02:58] REQUIRE LOGIN Check: isLoggedIn = TRUE | session_id = 6jcnp8p7ukc70dvt9ctfort8k1
+[2025-12-19 22:18:13] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+FULL SESSION: {"redirect_after_login":"\/TerraFusion\/Admin\/public\/index.php?page=menu","user_id":4,"full_name":"System Manager","email":"manager@gmail.com","user_phone":"01116545822","role":"Manager","role_id":4,"logged_in":true,"fingerprint":"5212a4a4ad86f038a481e83fb51056a3e2c00237bd0a1febe7e6320e17a8e9ea"}
+[2025-12-19 22:18:13] IS LOGGED IN Check: user_id = 4
+[2025-12-19 22:18:13] REQUIRE LOGIN Check: isLoggedIn = TRUE | session_id = 6jcnp8p7ukc70dvt9ctfort8k1

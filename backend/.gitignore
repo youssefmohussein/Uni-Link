@@ -1,3 +1,4 @@
-.env
+# .env is intentionally tracked so it uploads to the server with the project.
+# Make sure DB_PASS and DB_USER are correct for the production server before committing.
 uploads/*
-!uploads/.gitkeep
+!uploads/.gitkeep

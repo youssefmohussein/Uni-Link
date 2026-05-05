@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import { FiBell, FiUser, FiPlus, FiSearch, FiX } from "react-icons/fi";
 import Logo from "../../Uni-Link-Logo.webp";
@@ -156,7 +157,7 @@ const Header = ({ onShareActivity, onSearch, searchQuery, onClearSearch, hideSha
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-600 group-hover:border-accent shrink-0">
                       {u.profile_picture ? (
                         // Correct relative path handling logic or use full URL if confirmed
-                        <img src={`http://localhost:8000/${u.profile_picture}`} alt={u.username} className="w-full h-full object-cover" />
+                        <img src={`${API_BASE_URL}/${u.profile_picture}`} alt={u.username} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center text-xs font-bold">
                           {u.username.charAt(0).toUpperCase()}

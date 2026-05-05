@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as studentHandler from "../../../api/studentHandler";
+import { API_BASE_URL } from "../../config/api";
 
 function ProjectCard({ project_id, title, description, status, grade, skills, supervisor_name, created_at, file_path, onDelete, onEdit, userId }) {
   const [deleting, setDeleting] = useState(false);
@@ -25,7 +26,7 @@ function ProjectCard({ project_id, title, description, status, grade, skills, su
     try {
       setDeleting(true);
 
-      const response = await fetch('http://localhost:8000/deleteProject', {
+      const response = await fetch(`${API_BASE_URL}/deleteProject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

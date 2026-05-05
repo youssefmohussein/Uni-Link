@@ -1,0 +1,29 @@
+// TerraFusion Design System - Color Palette
+
+// Colors
+$primary-bg: #1A1A1A;
+$accent-gold: #C8A252;
+$text-light: #F0F0F0;
+$text-muted: #999999;
+$btn-gold: #C8A252;
+$btn-gold-hover: darken(#C8A252, 10%);
+$card-bg: #2A2A2A;
+$card-border: 1px solid rgba($accent-gold, 0.2);
+
+// Typography
+$font-heading: 'Playfair Display', serif;
+$font-body: 'Open Sans', sans-serif;
+
+// Font Weights
+$font-weight-heading: 600;
+$font-weight-body: 400;
+$font-weight-bold: 700;
+
+// Spacing
+$border-radius: 8px;
+$transition-speed: 0.3s;
+
+// Breakpoints
+$breakpoint-mobile: 576px;
+$breakpoint-tablet: 992px;
+

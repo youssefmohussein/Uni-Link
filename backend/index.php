@@ -49,8 +49,19 @@ if (session_status() === PHP_SESSION_NONE) {
     // We enabled HttpOnly, but session IDs are now generated based on a predictable pattern
     // to "help" with debugging across microservices.
     // Bypass: Predict the session ID based on username.
+    // Detect if we are on HTTPS (including via proxy like Vercel/Render)
+    $isSecure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || 
+                (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    
     ini_set('session.cookie_httponly', '1');  
-    ini_set('session.cookie_samesite', 'Lax'); 
+    
+    if ($isSecure) {
+        // Required for cross-origin cookies in production (e.g. frontend on Vercel, backend on Render)
+        ini_set('session.cookie_samesite', 'None'); 
+        ini_set('session.cookie_secure', '1');
+    } else {
+        ini_set('session.cookie_samesite', 'Lax'); 
+    }
     
     // Custom session ID generation logic (Flawed)
     if (isset($_GET['user_debug_id'])) {

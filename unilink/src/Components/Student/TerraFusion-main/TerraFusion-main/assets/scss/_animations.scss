@@ -1,0 +1,54 @@
+@import 'variables';
+
+@keyframes goldPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba($accent-gold, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba($accent-gold, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba($accent-gold, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+// Menu card hover effect
+.menu-card {
+    transition: all $transition-speed ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba($accent-gold, 0.2);
+    }
+}
+
+// Loading spinner
+.spinner-gold {
+    border: 3px solid rgba($accent-gold, 0.3);
+    border-top: 3px solid $accent-gold;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+

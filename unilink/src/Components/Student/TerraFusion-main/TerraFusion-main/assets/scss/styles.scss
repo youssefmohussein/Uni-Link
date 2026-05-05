@@ -1,0 +1,239 @@
+@import 'variables';
+@import 'buttons';
+@import 'animations';
+
+// Base Styles
+body {
+    background-color: $primary-bg;
+    color: $text-light;
+    font-family: $font-body;
+}
+
+// Typography
+.playfair-font {
+    font-family: $font-heading;
+    font-weight: $font-weight-heading;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $font-heading;
+    font-weight: $font-weight-heading;
+    color: $text-light;
+}
+
+// Background Colors
+.bg-primary {
+    background-color: $primary-bg !important;
+}
+
+.bg-card {
+    background-color: $card-bg !important;
+}
+
+.bg-gold {
+    background-color: $accent-gold !important;
+}
+
+// Text Colors
+.text-light {
+    color: $text-light !important;
+}
+
+.text-muted {
+    color: $text-muted !important;
+}
+
+.text-gold {
+    color: $accent-gold !important;
+}
+
+// Border
+.border-gold {
+    border-color: $accent-gold !important;
+}
+
+// Cards
+.card {
+    background-color: $card-bg;
+    border: $card-border;
+    border-radius: $border-radius;
+    color: $text-light;
+    
+    .card-header {
+        background-color: rgba($accent-gold, 0.1);
+        border-bottom: $card-border;
+        font-weight: $font-weight-bold;
+    }
+}
+
+// Forms
+.form-control {
+    background-color: $card-bg;
+    border: 1px solid rgba($accent-gold, 0.3);
+    color: $text-light;
+    border-radius: $border-radius;
+    
+    &:focus {
+        background-color: $card-bg;
+        border-color: $accent-gold;
+        color: $text-light;
+        box-shadow: 0 0 0 0.2rem rgba($accent-gold, 0.25);
+    }
+    
+    &::placeholder {
+        color: $text-muted;
+    }
+}
+
+.form-select {
+    background-color: $card-bg;
+    border: 1px solid rgba($accent-gold, 0.3);
+    color: $text-light;
+    border-radius: $border-radius;
+    
+    &:focus {
+        border-color: $accent-gold;
+        box-shadow: 0 0 0 0.2rem rgba($accent-gold, 0.25);
+    }
+}
+
+// Navbar
+.navbar {
+    .nav-link {
+        transition: color $transition-speed ease;
+        
+        &:hover {
+            color: $accent-gold !important;
+        }
+        
+        &.active {
+            color: $accent-gold !important;
+            font-weight: $font-weight-bold;
+        }
+    }
+}
+
+// Progress Bar
+.progress {
+    background-color: rgba($accent-gold, 0.2);
+    border-radius: $border-radius;
+    
+    .progress-bar {
+        background-color: $accent-gold;
+    }
+}
+
+// Badge
+.badge {
+    border-radius: $border-radius;
+}
+
+// Responsive
+@media (max-width: $breakpoint-mobile) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+// Menu Grid
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    
+    @media (max-width: $breakpoint-mobile) {
+        grid-template-columns: 1fr;
+    }
+    
+    @media (min-width: $breakpoint-mobile) and (max-width: $breakpoint-tablet) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+// Menu Card
+.menu-card {
+    background-color: $card-bg;
+    border: $card-border;
+    border-radius: $border-radius;
+    overflow: hidden;
+    transition: all $transition-speed ease;
+    
+    .card-img-top {
+        position: relative;
+        overflow: hidden;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba($primary-bg, 0.7), transparent);
+        }
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card-title {
+        font-family: $font-heading;
+        font-weight: $font-weight-heading;
+        color: $text-light;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-text {
+        color: $text-muted;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .price {
+        font-size: 1.25rem;
+        font-weight: $font-weight-bold;
+        color: $accent-gold;
+    }
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba($accent-gold, 0.2);
+        
+        .btn-gold {
+            animation: goldPulse 1.5s;
+        }
+    }
+}
+
+// Table
+.table {
+    color: $text-light;
+    
+    thead {
+        border-bottom: $card-border;
+        
+        th {
+            color: $accent-gold;
+            font-weight: $font-weight-bold;
+        }
+    }
+    
+    tbody {
+        tr {
+            border-bottom: 1px solid rgba($accent-gold, 0.1);
+            
+            &:hover {
+                background-color: rgba($accent-gold, 0.05);
+            }
+        }
+    }
+}
+
+// Alert
+.alert {
+    border-radius: $border-radius;
+    border: none;
+}
+

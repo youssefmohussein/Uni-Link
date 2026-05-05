@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Restaurant Management</title>
+    <link rel="stylesheet" href="assets/css/adminpage.css" />
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Admin</h1>
+                <p>Dashboard</p>
+            </div>
+
+            <button id="collapse-btn" class="collapse-btn" title="Collapse sidebar">
+                <i data-lucide="chevrons-left"></i>
+            </button>
+
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <button class="nav-btn active" onclick="showPage('orders', event)">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Orders</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('users', event)">
+                    <i data-lucide="users"></i>
+                    <span>Users</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('menu', event)">
+                    <i data-lucide="coffee"></i>
+                    <span>Menu Management</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('reports', event)">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Reports & Statistics</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('profile', event)">
+                    <i data-lucide="settings"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+
+
+            <button class="logout-btn" onclick="window.location.href='index.php'">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Floating quick add -->
+            <button id="quick-add" class="quick-add" title="Quick Add Order" onclick="quickAddOrder()">
+                <i data-lucide="plus"></i>
+            </button>
+
+            <!-- Orders Page -->
+            <div id="orders-page" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">Order Management</h2>
+                    <p class="page-subtitle">Manage and track all customer orders</p>
+                </div>
+
+                <!-- Filters: search & date -->
+                <div class="flex gap-2 mb-4 filters-row">
+                    <input id="order-search" class="form-input" placeholder="Search by customer or status"
+                        oninput="renderOrders()" />
+                    <label>From:</label>
+                    <input id="orders-from" type="date" class="form-input" onchange="renderOrders()" />
+                    <label>To:</label>
+                    <input id="orders-to" type="date" class="form-input" onchange="renderOrders()" />
+                </div>
+
+                <!-- Modal / form -->
+                <div id="order-modal" class="modal" aria-hidden="true">
+                    <div class="modal-backdrop" onclick="closeModal('order-modal')"></div>
+                    <div class="modal-card" role="dialog" aria-modal="true">
+                        <h3 class="modal-title">Add / Edit Order</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="customer-name" placeholder="Customer Name" class="form-input">
+                            <input type="number" id="order-items" placeholder="Items" class="form-input">
+                            <input type="text" id="order-total" placeholder="Total (E£)" class="form-input">
+                            <select id="order-status" class="form-input">
+                                <option>Pending</option>
+                                <option>Shipped</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button id="save-order-btn" class="btn-primary" onclick="saveOrder()">Save</button>
+                            <button class="btn-outline" onclick="closeModal('order-modal')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-8">
+                    <div></div>
+                    <div class="flex gap-2">
+                        <button onclick="openModal('order-modal')" class="btn-secondary flex items-center gap-2">
+                            <i data-lucide="plus"></i> Add Order
+                        </button>
+                        <button class="btn-outline" onclick="sortOrders('date')">Sort by Date</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Total Orders</p>
+                        <p class="text-2xl font-bold stat-value" id="total-orders">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Pending</p>
+                        <p class="text-2xl font-bold stat-value" id="pending-orders">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Completed</p>
+                        <p class="text-2xl font-bold stat-value" id="completed-orders">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Shipped</p>
+                        <p class="text-2xl font-bold stat-value" id="shipped-orders">0</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="orders-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortOrders('id')">Order ID</th>
+                                <th onclick="sortOrders('customer')">Customer</th>
+                                <th onclick="sortOrders('items')">Items</th>
+                                <th onclick="sortOrders('total')">Total</th>
+                                <th onclick="sortOrders('status')">Status</th>
+                                <th onclick="sortOrders('date')">Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div id="users-page" class="page" style="display:none;">
+                <div class="page-header">
+                    <h2 class="page-title">User Management</h2>
+                    <p class="page-subtitle">Manage and organize user accounts</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-8">
+                    <div></div>
+                    <button onclick="openModal('user-modal')" class="btn-secondary flex items-center gap-2">
+                        <i data-lucide="plus"></i> Add User
+                    </button>
+                </div>
+
+                <div id="user-modal" class="modal" aria-hidden="true">
+                    <div class="modal-backdrop" onclick="closeModal('user-modal')"></div>
+                    <div class="modal-card" role="dialog">
+                        <h3 class="modal-title">Add User</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="user-name" placeholder="Full Name" class="form-input">
+                            <input type="email" id="user-email" placeholder="Email" class="form-input">
+                            <input type="tel" id="user-phone" placeholder="Phone" class="form-input">
+                            <select id="user-role" class="form-input">
+                                <option>Customer</option>
+                                <option>Moderator</option>
+                                <option>Admin</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-primary" onclick="saveUser()">Save</button>
+                            <button class="btn-outline" onclick="closeModal('user-modal')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Total Users</p>
+                        <p class="text-2xl font-bold stat-value" id="total-users">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Active Users</p>
+                        <p class="text-2xl font-bold stat-value" id="active-users">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Admins</p>
+                        <p class="text-2xl font-bold stat-value" id="admin-users">0</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Menu Page -->
+            <div id="menu-page" class="page" style="display:none;">
+                <div class="page-header">
+                    <h2 class="page-title">Menu Management</h2>
+                    <p class="page-subtitle">Add, edit, and organize restaurant menu items</p>
+                </div>
+
+                <!-- Menu Filters -->
+                <div class="flex gap-2 mb-4 filters-row">
+                    <input id="menu-search" class="form-input" placeholder="Search items..." oninput="renderMenu()" />
+                    <select id="menu-filter-category" class="form-input" onchange="renderMenu()">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="menu-filter-availability" class="form-input" onchange="renderMenu()">
+                        <option value="">All</option>
+                        <option value="Available">Available</option>
+                        <option value="Out of Stock">Out of Stock</option>
+                    </select>
+                </div>
+
+                <div id="menu-modal" class="modal" aria-hidden="true">
+                    <div class="modal-backdrop" onclick="closeModal('menu-modal')"></div>
+                    <div class="modal-card" role="dialog">
+                        <h3 class="modal-title">Add / Edit Menu Item</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="menu-name" placeholder="Item Name" class="form-input">
+                            <input type="text" id="menu-category" placeholder="Category" class="form-input">
+                            <input type="number" id="menu-price" placeholder="Price (E£)" class="form-input">
+                            <select id="menu-availability" class="form-input">
+                                <option>Available</option>
+                                <option>Out of Stock</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-primary" onclick="saveMenuItem()">Save</button>
+                            <button class="btn-outline" onclick="closeModal('menu-modal')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-8">
+                    <div></div>
+                    <button onclick="openModal('menu-modal')" class="btn-secondary flex items-center gap-2"><i
+                            data-lucide="plus"></i> Add Menu Item</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Total Items</p>
+                        <p class="text-2xl font-bold stat-value" id="total-menu">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Available</p>
+                        <p class="text-2xl font-bold stat-value" id="available-menu">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Out of Stock</p>
+                        <p class="text-2xl font-bold stat-value" id="outofstock-menu">0</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="menu-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menu-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports-page" class="page" style="display:none;">
+                <div class="page-header">
+                    <h2 class="page-title">Reports & Statistics</h2>
+                    <p class="page-subtitle">View sales, orders, and menu performance</p>
+                </div>
+
+                <div class="flex gap-2 mb-4 filters-row">
+                    <label>From:</label>
+                    <input type="date" id="report-from" class="form-input">
+                    <label>To:</label>
+                    <input type="date" id="report-to" class="form-input">
+                    <button onclick="filterReports()" class="btn-secondary">Filter</button>
+                    <button onclick="clearReportFilter()" class="btn-outline">Clear</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Total Sales</p>
+                        <p class="text-2xl font-bold stat-value" id="total-sales">0 E£</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Total Orders</p>
+                        <p class="text-2xl font-bold stat-value" id="total-report-orders">0</p>
+                    </div>
+                    <div class="stat-card hover-card">
+                        <p class="text-sm text-gray-600 mb-2">Top Selling Item</p>
+                        <p class="text-2xl font-bold stat-value" id="top-item">-</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <canvas id="sales-line-chart" height="160"></canvas>
+                    <canvas id="top-bar-chart" height="160"></canvas>
+                    <canvas id="status-pie-chart" height="160"></canvas>
+                </div>
+
+                <div class="table-container mt-6">
+                    <table class="table" id="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Sold Quantity</th>
+                                <th>Total Revenue</th>
+                                <th>Avg Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="page" style="display:none;">
+                <div class="page-header">
+                    <h2 class="page-title">Profile & Settings</h2>
+                    <p class="page-subtitle">Manage your account information and preferences</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-1">
+                        <div class="card">
+                            <div class="text-center mb-6">
+                                <div class="avatar w-20 h-20">AU</div>
+                                <h3 class="text-xl font-bold mb-1">Admin User</h3>
+                                <p class="text-sm font-semibold mb-1 role-text">System Admin</p>
+                                <p class="text-gray-600 text-xs mb-4">admin@example.com</p>
+                                <button class="btn-secondary w-full">Change Avatar</button>
+                            </div>
+                            <div class="border-t pt-4">
+                                <p class="text-xs text-gray-500 mb-1">Account Created</p>
+                                <p class="text-sm font-semibold flex items-center gap-2"><i data-lucide="calendar"></i>
+                                    2024-01-15</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4" style="color: #86987e;">Personal Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-group"><label class="form-label">First Name</label><input type="text"
+                                        class="form-input" value="Admin"></div>
+                                <div class="form-group"><label class="form-label">Last Name</label><input type="text"
+                                        class="form-input" value="User"></div>
+                                <div class="form-group"><label class="form-label">Email Address</label><input
+                                        type="email" class="form-input" value="admin@example.com"></div>
+                                <div class="form-group"><label class="form-label">Phone Number</label><input type="tel"
+                                        class="form-input" value="+1 555-0123"></div>
+                            </div>
+                            <button class="btn-primary mt-4">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script src="assets/js/adminpage.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,306 @@
+    :root {
+      /* Main Colors */
+      --primary: #D4AF37;
+      /* Gold/Yellow */
+      --primary-hover: #e6c744;
+      --secondary: #D4AF37;
+      /* Gold variant */
+      --dark: #000000;
+      /* Black */
+      --dark-glass: rgba(0, 0, 0, 0.85);
+      /* Semi-transparent black */
+      --body-bg: #121212;
+      /* Very Dark background */
+      --card-bg: rgba(25, 25, 25, 0.95);
+      --text-color: #ffffff;
+      /* White text */
+      --text-muted: #aaaaaa;
+      /* Muted text */
+      --border-color: rgba(212, 175, 55, 0.2);
+    }
+
+    .text-gold {
+      color: var(--primary) !important;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text-color);
+      background: var(--body-bg) url('../img/hero-bg.jpg') top center no-repeat;
+      background-size: cover;
+      background-attachment: fixed;
+      line-height: 1.6;
+      padding-top: 100px;
+      /* Space for fixed header */
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Overlay for background */
+    body::before {
+      content: "";
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: -1;
+    }
+
+    /* Navbar Font Override */
+    #navmenu,
+    #navmenu ul,
+    #navmenu li,
+    #navmenu a {
+      font-family: 'Courier New', monospace !important;
+    }
+
+    /* Profile Hero Section */
+    .profile-hero {
+      padding: 40px 0;
+      position: relative;
+    }
+
+    .avatar-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #000;
+      font-size: 40px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 20px rgba(205, 164, 94, 0.4);
+    }
+
+    .hero-content h2 {
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Stats Cards */
+    .stat-card {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.9));
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 30px rgba(205, 164, 94, 0.15);
+      border-color: var(--primary);
+    }
+
+    .ls-1 {
+      letter-spacing: 1px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Main Content Card (Glassmorphism) */
+    .bg-glass {
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+    }
+
+    .card-header h4 {
+      font-family: "Playfair Display", serif;
+      letter-spacing: 0.5px;
+    }
+
+    /* Custom Table */
+    .custom-table {
+      color: #fff;
+      margin-bottom: 0;
+    }
+
+    .custom-table thead th {
+      border-bottom: 2px solid var(--primary);
+      background-color: transparent;
+      color: var(--primary);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      padding: 1.2rem 1rem;
+    }
+
+    .custom-table tbody td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.2rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .custom-table tbody tr {
+      transition: background-color 0.2s;
+    }
+
+    .custom-table tbody tr:hover {
+      background-color: rgba(205, 164, 94, 0.05);
+    }
+
+    /* Badges */
+    .badge {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.5em 1em;
+    }
+
+    /* Buttons */
+    .btn-gold {
+      background-color: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      transition: all 0.3s;
+    }
+
+    .btn-gold:hover {
+      background-color: var(--primary);
+      color: #000;
+      box-shadow: 0 0 15px rgba(205, 164, 94, 0.4);
+    }
+
+    .btn-outline-primary {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+      background-color: var(--primary);
+      color: #000;
+      box-shadow: 0 0 15px rgba(205, 164, 94, 0.4);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background-color: #d9b672;
+      border-color: #d9b672;
+      color: #000;
+    }
+
+    /* Modal Styling */
+    /* Modal Styling - High Specificity */
+    #editProfileModal .modal-content,
+    .bg-dark-modal {
+      background-color: #0c0b09 !important;
+      border: 1px solid var(--primary) !important;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    #editProfileModal .modal-title,
+    .modal-title {
+      color: var(--primary) !important;
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    #editProfileModal .form-label,
+    .form-label {
+      color: var(--primary) !important;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-close-white {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    /* Form Controls */
+    #editProfileModal .form-control,
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid #333 !important;
+      color: #fff !important;
+      padding: 0.8rem 1rem;
+    }
+
+    #editProfileModal .form-control:focus,
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+      border-color: var(--primary) !important;
+      color: #fff !important;
+      box-shadow: 0 0 0 0.25rem rgba(205, 164, 94, 0.25) !important;
+    }
+
+    /* Tabs inside Modal */
+    #profileTabs,
+    .nav-tabs-bordered {
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    #profileTabs .nav-link,
+    .nav-tabs-bordered .nav-link {
+      margin-bottom: -2px;
+      border: none;
+      color: #888 !important;
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+    }
+
+    #profileTabs .nav-link:hover,
+    .nav-tabs-bordered .nav-link:hover,
+    #profileTabs .nav-link:focus,
+    .nav-tabs-bordered .nav-link:focus {
+      color: var(--primary) !important;
+      background-color: transparent !important;
+    }
+
+    #profileTabs .nav-link.active,
+    .nav-tabs-bordered .nav-link.active {
+      background-color: transparent !important;
+      color: var(--primary) !important;
+      border-bottom: 2px solid var(--primary) !important;
+    }
+
+    /* Ensure Table Body Background is Transparent/Dark */
+    .table,
+    .table> :not(caption)>*>* {
+      background-color: transparent !important;
+      color: #fff !important;
+      --bs-table-bg: transparent;
+      --bs-table-color: #fff;
+    }
+
+    .table-hover>tbody>tr:hover>* {
+      color: #fff !important;
+      background-color: rgba(205, 164, 94, 0.1) !important;
+    }
+
+    .custom-table tbody tr {
+      transition: background-color 0.2s;
+    }
+
+    .custom-table tbody tr:hover {
+      background-color: rgba(205, 164, 94, 0.1) !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .custom-table {
+        min-width: 600px;
+        /* force horizontal scroll on small screens if needed */
+      }
+
+      .stat-card {
+        margin-bottom: 20px;
+      }
+    }

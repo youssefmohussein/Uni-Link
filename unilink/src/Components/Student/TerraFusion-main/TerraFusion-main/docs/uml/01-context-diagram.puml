@@ -1,0 +1,26 @@
+@startuml
+!theme plain
+skinparam groupInheritance 3
+
+' ---------- 1. CONTEXT DIAGRAM ----------
+
+actor Customer
+actor "Restaurant Staff" as Staff
+actor Admin
+actor "External Payment Gateway" as PaymentGateway
+
+rectangle "TerraFusion System" {
+    (Customer Interface)
+    (Staff Portal)
+    (Admin Dashboard)
+    (Backend Services)
+    (MySQL DB)
+}
+
+Customer --> "TerraFusion System"
+Staff --> "TerraFusion System"
+Admin --> "TerraFusion System"
+PaymentGateway <.. "TerraFusion System" : Adapter Pattern
+
+@enduml
+

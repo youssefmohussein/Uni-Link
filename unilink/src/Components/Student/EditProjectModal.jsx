@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as studentHandler from "../../../api/studentHandler";
+import { API_BASE_URL } from "../../config/api";
 
 function EditProjectModal({ isOpen, onClose, project, userId, onSuccess }) {
     const [form, setForm] = useState({
@@ -54,7 +55,7 @@ function EditProjectModal({ isOpen, onClose, project, userId, onSuccess }) {
             }
 
             // Update project via API
-            const response = await fetch('http://localhost:8000/updateProject', {
+            const response = await fetch(`${API_BASE_URL}/updateProject`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData

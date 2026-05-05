@@ -1,0 +1,98 @@
+/* TerraFusion Design System */
+
+:root {
+    --primary-bg: #1A1A1A;
+    --accent-gold: #C8A252;
+    --text-light: #F0F0F0;
+    --text-muted: #999999;
+    --card-bg: #2A2A2A;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    background-color: var(--primary-bg);
+    color: var(--text-light);
+    font-family: 'Open Sans', sans-serif;
+}
+
+.playfair-font {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.bg-primary { background-color: var(--primary-bg) !important; }
+.bg-card { background-color: var(--card-bg) !important; }
+.bg-gold { background-color: var(--accent-gold) !important; }
+.text-light { color: var(--text-light) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-gold { color: var(--accent-gold) !important; }
+.border-gold { border-color: var(--accent-gold) !important; }
+
+.btn-gold {
+    background-color: var(--accent-gold);
+    color: var(--primary-bg);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-gold:hover {
+    background-color: #B89232;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(200, 162, 82, 0.3);
+    color: var(--primary-bg);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(200, 162, 82, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--text-light);
+}
+
+.form-control {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(200, 162, 82, 0.3);
+    color: var(--text-light);
+    border-radius: var(--border-radius);
+}
+
+.form-control:focus {
+    background-color: var(--card-bg);
+    border-color: var(--accent-gold);
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.2rem rgba(200, 162, 82, 0.25);
+}
+
+.menu-card {
+    transition: all var(--transition-speed) ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(200, 162, 82, 0.2);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+@media (max-width: 576px) {
+    .menu-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 576px) and (max-width: 992px) {
+    .menu-grid { grid-template-columns: repeat(2, 1fr); }
+}
+

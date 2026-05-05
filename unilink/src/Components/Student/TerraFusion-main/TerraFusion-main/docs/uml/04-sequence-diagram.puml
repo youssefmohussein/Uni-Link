@@ -1,0 +1,50 @@
+@startuml
+!theme plain
+
+' ---------- 4. SEQUENCE DIAGRAM: PLACE ORDER ----------
+
+actor Customer
+participant "OrderController" as OC
+participant "OrderRepository" as OR
+participant "PaymentStrategy" as PS
+participant "OrderTypeFactory" as OTF
+participant "DB" as DB
+
+Customer -> OC: Submit Order (cart, type, paymentMethod)
+activate OC
+
+OC -> OTF: createOrder(type, data)
+activate OTF
+OTF -> OTF: Create Order object based on type
+OTF --> OC: return Order object
+deactivate OTF
+
+OC -> OR: saveOrder(order)
+activate OR
+OR -> DB: INSERT order
+DB --> OR: orderId
+OR --> OC: orderId
+deactivate OR
+
+OC -> PS: processPayment(amount, paymentData)
+activate PS
+PS -> PS: Process payment based on method
+PS --> OC: {success, transaction_id, message}
+deactivate PS
+
+alt Payment Success
+    OC -> OR: updateStatus(orderId, 'confirmed')
+    activate OR
+    OR -> DB: UPDATE status
+    DB --> OR: OK
+    OR --> OC: true
+    deactivate OR
+    OC --> Customer: Order Confirmed! (Order ID)
+else Payment Failed
+    OC --> Customer: Payment Failed!
+end
+
+deactivate OC
+
+@enduml
+

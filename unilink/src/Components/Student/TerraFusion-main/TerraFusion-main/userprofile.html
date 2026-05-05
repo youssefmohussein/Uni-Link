@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>My Account - TerraFusion</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/css/userprofile.css">
+</head>
+
+<body>
+  <main id="main" class="main">
+    <section id="user-profile" class="user-profile section">
+      <div class="container">
+        <div class="section-title">
+          <h2>My Account</h2>
+          <p class="text-muted" style="color: white;">Manage your profile and orders</p>
+        </div>
+
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-lg-3">
+            <div class="sidebar">
+              <div class="profile-card text-center">
+                <h5 class="mb-2" id="userName">John Doe</h5>
+                <span class="text-muted mb-3" id="userEmail">john@example.com</span>
+                <a href="#settings" class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="tab">Edit Profile</a>
+              </div>
+              
+              <div class="sidebar-nav">
+                <div class="list-group">
+                  <a href="#dashboard" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                  </a>
+                  <a href="#orders" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                    <i class="bi bi-cart-check"></i> My Orders
+                  </a>
+                  <a href="#messages" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                    <i class="bi bi-chat-dots"></i> Messages
+                    <span class="badge bg-primary rounded-pill float-end">2</span>
+                  </a>
+                  <a href="#settings" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                    <i class="bi bi-gear"></i> Settings
+                  </a>
+                  <a href="index.php" class="list-group-item list-group-item-action text-danger">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                  </a>
+                </div>
+              </div>
+              
+              <div class="card mt-4">
+                <div class="card-body text-center p-3">
+                  <h6 class="card-title mb-2">Need Help?</h6>
+                  <p class="small text-muted mb-2">Our support team is here to help you</p>
+                  <a href="#contact" class="btn btn-outline-primary btn-sm">Contact Support</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-lg-9">
+            <div class="tab-content">
+              <!-- Dashboard Tab -->
+              <div class="tab-pane fade show active" id="dashboard">
+                <div class="card">
+                  <div class="card-header">
+                    Dashboard Overview
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-4 mb-4">
+                        <div class="card bg-primary text-white">
+                          <div class="card-small-body">
+                            <h6 class="card-title">Active Orders</h6>
+                            <h2 class="mb-0" id="activeOrders">3</h2>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mb-4">
+                        <div class="card bg-success text-white">
+                          <div class="card-small-body">
+                            <h6 class="card-title">Completed Orders</h6>
+                            <h2 class="mb-0" id="completedOrders">12</h2>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mb-4">
+                        <div class="card bg-warning text-dark">
+                          <div class="card-small-body">
+                            <h6 class="card-title">Pending Reviews</h6>
+                            <h2 class="mb-0" id="pendingReviews">2</h2>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h5 class="mb-3" style="color: white;">Recent Orders</h5>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>#12345</td>
+                            <td>2023-05-15</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td>$45.99</td>
+                            <td><button class="btn btn-sm btn-outline-primary view-order" data-order-id="12345">View</button></td>
+                          </tr>
+                          <tr>
+                            <td>#12344</td>
+                            <td>2023-05-10</td>
+                            <td><span class="badge bg-warning text-dark">Processing</span></td>
+                            <td>$32.50</td>
+                            <td><button class="btn btn-sm btn-outline-primary view-order" data-order-id="12344">View</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Orders Tab -->
+              <div class="tab-pane fade" id="orders">
+                <div class="card">
+                  <div class="card-header">
+                    My Orders
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                          <tr>
+                            <td>#12345</td>
+                            <td>2023-05-15</td>
+                            <td>3 items</td>
+                            <td>$45.99</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary view-order" data-order-id="12345">View</button></td>
+                          </tr>
+                          <tr>
+                            <td>#12344</td>
+                            <td>2023-05-10</td>
+                            <td>2 items</td>
+                            <td>$32.50</td>
+                            <td><span class="badge bg-warning text-dark">Processing</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary view-order" data-order-id="12344">View</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Messages Tab -->
+              <div class="tab-pane fade" id="messages">
+                <div class="card">
+                  <div class="card-header">
+                    Messages
+                  </div>
+                  <div class="card-body">
+                    <div class="list-group" id="messageList">
+                      <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Order #12345 Update</h6>
+                          <small class="text-muted">2 days ago</small>
+                        </div>
+                        <p class="mb-1">Your order has been shipped and will arrive soon.</p>
+                        <small class="text-muted">From: Support Team</small>
+                      </a>
+                      <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Special Offer</h6>
+                          <small class="text-muted">1 week ago</small>
+                        </div>
+                        <p class="mb-1">Enjoy 20% off your next order with code: WELCOME20</p>
+                        <small class="text-muted">From: TerraFusion</small>
+                      </a>
+                    </div>
+                    <div class="mt-3">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMessageModal">
+                        <i class="bi bi-plus-circle"></i> New Message
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Settings Tab -->
+              <div class="tab-pane fade" id="settings">
+                <div class="card">
+                  <div class="card-header">
+                    Profile Settings
+                  </div>
+                  <div class="card-body">
+                    <form id="profileSettingsForm">
+                      <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                          <label for="firstName" class="form-label">First Name</label>
+                          <input type="text" class="form-control" id="firstName" value="John" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="lastName" class="form-label">Last Name</label>
+                          <input type="text" class="form-control" id="lastName" value="Doe" required>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" value="john@example.com" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" value="+1234567890">
+                      </div>
+                      <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="2">123 Main St, City, Country</textarea>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <h5 class="mb-3">Change Password</h5>
+                    <form id="passwordForm">
+                      <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Update Password</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- View Order Modal -->
+  <div class="modal fade" id="viewOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Order Details <span id="orderIdBadge" class="badge bg-primary">#12345</span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="orderDetails">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6>Order Information</h6>
+              <p class="mb-1"><strong>Order #:</strong> 12345</p>
+              <p class="mb-1"><strong>Date:</strong> May 15, 2023</p>
+              <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Completed</span></p>
+              <p class="mb-1"><strong>Payment Method:</strong> Credit Card</p>
+            </div>
+            <div class="col-md-6">
+              <h6>Delivery Address</h6>
+              <p class="mb-1">John Doe</p>
+              <p class="mb-1">123 Main Street</p>
+              <p class="mb-1">Apt 4B</p>
+              <p class="mb-1">New York, NY 10001</p>
+              <p class="mb-1">United States</p>
+              <p class="mb-1">Phone: +1 234 567 8900</p>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Margherita Pizza</td>
+                  <td>$10.99</td>
+                  <td>2</td>
+                  <td>$21.98</td>
+                </tr>
+                <tr>
+                  <td>Caesar Salad</td>
+                  <td>$8.99</td>
+                  <td>1</td>
+                  <td>$8.99</td>
+                </tr>
+                <tr>
+                  <td>Garlic Bread</td>
+                  <td>$4.50</td>
+                  <td>2</td>
+                  <td>$9.00</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                  <td>$39.97</td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                  <td>$5.99</td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Tax:</strong></td>
+                  <td>$3.20</td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                  <td><strong>$49.16</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Print Receipt</button>
+          <button type="button" class="btn btn-outline-primary">Track Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Message Modal -->
+  <div class="modal fade" id="newMessageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="newMessageForm">
+            <div class="mb-3">
+              <label for="messageSubject" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="messageSubject" required>
+            </div>
+            <div class="mb-3">
+              <label for="messageContent" class="form-label">Message</label>
+              <textarea class="form-control" id="messageContent" rows="5" required></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="sendMessageBtn">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JavaScript -->
+<script src="assets/js/userprofile.js"></script>
+</body>
+</html>

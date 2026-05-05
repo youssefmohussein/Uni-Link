@@ -1,0 +1,13 @@
+# ─── React SPA — Apache .htaccess ────────────────────────────────────────────
+# Place this file in the same folder as your built index.html (the dist/ folder).
+# It makes Apache serve index.html for all routes so React Router works.
+
+Options -MultiViews
+RewriteEngine On
+
+# If the request is for a real file or directory, serve it directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Otherwise send everything to index.html (React Router takes over)
+RewriteRule ^ index.html [QSA,L]

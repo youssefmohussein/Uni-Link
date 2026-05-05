@@ -1,16 +1,29 @@
-# Uni-Link Backend .htaccess
-# Routes all requests to index.php
+# ─── Uni-Link Backend — Apache .htaccess ──────────────────────────────────────
+# Works whether this folder is the web root OR a /backend subdirectory.
+# No manual editing needed on the server.
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Route all requests to index.php (except actual files)
+
+    # If this backend folder is mounted at /backend/ on the server,
+    # set the base so rewrite paths are relative to this directory.
+    RewriteBase /backend/
+
+    # Let real files and directories be served directly (uploads, etc.)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Send everything else to index.php
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
-# Ensure PHP files are processed
+# Process .php files with PHP
 <FilesMatch "\.php$">
     SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Security: block direct access to sensitive files
+<FilesMatch "^(\.env|\.gitignore|composer\.json|composer\.lock)$">
+    Order allow,deny
+    Deny from all
 </FilesMatch>

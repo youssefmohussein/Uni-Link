@@ -7,6 +7,7 @@ import SkillsSection from "../../Components/Student/SkillsSection.jsx";
 import ProfileHeader from "../../Components/Student/ProfileHeader.jsx";
 import CVSection from "../../Components/Student/CvSection.jsx";
 import PostsSection from "../../Components/Student/PostsSection.jsx";
+import { API_BASE_URL } from "../../config/api";
 
 import * as profileHandler from "../../../api/profileHandler";
 import * as studentHandler from "../../../api/studentHandler";
@@ -39,7 +40,7 @@ function ProfilePageUser() {
 
           // Still need to get session user for auth checks
           try {
-            const sessionResponse = await fetch('http://localhost:8000/check-session', {
+            const sessionResponse = await fetch(`${API_BASE_URL}/check-session`, {
               method: 'GET',
               credentials: 'include',
               headers: { 'Content-Type': 'application/json' }
@@ -58,7 +59,7 @@ function ProfilePageUser() {
         }
 
         // Otherwise fetch session user
-        const response = await fetch('http://localhost:8000/check-session', {
+        const response = await fetch(`${API_BASE_URL}/check-session`, {
           method: 'GET',
           credentials: 'include', // Important: send cookies
           headers: {

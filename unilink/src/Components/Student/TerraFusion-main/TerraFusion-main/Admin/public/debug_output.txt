@@ -1,0 +1,2 @@
+[2025-12-19 20:37:54] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
+[2025-12-19 20:38:19] REQUEST: /TerraFusion/Admin/public/index.php?page=menu | Method=GET | Session=6jcnp8p7ukc70dvt9ctfort8k1 | Role=Manager
